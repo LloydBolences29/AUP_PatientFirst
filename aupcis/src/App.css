@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 *{
   margin: 0;
   padding: 0;
@@ -7,10 +9,9 @@
 .navbar {
   display: flex;
   justify-content: center;
-  /* border-bottom: 1px black solid; */
-  box-shadow: 1px 0px 35px gray;
-  /* margin-bottom: 3%;   */
   position: sticky;
+
+  box-shadow: 1px 0px 35px gray;
   top: 0
   
 }
@@ -38,7 +39,6 @@ li,a{
 }
 
 .hero{
-  /* background-color: green; */
   margin-top: 5%;
   border: 1px solid black;
   margin: 5% ;

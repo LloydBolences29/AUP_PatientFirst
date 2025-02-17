@@ -2,48 +2,12 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.css";
 import "./Home.css";
+import { Navbar } from "../Navbar/Navbar";
 
 const Home = () => {
   return (
     <>
-      <nav className="navbar navbar-expand-lg navbar-light">
-        <div className="container-fluid">
-          <NavLink className="logo-text navbar-brand text-dark" to="/">
-            <span className="patient-Logo">Patient</span>
-            <span className="first-Logo">First</span>
-          </NavLink>
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarNav"
-            aria-controls="navbarNav"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div className="collapse navbar-collapse" id="navbarNav">
-            <ul className="navbar-nav ms-auto">
-              <li className="nav-item">
-                <NavLink className="nav-link" to="/">
-                  About
-                </NavLink>
-              </li>
-              <li className="nav-item">
-                <NavLink className="nav-link" to="/services">
-                  Services
-                </NavLink>
-              </li>
-              <li className="nav-item">
-                <NavLink className="nav-link" to="/login-register">
-                  Login/Register
-                </NavLink>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       <div className="body">
         <div className="content">
@@ -55,6 +19,14 @@ const Home = () => {
               PatientFirst is a platform that allows patients to book
               appointments with doctors and view their medical history.
             </p>
+          </div>
+
+          <div className="login-button">
+            <div className="span-text-align">
+              <div className="span-h-button">
+                <NavLink to={"/login-register"} className="text-wrapper">Log In</NavLink>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -129,11 +101,18 @@ const Home = () => {
               AUP Clinic, Putingkahoy, Silang Cavite 4118, Philippines
             </p>
             <p id="contact-info">
-              <span className="phoneNumberFooter" id="title">Phone: </span> +63916 123 4567
+              <span className="phoneNumberFooter" id="title">
+                Phone:{" "}
+              </span>{" "}
+              +63916 123 4567
             </p>
             <p id="contact-info">
-              <span className="emailFooter" id="title">Email: </span>
-              <a href="mailto: aupclinic@aup.edu.ph" id="contact-info">aupclinic@aup.edu.ph</a>
+              <span className="emailFooter" id="title">
+                Email:{" "}
+              </span>
+              <a href="mailto: aupclinic@aup.edu.ph" id="contact-info">
+                aupclinic@aup.edu.ph
+              </a>
             </p>
           </div>
 
@@ -148,7 +127,9 @@ const Home = () => {
         </div>
 
         <div className="footer-bottom">
-          <p className="footer-bottom-text">© 2021 PatientFirst. All rights reserved.</p>
+          <p className="footer-bottom-text">
+            © 2021 PatientFirst. All rights reserved.
+          </p>
         </div>
       </footer>
     </>

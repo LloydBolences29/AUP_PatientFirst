@@ -32,7 +32,7 @@
   flex-direction: row;
 }
 li,a{
-    margin-left: 2em;
+  margin-left: 1rem;
     list-style: none;
     text-decoration: none;
     

@@ -1,6 +1,4 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
 import AppointmentHistory from "./modules/Patient/AppointmentHistory";
 import { Router, Routes, Route } from "react-router-dom";
@@ -8,6 +6,10 @@ import Home from "./modules/Home/Home";
 import About from "./components/About";
 import Services from "./components/Services";
 import LogInPage from "./modules/Patient/LogInPage";
+import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
+
+
 
 export default function App() {
   return (

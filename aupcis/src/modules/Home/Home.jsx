@@ -1,13 +1,31 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "./Home.css";
 import { Navbar } from "../Navbar/Navbar";
+
+const navlinks = [
+  {
+    label: "About",
+    path: "/",
+  },
+  {
+    label: "Services",
+
+    path: "/services",
+  },
+  {
+    label: "Log In",
+    path: "/login-register",
+  },
+
+];
 
 const Home = () => {
   return (
     <>
-      <Navbar />
+      <Navbar myProps={navlinks }/>
 
       <div className="body">
         <div className="content">

@@ -1,0 +1,23 @@
+.body{
+    background-color: rgba(30, 144, 255, 0.2);
+   
+
+}
+
+.appointment-info{
+    display: flex;
+    
+
+}
+
+
+.wrapper{
+    padding-top: 5%;
+    
+}
+
+.header{
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}

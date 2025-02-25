@@ -68,7 +68,7 @@ body {
   padding: 16px 32px;
   position: relative;
   top: 30px;
-  right: 410px;
+  left: 150px;
 }
 
 .login-button .span-text-align {
@@ -81,6 +81,7 @@ body {
 
 .login-button .span-h-button {
   align-items: center;
+  align-content: center;
   align-self: stretch;
   display: flex;
   flex: 0 0 auto;
@@ -100,14 +101,15 @@ body {
   position: relative;
   white-space: nowrap;
   width: fit-content;
+  padding-bottom: 16px ;
 }
 
-.text-wrapper{
+.text-link{
   text-decoration: none;
   margin: 0;
 }
 .login-button:hover .text-wrapper {
-  color: #2c3e50;
+  color: #a5a3a280;
   cursor: pointer;
 }
 .service-content {

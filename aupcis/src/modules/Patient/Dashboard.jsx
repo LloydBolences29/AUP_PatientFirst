@@ -1,11 +1,57 @@
-import React from 'react'
+import React from "react";
+import Sidebar from "../../components/Sidebar";
 
+
+
+
+
+const sidebarLinks = [
+  {
+    label: "Dashboard",
+    path: "/dashboard",
+  },
+  {
+    label: "Doctors",
+    path: "/",
+
+  },
+  {
+    label: "My Profile ",
+    path: "/",
+  },
+  {
+    label: "Appointments",
+    path: "/AppointmentHistory"
+  },
+  {
+    label: "Medical Records",
+    path: "/"
+  },
+  {
+    label: "Payment History",
+    path: "/"
+  }
+];
 const Dashboard = () => {
-  return (
-    <div>
-      
-    </div>
-  )
-}
+  
 
-export default Dashboard
+
+  return (
+    <>
+      <div>
+        <Sidebar props={sidebarLinks}
+        pageContent={
+
+          <>
+          <div>
+            <h1>  this is the content </h1>
+          </div>
+          </>
+
+        } />
+      </div>
+    </>
+  );
+};
+
+export default Dashboard;

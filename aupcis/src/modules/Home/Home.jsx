@@ -1,9 +1,9 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "./Home.css";
 import { Navbar } from "../Navbar/Navbar";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 const navlinks = [
   {
@@ -19,13 +19,12 @@ const navlinks = [
     label: "Log In",
     path: "/login-register",
   },
-
 ];
 
 const Home = () => {
   return (
     <>
-      <Navbar myProps={navlinks }/>
+      <Navbar myProps={navlinks} />
 
       <div className="body">
         <div className="content">
@@ -42,7 +41,7 @@ const Home = () => {
           <div className="login-button">
             <div className="span-text-align">
               <div className="span-h-button">
-                <NavLink to={"/login-register"} className="text-wrapper">Log In</NavLink>
+                <NavLink to="/login-register" className="text-link"><span className="text-wrapper">Log In</span></NavLink>
               </div>
             </div>
           </div>

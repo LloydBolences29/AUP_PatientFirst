@@ -3,26 +3,30 @@ import Sidebar from '../../components/Sidebar';
 
 const PatientProfile = () => {
     const menuLinks = [
-        {
-          label: "Dashboard",
-          path: "/dashboard",
-        },
-        {
-          label: "My Profile ",
-          path: "/profile",
-        },
-        {
-          label: "Appointments",
-          path: "/AppointmentHistory"
-        },
-        {
-          label: "Medical Records",
-          path: "/"
-        },
-        {
-          label: "Billing",
-          path: "/"
-        }
+      {
+        label: "Dashboard",
+        path: "/dashboard",
+      },
+      {
+        label: "Doctor",
+        path: "/doctorpage"
+      },
+      {
+        label: "My Profile ",
+        path: "/profile",
+      },
+      {
+        label: "Appointments",
+        path: "/AppointmentHistory"
+      },
+      {
+        label: "Medical Records",
+        path: "/"
+      },
+      {
+        label: "Billing",
+        path: "/"
+      }
       ];
       
       const links = [

@@ -1,5 +1,4 @@
 .sidebar-wrapper{
-    height: 100vh;
     width: 100%;
     display: grid;
     grid-template-columns: auto 1fr;
@@ -12,6 +11,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    height: 100vh;
 }
 
 .logo-text{
@@ -79,3 +79,5 @@
 .note{
     padding: 15px 10px;
 }
+
+

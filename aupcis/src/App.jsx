@@ -10,10 +10,24 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Sidebar from "./components/Sidebar";
 import Dashboard from "./modules/Patient/Dashboard";
 import PatientProfile from "./modules/Patient/PatientProfile";
+import { useEffect } from "react";
+import Doctor from "./modules/Patient/Doctor"
+
 
 
 
 export default function App() {
+useEffect(() =>{
+
+  const fetchData = async () => {
+    const res = await fetch('http://localhost:3000')
+    const data = await res.json()
+    console.log(data)
+  }
+  fetchData();
+ 
+})
+
   return (
     <>
       
@@ -22,6 +36,7 @@ export default function App() {
           <Route path = "/dashboard" element = {<Dashboard />}></Route>
           <Route path = "/about" element = {<About />}></Route>
           <Route path = "/profile" element = {<PatientProfile />}></Route>
+          <Route path="/doctorpage" element = {<Doctor />}></Route>
 
           <Route
             path="/AppointmentHistory"

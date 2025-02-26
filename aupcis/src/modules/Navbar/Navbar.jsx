@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "./Navbar.css";
 
-export const Navbar = ({ myProps }) => {
+export const Navbar = ({ myProps}) => {
   const propitems = myProps;
 
   let myFunction = (item, index) => (

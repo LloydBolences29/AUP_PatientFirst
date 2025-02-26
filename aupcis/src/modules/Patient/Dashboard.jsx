@@ -28,7 +28,7 @@ const sidebarLinks = [
     path: "/"
   },
   {
-    label: "Payment History",
+    label: "Billing",
     path: "/"
   }
 ];
@@ -40,6 +40,7 @@ const Dashboard = () => {
     <>
       <div>
         <Sidebar props={sidebarLinks}
+        activeLink="Dashboard"
         pageContent={
 
           <>

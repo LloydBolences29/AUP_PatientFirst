@@ -1,3 +1,4 @@
+
 .body{
     background-color: rgba(30, 144, 255, 0.2);
    
@@ -20,4 +21,14 @@
     font-size: 32px;
     font-weight: bold;
     margin-bottom: 20px;
+}
+
+.btn-outline-primary:hover{
+    color: red
+   
+}
+
+
+.btn-text{
+    padding: 5px 15px;
 }

@@ -9,9 +9,9 @@
     width: auto;
 }
 
-.card:hover {
-    transform: scale(1.05);
-}
+/* .card:hover {
+    transform: scale(1);
+} */
 
 .card-header {
     display: flex;

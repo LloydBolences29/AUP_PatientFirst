@@ -3,7 +3,7 @@ import "./Sidebar.css";
 import { NavLink } from "react-router-dom";
 import Navbar from "../modules/Navbar/Navbar";
 
-export const Sidebar = ({ props, pageContent, activeLink }) => {
+export const Sidebar = ({ props, pageContent, activeLink, userLink }) => {
   let mySidebarFunction = (item, index) => (
     <li
       key={index}
@@ -68,6 +68,10 @@ export const Sidebar = ({ props, pageContent, activeLink }) => {
           <div className="user-menu-container">
             <div className="user-menu">
               <ul className="user-menu-list-wrapper">
+
+                {/* <ul className="user-menu-list-wrapper">
+                  {userLink.map(mySidebarFunction)}
+                </ul> */}
                 <NavLink to={"/"} className="user-menu-list">
                   Settings
                 </NavLink>

@@ -11,13 +11,8 @@ const sidebarLinks = [
     path: "/dashboard",
   },
   {
-    label: "Doctors",
-    path: "/",
-
-  },
-  {
     label: "My Profile ",
-    path: "/",
+    path: "/profile",
   },
   {
     label: "Appointments",
@@ -32,6 +27,13 @@ const sidebarLinks = [
     path: "/"
   }
 ];
+
+const links = [
+  {
+    label: "Log Out",
+    path: "/home",
+  },
+];
 const Dashboard = () => {
   
 
@@ -40,6 +42,7 @@ const Dashboard = () => {
     <>
       <div>
         <Sidebar props={sidebarLinks}
+        userLink={links}
         activeLink="Dashboard"
         pageContent={
 

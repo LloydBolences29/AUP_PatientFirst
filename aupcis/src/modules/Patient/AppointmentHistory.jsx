@@ -10,13 +10,8 @@ const menuLinks = [
     path: "/dashboard",
   },
   {
-    label: "Doctors",
-    path: "/",
-
-  },
-  {
     label: "My Profile ",
-    path: "/",
+    path: "/profile",
   },
   {
     label: "Appointments",
@@ -107,7 +102,7 @@ const AppointmentHistory = () => {
           <Card
             cardTitle="Schedule an Appointment"
             addbtn={
-              <button className="btn btn-primary ms-auto">Add</button>
+              <button className="btn btn-primary ms-auto">Schedule an Appointment</button>
             }
             cardBody={
               <>

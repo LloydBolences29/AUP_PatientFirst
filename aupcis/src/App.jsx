@@ -9,6 +9,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Sidebar from "./components/Sidebar";
 import Dashboard from "./modules/Patient/Dashboard";
+import PatientProfile from "./modules/Patient/PatientProfile";
 
 
 
@@ -19,6 +20,9 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />}></Route>
           <Route path = "/dashboard" element = {<Dashboard />}></Route>
+          <Route path = "/about" element = {<About />}></Route>
+          <Route path = "/profile" element = {<PatientProfile />}></Route>
+
           <Route
             path="/AppointmentHistory"
             element={<AppointmentHistory />}

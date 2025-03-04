@@ -11,7 +11,7 @@ const menuLinks = [
   },
   {
     label: "Doctor",
-    path: "/doctorpage"
+    path: "/doctorpage",
   },
   {
     label: "My Profile ",
@@ -19,16 +19,16 @@ const menuLinks = [
   },
   {
     label: "Appointments",
-    path: "/AppointmentHistory"
+    path: "/AppointmentHistory",
   },
   {
     label: "Medical Records",
-    path: "/"
+    path: "/",
   },
   {
     label: "Billing",
-    path: "/"
-  }
+    path: "/",
+  },
 ];
 
 const links = [
@@ -52,7 +52,7 @@ const AppointmentHistory = () => {
                   cardTitle="Doctor's Schedule"
                   cardBody={
                     <>
-                      <div className="container">
+                      <div className="doctor-schedule container">
                         <table className="table">
                           <tr>
                             <th></th>
@@ -78,7 +78,7 @@ const AppointmentHistory = () => {
                   cardTitle="Appointment History"
                   cardBody={
                     <>
-                      <div className="container">
+                      <div className="appointment-history container">
                         <table className="table">
                           <tr>
                             <th></th>
@@ -105,13 +105,13 @@ const AppointmentHistory = () => {
                 <Card
                   cardTitle="Schedule an Appointment"
                   addbtn={
-                    <button className="btn btn-primary ms-auto">
+                    <button className="btn btn-primary w-100">
                       Schedule an Appointment
                     </button>
                   }
                   cardBody={
                     <>
-                      <div className="container">
+                      <div className="table-of-schedules container">
                         <table className="table">
                           <tr>
                             <th className="ID">No.</th>
@@ -169,8 +169,12 @@ const AppointmentHistory = () => {
                             <td className="status">Cancelled</td>
                             <td>
                               <div className="action">
-                                <span> Cancelled </span>
-                                <span> Cancelled </span>
+                                <div className="status-cancelled-wrapper">
+                                  <span> Cancelled </span>
+                                </div>
+                                <div className="status-cancelled-wrapper">
+                                  <span> Cancelled </span>
+                                </div>
                               </div>
                             </td>
                           </tr>

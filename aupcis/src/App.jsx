@@ -17,16 +17,16 @@ import Doctor from "./modules/Patient/Doctor"
 
 
 export default function App() {
-useEffect(() =>{
+// useEffect(() =>{
 
-  const fetchData = async () => {
-    const res = await fetch('http://localhost:3000')
-    const data = await res.json()
-    console.log(data)
-  }
-  fetchData();
+//   const fetchData = async () => {
+//     const res = await fetch('http://localhost:3000')
+//     const data = await res.json()
+//     console.log(data)
+//   }
+//   fetchData();
  
-})
+// })
 
   return (
     <>

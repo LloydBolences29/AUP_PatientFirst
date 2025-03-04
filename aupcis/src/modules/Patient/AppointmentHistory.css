@@ -26,8 +26,13 @@
 
 .action{
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
     gap: 0.5rem;
     align-items: center;
     text-align: center;
+}
+
+.status-cancelled-wrapper{
+  padding: 10px;
+  
 }

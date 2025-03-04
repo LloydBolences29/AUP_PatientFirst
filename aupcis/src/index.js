@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import posthog from 'posthog-js';
 
+
 // Initialize PostHog
 posthog.init('YOUR_POSTHOG_API_KEY', { api_host: 'https://app.posthog.com' });
 

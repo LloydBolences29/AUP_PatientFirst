@@ -1,0 +1,18 @@
+.content-header-container, .nurse-div-container{
+    border: 1px solid black;
+}
+.content-header{
+    padding: 0 10px;
+}
+.content-header-wrapper{
+    display: flex;
+    justify-content: space-between;
+}
+
+.content-search-wrapper{
+    padding: 15px;
+    display: flex;
+}
+.search-input{
+    padding-right: 10px;
+}

@@ -12,6 +12,7 @@ import Dashboard from "./modules/Patient/Dashboard";
 import PatientProfile from "./modules/Patient/PatientProfile";
 import { useEffect } from "react";
 import Doctor from "./modules/Patient/Doctor"
+import Nursing from "./modules/Medical Practitioner/Nursing"
 
 
 
@@ -37,6 +38,7 @@ export default function App() {
           <Route path = "/about" element = {<About />}></Route>
           <Route path = "/profile" element = {<PatientProfile />}></Route>
           <Route path="/doctorpage" element = {<Doctor />}></Route>
+          <Route path="/nurse" element = {<Nursing />}></Route>
 
           <Route
             path="/AppointmentHistory"

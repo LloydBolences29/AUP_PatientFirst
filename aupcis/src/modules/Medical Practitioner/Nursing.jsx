@@ -34,6 +34,7 @@ const Nursing = () => {
   const [patientAge, setPatientAge] = useState("");
   const [patientGender, setPatientGender] = useState("");
   const [notification, setNotification] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const fetchPatientData = async () => {
@@ -41,12 +42,6 @@ const Nursing = () => {
       const data = await res.json();
       setPatients(data.patientname);
       setFilteredPatients(data.patientname);
-      if (data.patientname.length > 0) {
-        const lastPatientID = data.patientname[data.patientname.length - 1].patientID;
-        setPatientID(parseInt(lastPatientID) + 1);
-      } else {
-        setPatientID(1);
-      }
     };
     fetchPatientData();
   }, []);
@@ -85,7 +80,7 @@ const Nursing = () => {
         setNotification("Added successfully");
         setTimeout(() => setNotification(""), 3000);
         setIsOpen(false);
-        setPatientID(patientID + 1);
+        setPatientID("");
         setPatientName("");
         setPatientAge("");
         setPatientGender("");
@@ -95,6 +90,73 @@ const Nursing = () => {
     } catch (error) {
       console.error("Error adding patient:", error);
     }
+  };
+
+  const handleUpdatePatient = async (e) => {
+    e.preventDefault();
+    const updatedPatient = {
+      patientID,
+      name: patientName,
+      age: patientAge,
+      gender: patientGender,
+    };
+    try {
+      const response = await fetch(`http://localhost:3000/patientname/${patientID}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedPatient),
+      });
+      if (response.ok) {
+        const updatedPatientData = await response.json();
+        const updatedPatients = patients.map((patient) =>
+          patient._id === updatedPatientData._id ? updatedPatientData : patient
+        );
+        setPatients(updatedPatients);
+        setFilteredPatients(updatedPatients);
+        setNotification("Updated successfully");
+        setTimeout(() => setNotification(""), 3000);
+        setIsOpen(false);
+        setPatientID("");
+        setPatientName("");
+        setPatientAge("");
+        setPatientGender("");
+        setIsEditing(false);
+      } else {
+        console.error("Error updating patient:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error updating patient:", error);
+    }
+  };
+
+  const handleDeletePatient = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:3000/patientname/${id}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        const updatedPatients = patients.filter((patient) => patient._id !== id);
+        setPatients(updatedPatients);
+        setFilteredPatients(updatedPatients);
+        setNotification("Deleted successfully");
+        setTimeout(() => setNotification(""), 3000);
+      } else {
+        console.error("Error deleting patient:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error deleting patient:", error);
+    }
+  };
+
+  const handleEditClick = (patient) => {
+    setPatientID(patient.patientID);
+    setPatientName(patient.name);
+    setPatientAge(patient.age);
+    setPatientGender(patient.gender);
+    setIsEditing(true);
+    setIsOpen(true);
   };
 
   return (
@@ -146,7 +208,7 @@ const Nursing = () => {
               show={isOpen}
               title={
                 <>
-                  <h2 className="modal-title">Add Patient</h2>
+                  <h2 className="modal-title">{isEditing ? "Update Patient" : "Add Patient"}</h2>
                 </>
               }
               body={
@@ -154,7 +216,7 @@ const Nursing = () => {
                   <div className="form-container">
                     <div className="form-wrapper">
                       <div className="form-content">
-                        <form onSubmit={handleAddPatient}>
+                        <form onSubmit={isEditing ? handleUpdatePatient : handleAddPatient}>
                           <div className="form-group">
                             <label className="form-label">Patient ID:</label>
                             <input
@@ -162,7 +224,8 @@ const Nursing = () => {
                               type="text"
                               className="form-control"
                               value={patientID}
-                              readOnly
+                              onChange={(e) => setPatientID(e.target.value)}
+                              readOnly={isEditing}
                             />
 
                             <label className="form-label">Patient Name:</label>
@@ -200,12 +263,19 @@ const Nursing = () => {
                               type="submit"
                               className="add-btn btn btn-primary"
                             >
-                              Add Patient
+                              {isEditing ? "Update Patient" : "Add Patient"}
                             </button>
                             <button
                               type="button"
                               className="btn btn-secondary"
-                              onClick={() => setIsOpen(false)}
+                              onClick={() => {
+                                setIsOpen(false);
+                                setIsEditing(false);
+                                setPatientID("");
+                                setPatientName("");
+                                setPatientAge("");
+                                setPatientGender("");
+                              }}
                             >
                               Close
                             </button>
@@ -230,6 +300,7 @@ const Nursing = () => {
                         <th>Name</th>
                         <th>Gender</th>
                         <th>Age</th>
+                        <th>Actions</th>
                       </tr>
                     </thead>
 
@@ -237,11 +308,25 @@ const Nursing = () => {
                     <tbody>
                       {filteredPatients.map((i) => {
                         return (
-                          <tr key={i.patientID}>
+                          <tr key={i._id}>
                             <td>{i.patientID}</td>
                             <td>{i.name}</td>
                             <td>{i.gender}</td>
                             <td>{i.age}</td>
+                            <td>
+                              <button
+                                className="btn btn-warning"
+                                onClick={() => handleEditClick(i)}
+                              >
+                                Update
+                              </button>
+                              <button
+                                className="btn btn-danger"
+                                onClick={() => handleDeletePatient(i._id)}
+                              >
+                                Delete
+                              </button>
+                            </td>
                           </tr>
                         );
                       })}

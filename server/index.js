@@ -1,44 +1,74 @@
 // mongodb+srv://2051068:hindikoalam@29@cluster0.9whxj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
 
 const express = require("express");
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 const connectDB = require("./db.js");
 const itemModel = require("./model/Item.js");
 const cors = require("cors");
-const patientModel = require("./model/Patient.js")
-
+const patientModel = require("./model/Patient.js");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-
 connectDB();
 
-
 //API fetching for the Item Model
-app.get("/",  async  (req, res) => {
+app.get("/", async (req, res) => {
   const response = await itemModel.find();
-  return res.json({items : response});
+  return res.json({ items: response });
 });
 
 //API fetching for the patient model
 app.get("/patientname", async (req, res) => {
   const response = await patientModel.find();
   return res.json({ patientname: response });
-  }); 
-
-
-  app.post("/patientname", async (req, res) => {
-    try {
-        const newPatient = new patientModel(req.body); // Save to MongoDB
-        await newPatient.save();
-        res.status(201).json(newPatient);
-    } catch (error) {
-        res.status(500).json({ message: "Error adding patient", error });
-    }
 });
 
+//Add new patient
+app.post("/patientname", async (req, res) => {
+  try {
+    const newPatient = new patientModel(req.body); // Save to MongoDB
+    await newPatient.save();
+    res.status(201).json(newPatient);
+  } catch (error) {
+    res.status(500).json({ message: "Error adding patient", error });
+  }
+});
+
+// PUT - Update patient by ID
+app.put("/patientname/:id", async (req, res) => {
+  try {
+    const updatedPatient = await patientModel.findOneAndUpdate(
+      { patientID: req.params.id }, // Find by patientID
+      req.body,
+      { new: true } // Return the updated patient
+    );
+
+    if (!updatedPatient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    res.json(updatedPatient);
+  } catch (error) {
+    res.status(500).json({ message: "Error updating patient", error });
+  }
+});
+
+// DELETE - Remove patient by ID
+app.delete("/patientname/:id", async (req, res) => {
+  try {
+    const deletedPatient = await patientModel.findByIdAndDelete(req.params.id);
+
+    if (!deletedPatient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    res.json({ message: "Patient deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting patient", error });
+  }
+});
 
 //run the server
 app.listen(3000, () => {

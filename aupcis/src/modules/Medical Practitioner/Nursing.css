@@ -22,3 +22,15 @@
     display: flex;
   justify-content: center;
 }
+
+.nurse-div-container {
+  width: 100%;
+}
+
+.nurse-div-wrapper {
+  width: 100%;
+}
+
+.nurse-div-content {
+  width: 100%;
+}

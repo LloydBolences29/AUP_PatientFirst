@@ -29,6 +29,17 @@ app.get("/patientname", async (req, res) => {
   }); 
 
 
+  app.post("/patientname", async (req, res) => {
+    try {
+        const newPatient = new patientModel(req.body); // Save to MongoDB
+        await newPatient.save();
+        res.status(201).json(newPatient);
+    } catch (error) {
+        res.status(500).json({ message: "Error adding patient", error });
+    }
+});
+
+
 //run the server
 app.listen(3000, () => {
   console.log("Server is running on port 3000");

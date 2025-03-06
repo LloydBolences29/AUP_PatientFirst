@@ -1,18 +1,24 @@
-.content-header-container, .nurse-div-container{
-    border: 1px solid black;
+.content-header-container,
+.nurse-div-container {
+  border: 1px solid black;
 }
-.content-header{
-    padding: 0 10px;
+.content-header {
+  padding: 0 10px;
 }
-.content-header-wrapper{
-    display: flex;
-    justify-content: space-between;
+.content-header-wrapper {
+  display: flex;
+  justify-content: space-between;
 }
 
-.content-search-wrapper{
-    padding: 15px;
-    display: flex;
+.content-search-wrapper {
+  padding: 15px;
+  display: flex;
 }
-.search-input{
-    padding-right: 10px;
+.search-input {
+  padding: 0 10px;
+}
+
+.btn-container {
+    display: flex;
+  justify-content: center;
 }

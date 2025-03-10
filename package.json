@@ -12,6 +12,7 @@
     "sass": "^1.85.1",
     "styled-components": "^6.1.15",
     "tailwindcss": "^4.0.9",
-    "vie": "^2.1.2"
+    "vie": "^2.1.2",
+    "vite": "^6.2.1"
   }
 }

@@ -1,11 +1,15 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
-const UserSchema = new mongoose.Schema({
-  patientID: String,
-  name: String,
-  gender: String,
-  age: Number,
-})
+const PatientSchema = new mongoose.Schema({
+  patientID: { type: String, unique: true, required: true },
+  name: { type: String, unique: true, required: true },
+  gender: { type: String, required: true },
+  age: { type: Number, required: true },
+});
 
-const patientModel = mongoose.model('patientname', UserSchema)
-module.exports = patientModel
+// Create an index to enforce uniqueness in the database
+PatientSchema.index({ patientID: 1 }, { unique: true });
+PatientSchema.index({ name: 1 }, { unique: true });
+
+const patientModel = mongoose.model("patientname", PatientSchema);
+module.exports = patientModel;

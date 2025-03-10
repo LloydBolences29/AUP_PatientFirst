@@ -65,6 +65,7 @@ const Nursing = () => {
       age: patientAge,
       gender: patientGender,
     };
+  
     try {
       const response = await fetch("http://localhost:3000/patientname", {
         method: "POST",
@@ -73,24 +74,35 @@ const Nursing = () => {
         },
         body: JSON.stringify(newPatient),
       });
-      if (response.ok) {
-        const addedPatient = await response.json();
-        setPatients([...patients, addedPatient]);
-        setFilteredPatients([...patients, addedPatient]);
-        setNotification("Added successfully");
+  
+      const responseData = await response.json();
+  
+      if (!response.ok) {
+        // Show notification if patient already exists
+        setNotification(responseData.message);
         setTimeout(() => setNotification(""), 3000);
-        setIsOpen(false);
-        setPatientID("");
-        setPatientName("");
-        setPatientAge("");
-        setPatientGender("");
-      } else {
-        console.error("Error adding patient:", response.statusText);
+        return;
       }
+  
+      // Successfully added patient
+      setPatients([...patients, responseData]);
+      setFilteredPatients([...patients, responseData]);
+      setNotification("Patient added successfully");
+      setTimeout(() => setNotification(""), 3000);
+      
+      // Reset fields and close modal
+      setIsOpen(false);
+      setPatientID("");
+      setPatientName("");
+      setPatientAge("");
+      setPatientGender("");
     } catch (error) {
       console.error("Error adding patient:", error);
+      setNotification("An error occurred. Please try again.");
+      setTimeout(() => setNotification(""), 3000);
     }
   };
+  
 
   const handleUpdatePatient = async (e) => {
     e.preventDefault();

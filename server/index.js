@@ -5,83 +5,20 @@ const mongoose = require("mongoose");
 const connectDB = require("./db.js");
 const itemModel = require("./model/Item.js");
 const cors = require("cors");
-const patientModel = require("./model/Patient.js");
+const patientRoutes = require("./routes/patient-data");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+//patient Routes
+app.use("/patientname", patientRoutes);
 connectDB();
 
 //API fetching for the Item Model
 app.get("/", async (req, res) => {
   const response = await itemModel.find();
   return res.json({ items: response });
-});
-
-//API fetching for the patient model
-app.get("/patientname", async (req, res) => {
-  const response = await patientModel.find();
-  return res.json({ patientname: response });
-});
-
-//Add new patient
-app.post("/patientname", async (req, res) => {
-  try {
-    const { patientID, name, age, gender } = req.body;
-
-    // Convert name to lowercase for case-insensitive matching
-    const existingPatient = await patientModel.findOne({
-      name: { $regex: new RegExp(`^${name}$`, "i") }, // Case-insensitive regex
-      age,
-      gender
-    });
-
-    if (existingPatient) {
-      return res.status(400).json({ message: "Patient record already exists." });
-    }
-
-    // Create and save new patient
-    const newPatient = new patientModel(req.body);
-    await newPatient.save();
-    res.status(201).json(newPatient);
-  } catch (error) {
-    res.status(500).json({ message: "Error adding patient", error: error.message });
-  }
-});
-
-// PUT - Update patient by ID
-app.put("/patientname/:id", async (req, res) => {
-  try {
-    const updatedPatient = await patientModel.findOneAndUpdate(
-      { patientID: req.params.id }, // Find by patientID
-      req.body,
-      { new: true } // Return the updated patient
-    );
-
-    if (!updatedPatient) {
-      return res.status(404).json({ message: "Patient not found" });
-    }
-
-    res.json(updatedPatient);
-  } catch (error) {
-    res.status(500).json({ message: "Error updating patient", error });
-  }
-});
-
-// DELETE - Remove patient by ID
-app.delete("/patientname/:id", async (req, res) => {
-  try {
-    const deletedPatient = await patientModel.findByIdAndDelete(req.params.id);
-
-    if (!deletedPatient) {
-      return res.status(404).json({ message: "Patient not found" });
-    }
-
-    res.json({ message: "Patient deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ message: "Error deleting patient", error });
-  }
 });
 
 //run the server

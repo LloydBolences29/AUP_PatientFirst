@@ -35,6 +35,7 @@ const Nursing = () => {
   const [patientGender, setPatientGender] = useState("");
   const [notification, setNotification] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
 
   useEffect(() => {
     const fetchPatientData = async () => {
@@ -45,6 +46,37 @@ const Nursing = () => {
     };
     fetchPatientData();
   }, []);
+
+  useEffect(() => {
+    let sortedPatients = [...patients];
+
+    // Sorting based on the selected column
+    if (sortConfig.key) {
+      sortedPatients.sort((a, b) => {
+        let valueA = a[sortConfig.key];
+        let valueB = b[sortConfig.key];
+
+        // Convert values to lowercase for case-insensitive sorting (if string)
+        if (typeof valueA === "string") valueA = valueA.toLowerCase();
+        if (typeof valueB === "string") valueB = valueB.toLowerCase();
+
+        if (valueA < valueB) return sortConfig.direction === "asc" ? -1 : 1;
+        if (valueA > valueB) return sortConfig.direction === "asc" ? 1 : -1;
+        return 0;
+      });
+    }
+
+    setFilteredPatients(sortedPatients);
+  }, [sortConfig, patients]);
+
+  // Handle sorting when clicking on a column header
+  const handleSort = (key) => {
+    setSortConfig((prevSort) => ({
+      key,
+      direction: prevSort.key === key && prevSort.direction === "asc" ? "desc" : "asc",
+    }));
+  };
+
 
   useEffect(() => {
     setFilteredPatients(
@@ -65,7 +97,7 @@ const Nursing = () => {
       age: patientAge,
       gender: patientGender,
     };
-  
+
     try {
       const response = await fetch("http://localhost:3000/patientname", {
         method: "POST",
@@ -74,22 +106,22 @@ const Nursing = () => {
         },
         body: JSON.stringify(newPatient),
       });
-  
+
       const responseData = await response.json();
-  
+
       if (!response.ok) {
         // Show notification if patient already exists
         setNotification(responseData.message);
         setTimeout(() => setNotification(""), 3000);
         return;
       }
-  
+
       // Successfully added patient
       setPatients([...patients, responseData]);
       setFilteredPatients([...patients, responseData]);
       setNotification("Patient added successfully");
       setTimeout(() => setNotification(""), 3000);
-      
+
       // Reset fields and close modal
       setIsOpen(false);
       setPatientID("");
@@ -102,7 +134,6 @@ const Nursing = () => {
       setTimeout(() => setNotification(""), 3000);
     }
   };
-  
 
   const handleUpdatePatient = async (e) => {
     e.preventDefault();
@@ -113,13 +144,16 @@ const Nursing = () => {
       gender: patientGender,
     };
     try {
-      const response = await fetch(`http://localhost:3000/patientname/${patientID}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedPatient),
-      });
+      const response = await fetch(
+        `http://localhost:3000/patientname/${patientID}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedPatient),
+        }
+      );
       if (response.ok) {
         const updatedPatientData = await response.json();
         const updatedPatients = patients.map((patient) =>
@@ -149,7 +183,9 @@ const Nursing = () => {
         method: "DELETE",
       });
       if (response.ok) {
-        const updatedPatients = patients.filter((patient) => patient._id !== id);
+        const updatedPatients = patients.filter(
+          (patient) => patient._id !== id
+        );
         setPatients(updatedPatients);
         setFilteredPatients(updatedPatients);
         setNotification("Deleted successfully");
@@ -220,7 +256,9 @@ const Nursing = () => {
               show={isOpen}
               title={
                 <>
-                  <h2 className="modal-title">{isEditing ? "Update Patient" : "Add Patient"}</h2>
+                  <h2 className="modal-title">
+                    {isEditing ? "Update Patient" : "Add Patient"}
+                  </h2>
                 </>
               }
               body={
@@ -228,7 +266,11 @@ const Nursing = () => {
                   <div className="form-container">
                     <div className="form-wrapper">
                       <div className="form-content">
-                        <form onSubmit={isEditing ? handleUpdatePatient : handleAddPatient}>
+                        <form
+                          onSubmit={
+                            isEditing ? handleUpdatePatient : handleAddPatient
+                          }
+                        >
                           <div className="form-group">
                             <label className="form-label">Patient ID:</label>
                             <input
@@ -308,10 +350,31 @@ const Nursing = () => {
                   <table className="table">
                     <thead>
                       <tr>
-                        <th>Patient ID</th>
-                        <th>Name</th>
-                        <th>Gender</th>
-                        <th>Age</th>
+                        <th onClick={() => handleSort("patientID")}>
+                          Patient ID{" "}
+                          {sortConfig.key === "patientID"
+                            ? sortConfig.direction === "asc"
+                              ? "▲"
+                              : "▼"
+                            : ""}
+                        </th>
+                        <th onClick={() => handleSort("name")}>
+                          Name{" "}
+                          {sortConfig.key === "name"
+                            ? sortConfig.direction === "asc"
+                              ? "▲"
+                              : "▼"
+                            : ""}
+                        </th>
+                        <th onClick={() => handleSort("gender")}>
+                          Gender{" "}
+                          {sortConfig.key === "gender"
+                            ? sortConfig.direction === "asc"
+                              ? "▲"
+                              : "▼"
+                            : ""}
+                        </th>
+                        <th onClick={() => handleSort("age")}>Age {sortConfig.key === "age" ? (sortConfig.direction === "asc" ? "▲" : "▼") : ""}</th>
                         <th>Actions</th>
                       </tr>
                     </thead>

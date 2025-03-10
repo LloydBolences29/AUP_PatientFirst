@@ -16,37 +16,31 @@ router.get("/", async (req, res) => {
   });
   
   // POST - Add new patient with validation
-router.post("/", async (req, res) => {
-    try {
-      const { patientID, name, age, gender } = req.body;
+  router.post("/", async (req, res) => {
+    const { firstname } = req.body;
   
-      // Convert name to lowercase for case-insensitive validation
-      const existingPatient = await patientModel.findOne({
-        name: { $regex: new RegExp(`^${name}$`, "i") },
-        age,
-        gender
-      });
-  
-      if (existingPatient) {
-        return res.status(400).json({ message: "Patient record already exists." });
-      }
-  
-      // Create and save new patient
-      const newPatient = new patientModel(req.body);
-      await newPatient.save();
-      res.status(201).json(newPatient);
-    } catch (error) {
-      res.status(500).json({ message: "Error adding patient. The patient might existing. Check the record first", error: error.message });
+    // Check if patient already exists
+    const existingPatient = await patientModel.findOne({ firstname });
+    if (existingPatient) {
+      return res.status(400).json({ message: "Patient already exists" });
     }
+  
+    // Add new patient
+    const newPatient = new patientModel(req.body);
+    await newPatient.save();
+    res.status(201).json(newPatient);
   });
   
   // PUT - Update patient by ID
-router.put("/:id", async (req, res) => {
+  router.put("/:patientID", async (req, res) => {
+    const { patientID } = req.params;
+    const { firstname, age, gender } = req.body;
+  
     try {
       const updatedPatient = await patientModel.findOneAndUpdate(
-        { patientID: req.params.id }, // Find by patientID
-        req.body,
-        { new: true }
+        { patientID }, // Find by patientID
+        { firstname, age, gender }, // Update fields
+        { new: true } // Return updated document
       );
   
       if (!updatedPatient) {

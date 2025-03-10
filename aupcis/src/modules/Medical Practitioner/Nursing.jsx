@@ -30,7 +30,7 @@ const Nursing = () => {
   const [filteredPatients, setFilteredPatients] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [patientID, setPatientID] = useState("");
-  const [patientName, setPatientName] = useState("");
+  const [patientfName, setPatientfName] = useState("");
   const [patientAge, setPatientAge] = useState("");
   const [patientGender, setPatientGender] = useState("");
   const [notification, setNotification] = useState("");
@@ -82,7 +82,7 @@ const Nursing = () => {
     setFilteredPatients(
       patients.filter(
         (patient) =>
-          patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          patient.firstname.toLowerCase().includes(searchTerm.toLowerCase()) ||
           patient.age.toString().includes(searchTerm) ||
           patient.gender.toLowerCase().includes(searchTerm.toLowerCase())
       )
@@ -91,13 +91,25 @@ const Nursing = () => {
 
   const handleAddPatient = async (e) => {
     e.preventDefault();
+  
+    // Check if patient already exists in state (before making API call)
+    const isDuplicate = patients.some(
+      (patient) => patient.firstname.toLowerCase() === patientfName.toLowerCase()
+    );
+  
+    if (isDuplicate) {
+      setNotification("Patient already exists");
+      setTimeout(() => setNotification(""), 3000);
+      return; // Stop execution if duplicate found
+    }
+  
     const newPatient = {
       patientID,
-      name: patientName,
+      firstname: patientfName,
       age: patientAge,
       gender: patientGender,
     };
-
+  
     try {
       const response = await fetch("http://localhost:3000/patientname", {
         method: "POST",
@@ -106,26 +118,25 @@ const Nursing = () => {
         },
         body: JSON.stringify(newPatient),
       });
-
+  
       const responseData = await response.json();
-
+  
       if (!response.ok) {
-        // Show notification if patient already exists
         setNotification(responseData.message);
         setTimeout(() => setNotification(""), 3000);
         return;
       }
-
-      // Successfully added patient
-      setPatients([...patients, responseData]);
-      setFilteredPatients([...patients, responseData]);
+  
+      // Successfully added patient (use functional update to avoid stale state issues)
+      setPatients((prevPatients) => [...prevPatients, responseData]);
+      setFilteredPatients((prevFiltered) => [...prevFiltered, responseData]);
       setNotification("Patient added successfully");
       setTimeout(() => setNotification(""), 3000);
-
+  
       // Reset fields and close modal
       setIsOpen(false);
       setPatientID("");
-      setPatientName("");
+      setPatientfName("");
       setPatientAge("");
       setPatientGender("");
     } catch (error) {
@@ -137,15 +148,17 @@ const Nursing = () => {
 
   const handleUpdatePatient = async (e) => {
     e.preventDefault();
+  
     const updatedPatient = {
       patientID,
-      name: patientName,
+      firstname: patientfName,
       age: patientAge,
       gender: patientGender,
     };
+  
     try {
       const response = await fetch(
-        `http://localhost:3000/patientname/${patientID}`,
+        `http://localhost:3000/patientname/${patientID}`, 
         {
           method: "PUT",
           headers: {
@@ -154,28 +167,45 @@ const Nursing = () => {
           body: JSON.stringify(updatedPatient),
         }
       );
-      if (response.ok) {
-        const updatedPatientData = await response.json();
-        const updatedPatients = patients.map((patient) =>
-          patient._id === updatedPatientData._id ? updatedPatientData : patient
-        );
-        setPatients(updatedPatients);
-        setFilteredPatients(updatedPatients);
-        setNotification("Updated successfully");
+  
+      const responseData = await response.json();
+  
+      if (!response.ok) {
+        setNotification(responseData.message || "Error updating patient");
         setTimeout(() => setNotification(""), 3000);
-        setIsOpen(false);
-        setPatientID("");
-        setPatientName("");
-        setPatientAge("");
-        setPatientGender("");
-        setIsEditing(false);
-      } else {
-        console.error("Error updating patient:", response.statusText);
+        return;
       }
+  
+      // Ensure state update is done correctly
+      setPatients((prevPatients) => 
+        prevPatients.map((patient) =>
+          patient.patientID === responseData.patientID ? responseData : patient
+        )
+      );
+  
+      setFilteredPatients((prevFiltered) =>
+        prevFiltered.map((patient) =>
+          patient.patientID === responseData.patientID ? responseData : patient
+        )
+      );
+  
+      setNotification("Updated successfully");
+      setTimeout(() => setNotification(""), 3000);
+  
+      // Reset form fields and close modal
+      setIsOpen(false);
+      setPatientID("");
+      setPatientfName("");
+      setPatientAge("");
+      setPatientGender("");
+      setIsEditing(false);
     } catch (error) {
       console.error("Error updating patient:", error);
+      setNotification("An error occurred. Please try again.");
+      setTimeout(() => setNotification(""), 3000);
     }
   };
+  
 
   const handleDeletePatient = async (id) => {
     try {
@@ -200,7 +230,7 @@ const Nursing = () => {
 
   const handleEditClick = (patient) => {
     setPatientID(patient.patientID);
-    setPatientName(patient.name);
+    setPatientfName(patient.firstname);
     setPatientAge(patient.age);
     setPatientGender(patient.gender);
     setIsEditing(true);
@@ -284,11 +314,11 @@ const Nursing = () => {
 
                             <label className="form-label">Patient Name:</label>
                             <input
-                              id="patientName"
+                              id="patientfName"
                               type="text"
                               className="form-control"
-                              value={patientName}
-                              onChange={(e) => setPatientName(e.target.value)}
+                              value={patientfName}
+                              onChange={(e) => setPatientfName(e.target.value)}
                             />
 
                             <label className="form-label">Patient Age:</label>
@@ -326,7 +356,7 @@ const Nursing = () => {
                                 setIsOpen(false);
                                 setIsEditing(false);
                                 setPatientID("");
-                                setPatientName("");
+                                setPatientfName("");
                                 setPatientAge("");
                                 setPatientGender("");
                               }}
@@ -358,9 +388,9 @@ const Nursing = () => {
                               : "▼"
                             : ""}
                         </th>
-                        <th onClick={() => handleSort("name")}>
+                        <th onClick={() => handleSort("firstname")}>
                           Name{" "}
-                          {sortConfig.key === "name"
+                          {sortConfig.key === "firstname"
                             ? sortConfig.direction === "asc"
                               ? "▲"
                               : "▼"
@@ -385,7 +415,7 @@ const Nursing = () => {
                         return (
                           <tr key={i._id}>
                             <td>{i.patientID}</td>
-                            <td>{i.name}</td>
+                            <td>{i.firstname}</td>
                             <td>{i.gender}</td>
                             <td>{i.age}</td>
                             <td>

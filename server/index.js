@@ -28,30 +28,25 @@ app.get("/patientname", async (req, res) => {
 //Add new patient
 app.post("/patientname", async (req, res) => {
   try {
-    const { patientID, name } = req.body; // Extract fields
+    const { patientID, name, age, gender } = req.body;
 
-    // Validate input
-    if (!patientID || !name) {
-      return res.status(400).json({ message: "Patient ID and name are required" });
-    }
-
-    // 1️⃣ Check if a patient with the same ID or name already exists
-    const existingPatient = await patientModel.findOne({ 
-      $or: [{ patientID }, { name }] 
+    // Convert name to lowercase for case-insensitive matching
+    const existingPatient = await patientModel.findOne({
+      name: { $regex: new RegExp(`^${name}$`, "i") }, // Case-insensitive regex
+      age,
+      gender
     });
 
     if (existingPatient) {
-      // Notify about duplicity
-      return res.status(400).json({ message: "Patient already exists" });
+      return res.status(400).json({ message: "Patient record already exists." });
     }
 
-    // 2️⃣ If no duplicate, create new patient
+    // Create and save new patient
     const newPatient = new patientModel(req.body);
     await newPatient.save();
-    
     res.status(201).json(newPatient);
   } catch (error) {
-    res.status(500).json({ message: "Error adding patient", error });
+    res.status(500).json({ message: "Error adding patient", error: error.message });
   }
 });
 

@@ -6,6 +6,10 @@ const connectDB = require("./db.js");
 const itemModel = require("./model/Item.js");
 const cors = require("cors");
 const patientRoutes = require("./routes/patient-data");
+const cookieParser = require("cookie-parser");
+
+//initialize the user.js file
+const userRoutes = require("./routes/user-data");
 
 const app = express();
 app.use(cors());
@@ -14,6 +18,10 @@ app.use(express.json());
 //patient Routes
 app.use("/patientname", patientRoutes);
 connectDB();
+app.use("/user", userRoutes);
+//cookie parser
+app.use(cookieParser());
+
 
 //API fetching for the Item Model
 app.get("/", async (req, res) => {

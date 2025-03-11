@@ -4,7 +4,6 @@ import {Routes, Route } from "react-router-dom";
 import Home from "./modules/Home/Home";
 import About from "./components/About";
 import Services from "./components/Services";
-import LogInPage from "./modules/Patient/LogInPage";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Sidebar from "./components/Sidebar";
@@ -14,6 +13,7 @@ import { useEffect } from "react";
 import Doctor from "./modules/Patient/Doctor"
 import Nursing from "./modules/Medical Practitioner/Nursing"
 import Pharma from "./modules/Pharma/Pharma"
+import LogInPage from "./modules/Home/LogInPage";
 
 
 

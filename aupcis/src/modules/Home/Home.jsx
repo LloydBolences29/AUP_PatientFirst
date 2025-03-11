@@ -23,7 +23,6 @@ const navlinks = [
 ];
 
 const Home = () => {
-  const [isOpen, setIsOpen] = useState();
 
   return (
     <>
@@ -46,7 +45,7 @@ const Home = () => {
               <div className="span-h-button">
                 <button
                   className="text-link btn"
-                  onClick={() => setIsOpen(true)}
+                  to="/login-register"
                 >
                   <span className="text-wrapper">Log In</span>
                 </button>
@@ -54,67 +53,6 @@ const Home = () => {
             </div>
           </div>
         </div>
-      </div>
-      <div>
-        <Modal
-          show={isOpen}
-          title={
-            <>
-              <h1 className="modal-title">Log In as a Patient</h1>
-            </>
-          }
-          body={
-            <>
-              <form>
-                <div class="mb-3">
-                  <label for="exampleInputEmail1" class="form-label">
-                    Patient ID
-                  </label>
-                  <input
-                    type="email"
-                    class="form-control"
-                    id="exampleInputEmail1"
-                    aria-describedby="emailHelp"
-                  />
-                  <div id="emailHelp" class="form-text">
-                    We'll never share your email with anyone else.
-                  </div>
-                </div>
-                <div class="mb-3">
-                  <label for="exampleInputPassword1" class="form-label">
-                    Password
-                  </label>
-                  <input
-                    type="password"
-                    class="form-control"
-                    id="exampleInputPassword1"
-                  />
-                </div>
-                <div class="mb-3 form-check">
-                  <input
-                    type="checkbox"
-                    class="form-check-input"
-                    id="exampleCheck1"
-                  />
-                  <label class="form-check-label" for="exampleCheck1">
-                    Check me out
-                  </label>
-                </div>
-                <button type="submit" class="btn btn-primary submit-modal-btn">
-                  Submit
-                </button>
-              </form>
-
-              <button
-                type="btn"
-                className="btn btn-dark modal-close-btn"
-                onClick={() => setIsOpen(false)}
-              >
-                Close
-              </button>
-            </>
-          }
-        ></Modal>
       </div>
 
       <div className="container-fluid services">

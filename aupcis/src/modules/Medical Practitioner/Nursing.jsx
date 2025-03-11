@@ -145,7 +145,7 @@ const Nursing = () => {
       setTimeout(() => setNotification(""), 3000);
     }
   };
-
+  
   const handleUpdatePatient = async (e) => {
     e.preventDefault();
   

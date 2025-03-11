@@ -8,8 +8,8 @@ const PatientSchema = new mongoose.Schema({
 });
 
 // Create an index to enforce uniqueness in the database
-PatientSchema.index({ patientID: 1 }, { unique: true });
-PatientSchema.index({ firstname: 1 }, { unique: true });
+// PatientSchema.index({ patientID: 1 }, { unique: true });
+// PatientSchema.index({ firstname: 1 }, { unique: true });
 
 const patientModel = mongoose.model("patientname", PatientSchema);
 module.exports = patientModel;

@@ -49,7 +49,7 @@ const LogInPage = () => {
           id="container"
         >
           {/* Register Form */}
-          <div className="form-container register-container">
+          <div className="login-register-form-container register-container">
             <form className="login-register-form" onSubmit={handleSubmit}>
               <h1 className="head-one">Register here.</h1>
               <input
@@ -77,7 +77,7 @@ const LogInPage = () => {
           </div>
 
           {/* Login Form */}
-          <div className="form-container login-container">
+          <div className="login-register-form-container login-container">
             <form className="login-register-form" action="#">
               <h1 className="head-one">Login here.</h1>
               <input

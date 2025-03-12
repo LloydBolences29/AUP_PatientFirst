@@ -15,6 +15,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+
 //patient Routes
 app.use("/patientname", patientRoutes);
 connectDB();

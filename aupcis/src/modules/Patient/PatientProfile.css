@@ -12,7 +12,47 @@
   background-color: #d9d9d9;
 }
 .patient-profile-header h1 {
-  padding:0
+  padding: 0;
+}
+
+.patient-profile-wrapper {
+  display: flex;
+}
+.paiient-name {
+  margin: 0 20px;
+}
+
+#patient-info-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.item-3,
+.additional-patient-info {
+  display: flex;
+}
+.additional-patient-info {
+  justify-content: flex-start;
+}
+.add-info-flex-items {
+  padding: 0 10px;
+}
+.item-3 {
+  justify-content: space-between;
+}
+
+.patient-profile-img {
+  display: flex;
+  width: 10%;
+  align-items: center;
+  justify-content: center;
+  margin: 2%;
+}
+#patient-profile-img {
+  width: 100vw;
+  max-height: 100vh;
+  height: auto;
+  border-radius: 5em;
 }
 .button-wrapper {
   display: flex;
@@ -34,9 +74,9 @@
 }
 
 /*patient profile*/
-.profile-data-wrapper{
+.profile-data-wrapper {
   display: grid;
-  grid-template-columns:1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: auto auto 1fr;
   grid-gap: 0.5em;
   margin: 1em;
@@ -45,16 +85,14 @@
   max-height: 300px; /* Limits the height */
   min-height: 150px; /* Ensures a minimum height */
   text-overflow: ellipsis; /* Adds "..." for overflowing text */
-
 }
-.emergency-contact-data, .health-information-data{
+.emergency-contact-data,
+.health-information-data {
   display: grid;
-  grid-template-columns:1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   grid-template-rows: auto auto 1fr;
   grid-gap: 0.5em;
   margin: 1em;
 }
-.lower-information{
- 
+.lower-information {
 }
-    

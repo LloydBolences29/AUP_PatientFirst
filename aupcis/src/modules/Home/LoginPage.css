@@ -1,7 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins");
 
-*{}
-
 .body-form {
   box-sizing: border-box;
   display: flex;
@@ -28,7 +26,7 @@
   text-shadow: 0 0 10px rgba(16, 64, 74, 0.5);
 }
 
-.login-register-p{
+.login-register-p {
   font-size: 14px;
   font-weight: 100;
   line-height: 20px;
@@ -113,26 +111,26 @@
   color: #fff;
 }
 
-.login-register-btn.ghost i{
+.login-register-btn.ghost i {
   position: absolute;
   opacity: 0;
   transition: 0.3s ease-in-out;
 }
 
-.login-register-btn.ghost i.register{
+.login-register-btn.ghost i.register {
   right: 70px;
 }
 
-.login-register-btn.ghost i.login{
+.login-register-btn.ghost i.login {
   left: 70px;
 }
 
-.login-register-btn.ghost:hover i.register{
+.login-register-btn.ghost:hover i.register {
   right: 40px;
   opacity: 1;
 }
 
-.login-register-btn.ghost:hover i.login{
+.login-register-btn.ghost:hover i.login {
   left: 40px;
   opacity: 1;
 }
@@ -168,8 +166,8 @@
   min-height: 500px;
 }
 
-.form-container {
-    margin-top: 2rem;
+.login-register-form-container {
+  margin-top: 2rem;
   position: absolute;
   top: 0;
   height: 100%;
@@ -230,7 +228,7 @@
 }
 
 .overlay {
-  background-image: url('image/image.gif');
+  background-image: url("image/image.gif");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: 0 0;

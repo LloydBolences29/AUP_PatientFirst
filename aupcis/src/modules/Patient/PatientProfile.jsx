@@ -48,8 +48,69 @@ const PatientProfile = () => {
           <>
             <div className="pageContent-container">
               <div className="pageContent-wrapper">
+                {/* Patient Profile Header */}
                 <div className="patient-profile-header">
-                  <h1>Patient Profile</h1>
+                  <div className="patient-profile-wrapper">
+                    <div className="grid-items item-1 patient-profile-img">
+                      <img
+                        id="patient-profile-img"
+                        src="../../../public/img/profile.jpg"
+                        alt="profile"
+                      />
+                    </div>
+                    <div id="patient-info-wrapper">
+                      <div className="grid-items item-2 patient-basic-info">
+                        <div className="patient-name"><h2 id="patient-name">Lloyd Bolences</h2></div>
+                        <div className="additional-patient-info">
+                          <div className="add-info-flex-items" id="gender">
+                            <p>Male</p>
+                          </div>
+
+                          <div className="add-info-flex-items" id="religion">
+                            <p>Seventh-day Adventist</p>
+                          </div>
+
+                          <div className="add-info-flex-items" id="patient-ID">
+                            <p>2051068</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="grid-items item-3 patient-vital-signs">
+                        <div>
+                          <label>BMI:</label>
+                          <p>120/80</p>
+                        </div>
+                        <div>
+                          <label>Height:</label>
+                          <p>120/80</p>
+                        </div>
+                        <div>
+                          <label>Weight:</label>
+                          <p>120/80</p>
+                        </div>
+                        <div>
+                          <label>Heart Rate:</label>
+                          <p>120/80</p>
+                        </div>
+                        <div>
+                          <label>Temperature:</label>
+                          <p>120/80</p>
+                        </div>
+                        <div>
+                          <label>Pulse Rate:</label>
+                          <p>120/80</p>
+                        </div>
+                        <div>
+                          <label>Pulse Rate:</label>
+                          <p>120/80</p>
+                        </div>
+                        <div>
+                          <label>R Rate:</label>
+                          <p>120/80</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="button-wrapper">
@@ -178,7 +239,7 @@ const PatientProfile = () => {
                               <p>John Doe</p>
                             </div>
 
-                            <div className="health-grid-items">
+                            {/* <div className="health-grid-items">
                               <label htmlFor="">Blood Pressure:</label>
                               <p>John Doe</p>
                             </div>
@@ -211,7 +272,7 @@ const PatientProfile = () => {
                             <div className="health-grid-items">
                               <label htmlFor="">LMP:</label>
                               <p>John Doe</p>
-                            </div>
+                            </div> */}
                           </div>
                         </div>
                       </div>

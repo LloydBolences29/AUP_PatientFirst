@@ -9,8 +9,8 @@ const itemModel = require("./model/Item.js");
 const cors = require("cors");
 const patientRoutes = require("./routes/patient-data");
 const cookieParser = require("cookie-parser");
-const authMiddleware = require("./middlewares/authMiddleware");
-const roleMiddleware = require("./middlewares/roleMiddleware");
+const authMiddleware = require("../middlewares/authMiddleware");
+const roleMiddleware = require("../middlewares/roleMiddleware");
 const protectedRoutes = require("./routes/protectedRoutes");
 //initialize the user.js file
 const userRoutes = require("./routes/user-data");

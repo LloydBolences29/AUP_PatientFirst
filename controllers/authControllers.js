@@ -50,7 +50,7 @@ const login = async (req, res) => {
       { expiresIn: "1h" }
     );
     //sets the token in a HTTP-only cookie
-    res.cookie("ito_yung_cookie", token, {
+    res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "development",
       sameSite: "Strict",

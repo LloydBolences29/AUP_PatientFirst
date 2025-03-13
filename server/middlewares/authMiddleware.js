@@ -8,7 +8,9 @@ const JWT_SECRET = process.env.JWT_SECRET;
 // if valid, authenticate user, if not send error messages. 
 const authMiddleware = (req, res, next) => {
   const token = req.cookies.token;
-  if (!token) return res.status(401).json({ message: "Unauthorized" });
+  if (!token) return res.status(401).json({ message: "Unauthorized" , token 
+
+  });
 
   jwt.verify(token, JWT_SECRET, (err, decoded) => {
     if (err) return res.status(403).json({ message: "Forbidden" });

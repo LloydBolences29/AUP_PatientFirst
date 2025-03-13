@@ -21,7 +21,7 @@ const signup = async (req, res) => {
     const user = new User({ patient_ID, password: hashedPassword, role });
     await user.save();
 
-    res.status(201).json({ message: "User registered successfully" });
+    res.status(201).json({ message: "User registered successfully" , password});
   } catch (error) {
     res.status(500).json({ message: "Error registering user", error });
   }
@@ -50,13 +50,14 @@ const login = async (req, res) => {
       { expiresIn: "1h" }
     );
     //sets the token in a HTTP-only cookie
-    res.cookie("ito_yung_cookie", token, {
+    res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "development",
       sameSite: "Strict",
     });
 
-    res.json({ message: "Login successful" });
+    res.json({ message: "Login successful", //show the patientID and role of the user
+    patient_ID: user.patient_ID, role: user.password, token });
   } catch (error) {
     res.status(500).json({ message: "Error logging in", error });
   }

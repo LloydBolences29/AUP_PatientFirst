@@ -10,18 +10,18 @@ const PatientProfile = () => {
       label: "Dashboard",
       path: "/dashboard",
     },
-    {
-      label: "Doctor",
-      path: "/doctorpage",
-    },
+    // {
+    //   label: "Doctor",
+    //   path: "/doctorpage",
+    // },
     {
       label: "My Profile ",
       path: "/profile",
     },
-    {
-      label: "Appointments",
-      path: "/AppointmentHistory",
-    },
+    // {
+    //   label: "Appointments",
+    //   path: "/AppointmentHistory",
+    // },
     {
       label: "Medical Records",
       path: "/",
@@ -81,10 +81,6 @@ const PatientProfile = () => {
                           <p>120/80</p>
                         </div>
                         <div>
-                          <label>Height:</label>
-                          <p>120/80</p>
-                        </div>
-                        <div>
                           <label>Weight:</label>
                           <p>120/80</p>
                         </div>
@@ -105,7 +101,7 @@ const PatientProfile = () => {
                           <p>120/80</p>
                         </div>
                         <div>
-                          <label>R Rate:</label>
+                          <label>Respiratory Rate:</label>
                           <p>120/80</p>
                         </div>
                       </div>

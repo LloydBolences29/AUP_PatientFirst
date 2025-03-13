@@ -8,18 +8,18 @@ const sidebarLinks = [
     label: "Dashboard",
     path: "/dashboard",
   },
-  {
-    label: "Doctor",
-    path: "/doctorpage",
-  },
+  // {
+  //   label: "Doctor",
+  //   path: "/doctorpage",
+  // },
   {
     label: "My Profile ",
     path: "/profile",
   },
-  {
-    label: "Appointments",
-    path: "/AppointmentHistory",
-  },
+  // {
+  //   label: "Appointments",
+  //   path: "/AppointmentHistory",
+  // },
   {
     label: "Medical Records",
     path: "/",

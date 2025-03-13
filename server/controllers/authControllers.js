@@ -1,17 +1,21 @@
 const User = require("../model/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const express = require("express");
+
+const router = express.Router();
 
 // JWT Secret Key
-const JWT_SECRET = process.env.JWT_SECRET || "your_secret_key";
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // ✅ Signup (Register)
-exports.signup = async (req, res) => {
+const signup = async (req, res) => {
   try {
     const { patient_ID, password, role } = req.body;
 
     const existingUser = await User.findOne({ patient_ID });
-    if (existingUser) return res.status(400).json({ message: "User already exists" });
+    if (existingUser)
+      return res.status(400).json({ message: "User already exists" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({ patient_ID, password: hashedPassword, role });
@@ -24,21 +28,31 @@ exports.signup = async (req, res) => {
 };
 
 // ✅ Login (Set JWT in HTTP-only Cookie)
-exports.login = async (req, res) => {
+const login = async (req, res) => {
   try {
+    //gets the patient_ID and password from the request body
     const { patient_ID, password } = req.body;
 
+    //finds the user with the patient_ID and return the message "User not found" if the user is not found
     const user = await User.findOne({ patient_ID });
     if (!user) return res.status(400).json({ message: "User not found" });
 
+    //compares the password with the hashed password in the database and return the message "Invalid credentials" if the password is incorrect
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
+    if (!isMatch)
+      return res.status(400).json({ message: "Invalid credentials" });
 
-    const token = jwt.sign({ patient_ID: user.patient_ID, role: user.role }, JWT_SECRET, { expiresIn: "1h" });
 
-    res.cookie("token", token, {
+    //creates a token with the patient_ID and role and sets the token in a HTTP-only cookie
+    const token = jwt.sign(
+      { patient_ID: user.patient_ID, role: user.role },
+      JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+    //sets the token in a HTTP-only cookie
+    res.cookie("ito_yung_cookie", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "development",
       sameSite: "Strict",
     });
 
@@ -49,7 +63,9 @@ exports.login = async (req, res) => {
 };
 
 // ✅ Logout (Clear Cookie)
-exports.logout = (req, res) => {
-  res.clearCookie("token");
-  res.json({ message: "Logged out successfully" });
-};
+// exports.logout = (req, res) => {
+//   res.clearCookie("token");
+//   res.json({ message: "Logged out successfully" });
+// };
+
+module.exports = { signup, login };

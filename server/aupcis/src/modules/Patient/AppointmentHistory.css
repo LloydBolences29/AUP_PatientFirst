@@ -1,0 +1,38 @@
+.body {
+  background-color: rgba(30, 144, 255, 0.2);
+}
+
+.appointment-info {
+  display: flex;
+}
+
+.wrapper {
+  padding-top: 3%;
+}
+
+.header {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.btn-outline-primary:hover {
+  color: red;
+}
+
+.btn-text {
+  padding: 5px 15px;
+}
+
+.action{
+    display: flex;
+    justify-content: space-around;
+    gap: 0.5rem;
+    align-items: center;
+    text-align: center;
+}
+
+.status-cancelled-wrapper{
+  padding: 10px;
+  
+}

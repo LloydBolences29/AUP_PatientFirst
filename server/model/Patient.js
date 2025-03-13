@@ -20,6 +20,7 @@ const PatientSchema = new mongoose.Schema({
   civil_status: { type: String, required: true, enum: ["Single", "Married", "Divorced", "Widowed"] },
   nationality: { type: String, required: true },
   religion: { type: String, required: true },
+  passwordChanged: { type: Boolean, default: false },
 
   // Optional Fields
   student_id: { type: String, default: null },
@@ -31,7 +32,8 @@ const PatientSchema = new mongoose.Schema({
 // Hash password before saving
 PatientSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
-  this.password = await bcrypt.hash(this.password, 10);
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(req.body.password, salt);
   next();
 });
 

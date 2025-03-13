@@ -9,21 +9,59 @@ const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET;
 
 // ✅ Signup (Register)
-const signup = async (req, res) => {
+const addPatient = async (req, res) => {
   try {
-    const { patient_ID, password, role } = req.body;
+      const {
+          patientID,
+          religion,
+          firstname,
+          middleInitial,
+          lastname,
+          gender,
+          dob,
+          civil_status,
+          contact_number,
+          home_address
+      } = req.body;
 
-    const existingUser = await User.findOne({ patient_ID });
-    if (existingUser)
-      return res.status(400).json({ message: "User already exists" });
+      // Validate required fields
+      if (!patientID || !firstname || !religion) {
+          return res.status(400).json({ message: "Patient ID, First Name, and Religion are required" });
+      }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ patient_ID, password: hashedPassword, role });
-    await user.save();
+      // Check if the patient ID already exists
+      const existingPatient = await Patient.findOne({ patientID });
+      if (existingPatient) {
+          return res.status(400).json({ message: "Patient ID already exists" });
+      }
 
-    res.status(201).json({ message: "User registered successfully" , password});
+      // Use religion as the temporary password
+      const hashedPassword = await bcrypt.hash(religion, 10);
+
+      // Create the patient object
+      const newPatient = new Patient({
+          patientID,
+          firstname,
+          middleInitial,
+          lastname,
+          gender,
+          dob,
+          civil_status,
+          contact_number,
+          home_address,
+          religion,
+          password: hashedPassword, // Hash the password before saving
+          role: "patient",
+          mustChangePassword: true // Force user to change password on first login
+      });
+
+      // Save patient to database
+      await newPatient.save();
+
+      res.status(201).json({ message: "Patient registered successfully", patient: newPatient });
   } catch (error) {
-    res.status(500).json({ message: "Error registering user", error });
+      console.error("Error adding patient:", error);
+      res.status(500).json({ message: "An error occurred while adding the patient" });
   }
 };
 
@@ -69,4 +107,4 @@ const login = async (req, res) => {
 //   res.json({ message: "Logged out successfully" });
 // };
 
-module.exports = { signup, login };
+module.exports = { addPatient, login };

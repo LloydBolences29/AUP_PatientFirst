@@ -14,7 +14,6 @@ import Doctor from "./modules/Patient/Doctor";
 import Nursing from "./modules/Medical Practitioner/Nursing";
 import Pharma from "./modules/Pharma/Pharma";
 import LogInPage from "./modules/Home/LogInPage";
-import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
   // useEffect(() =>{

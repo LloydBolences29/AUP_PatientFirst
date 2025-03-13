@@ -31,6 +31,14 @@ const Nursing = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [patientID, setPatientID] = useState("");
   const [patientfName, setPatientfName] = useState("");
+  const [patientMiddleName, setPatientMiddleName] = useState("");
+  const [patientlastName, setPatientlastName] = useState("");
+  const [patientContact, setPatientContact] = useState("");
+  const [patientAddress, setPatientAddress] = useState("");
+  const [patientDOB, setPatientDOB] = useState("");
+  const [patientCivilStatus, setPatientCivilStatus] = useState("");
+  const [patientNationality, setPatientNationality] = useState("");
+  const [patientReligion, setPatientReligion] = useState("");
   const [patientAge, setPatientAge] = useState("");
   const [patientGender, setPatientGender] = useState("");
   const [notification, setNotification] = useState("");
@@ -94,7 +102,7 @@ const Nursing = () => {
   
     // Check if patient already exists in state (before making API call)
     const isDuplicate = patients.some(
-      (patient) => patient.firstname.toLowerCase() === patientfName.toLowerCase()
+      (patient) => patient.firstname.toLowerCase() === patientfName.toLowerCase() || patient.patientID === patientID 
     );
   
     if (isDuplicate) {
@@ -106,8 +114,17 @@ const Nursing = () => {
     const newPatient = {
       patientID,
       firstname: patientfName,
+      middleInitial: patientMiddleName,
+      lastname: patientlastName,
+      contactNumber: patientContact,
+      homeAddress: patientAddress,
+      dob: patientDOB,
+      civilStatus: patientCivilStatus,
+      religion: patientReligion,
+      nationality: patientNationality,
       age: patientAge,
       gender: patientGender,
+
     };
   
     try {

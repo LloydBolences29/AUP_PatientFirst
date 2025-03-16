@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../../components/Sidebar";
-import './AdminRoleManagement.css'
+import "./AdminRoleManagement.css";
 
 const AdminRoleManagement = () => {
   const sidebarLinks = [
@@ -31,20 +31,29 @@ const AdminRoleManagement = () => {
   ];
 
   const [formData, setFormData] = useState({
-    role_id: '',
-    password: '',
-    fullName: '',
-    address: '',
-    city: '',
-    role: '',
-    zip: ''
+    role_ID: "",
+    password: "",
+    fullname: "",
+    address: "",
+    city: "",
+    role: "",
+    zip: "",
   });
 
-  const [notification, setNotification] = useState('');
+  const [notification, setNotification] = useState("");
 
   useEffect(() => {
     const fetchAdmin = async () => {
-      const response = await fetch('http://localhost:3000/user');
+      const response = await fetch("http://localhost:3000/api/user");
+      const text = await response.text(); // Read raw response
+      console.log("Raw response:", text);
+
+      try {
+        const data = JSON.parse(text); // Try parsing as JSON
+        console.log("Parsed JSON:", data);
+      } catch (error) {
+        console.error("Response is not JSON:", error);
+      }
       const data = await response.json();
       console.log(data.user);
     };
@@ -58,20 +67,35 @@ const AdminRoleManagement = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await fetch('http://localhost:3000/user', {
-      method: 'POST',
+
+    console.log("Submitting FormData:", formData); // Debugging
+    const response = await fetch("http://localhost:3000/api/user", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(formData)
+      body: JSON.stringify(formData),
     });
-    const data = await response.json();
-    console.log(data);
-    if (response.ok) {
-      setNotification('User added successfully!');
-    } else {
-      setNotification('Failed to add user.');
+
+    const text = await response.text(); // Read raw response
+    console.log("Raw response:", text);
+
+    try {
+      const data = JSON.parse(text); // Try parsing as JSON
+      console.log("Parsed JSON:", data);
+      if (response.ok) {
+        setNotification("User added successfully!");
+      } else {
+        setNotification("Failed to add user.");
+      }
+    } catch (error) {
+      console.error("Response is not JSON:", error);
+      setNotification("Failed to add user.");
     }
+
+    setTimeout(() => {
+      setNotification("");
+    }, 3000); // Clear notification after 3 seconds
   };
 
   return (
@@ -96,12 +120,17 @@ const AdminRoleManagement = () => {
                     <h1>Admin Role Management</h1>
                     <p>Manage the roles of the users in the system</p>
 
-                    {notification && <div className="alert alert-info">{notification}</div>}
+                    {notification && (
+                      <div className="alert alert-info">{notification}</div>
+                    )}
 
-                    <form className="admin-form-container" onSubmit={handleSubmit}>
+                    <form
+                      className="admin-form-container"
+                      onSubmit={handleSubmit}
+                    >
                       <div className="form-row admin-form">
                         <div className="form-group col-md-6">
-                          <label htmlFor="role_id">ID</label>
+                          <label htmlFor="role_ID">ID</label>
                           <input
                             type="text"
                             className="form-control"
@@ -124,13 +153,13 @@ const AdminRoleManagement = () => {
                         </div>
                       </div>
                       <div className="form-group col-md-6">
-                        <label htmlFor="fullName">Full Name</label>
+                        <label htmlFor="fullname">Full Name</label>
                         <input
                           type="text"
                           className="form-control"
-                          id="fullName"
+                          id="fullname"
                           placeholder="Dela Cruz, Juan Miguel, A"
-                          value={formData.fullName}
+                          value={formData.fullname}
                           onChange={handleChange}
                         />
                       </div>
@@ -167,7 +196,9 @@ const AdminRoleManagement = () => {
                             <option value="">Choose...</option>
                             <option value="Nurse">Nurse</option>
                             <option value="Doctor">Doctor</option>
-                            <option value="Medical Records Officer">Medical Records Officer</option>
+                            <option value="Medical Records Officer">
+                              Medical Records Officer
+                            </option>
                             <option value="Pharmacist">Pharmacist</option>
                             <option value="Cashier">Cashier</option>
                             <option value="Admin">Admin</option>
@@ -185,7 +216,7 @@ const AdminRoleManagement = () => {
                         </div>
                       </div>
                       <button type="submit" className="btn btn-outline-primary">
-                        Sign in
+                        Add role
                       </button>
                     </form>
                   </div>

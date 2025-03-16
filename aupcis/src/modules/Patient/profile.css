@@ -1,0 +1,72 @@
+*{
+  margin: 0;
+  padding: 0;
+}
+.NavList{
+  list-style: none;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: #E9F6F6;
+  padding-left: 2rem;
+  height: 5rem;
+}
+.NavListOthers{
+  display: flex;
+  flex-direction: row;
+  gap: 4rem;
+  padding-right: 8rem;
+}
+.Indi{
+  padding-top: 1rem;
+  color: black;
+}
+.textdecor{
+  text-decoration: none;
+}
+.ProfilePage{
+  padding-top: 5rem;
+  padding-left: 5rem;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.PersonalInfo{
+  background-color: rgba(30, 144, 255, 0.50);
+  width: 39rem;
+  height: 10rem;
+  border-radius: 3rem;
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  padding-left: 3rem;
+}
+.ProfilePic{
+  font-size: 10rem;
+}
+.PersonalInfo2{
+  padding-top: 5.5rem;
+  padding-right: 3rem;
+  font-weight: bold;
+}
+.PersonalOverall{
+  padding-left: 5rem;
+}
+.ProfilePicEdit{
+  padding-top: 6.6rem;
+  padding-left: 4rem;
+  font-size: 2rem;
+}
+.UserEx{
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+.InfoName{
+  display: flex;
+  flex-direction: column;
+}
+.NavProfilePic{
+  font-size: 3.5rem;
+}

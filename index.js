@@ -4,14 +4,14 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 const express = require("express");
 const mongoose = require("mongoose");
-const connectDB = require("./db.js");
-const itemModel = require("./model/Item.js");
+const connectDB = require("./db");
+const itemModel = require("./server/model/Item.js");
 const cors = require("cors");
-const patientRoutes = require("./routes/patient-data");
+const patientRoutes = require("./server/routes/patient-data");
 const cookieParser = require("cookie-parser");
-const authMiddleware = require("./middlewares/authMiddleware");
-const roleMiddleware = require("./middlewares/roleMiddleware");
-const protectedRoutes = require("./routes/protectedRoutes");
+const authMiddleware = require("./server/middlewares/authMiddleware");
+const roleMiddleware = require("./server/middlewares/roleMiddleware");
+const protectedRoutes = require("./server/routes/roles-data");
 //initialize the user.js file
 const userRoutes = require("./routes/user-data");
 

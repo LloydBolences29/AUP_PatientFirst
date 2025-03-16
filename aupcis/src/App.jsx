@@ -14,6 +14,8 @@ import Doctor from "./modules/Patient/Doctor";
 import Nursing from "./modules/Medical Practitioner/Nursing";
 import Pharma from "./modules/Pharma/Pharma";
 import LogInPage from "./modules/Home/LogInPage";
+import AdminDashboard from "./modules/Admin/AdminDashboard";
+import AdminRoleManagement from "./modules/Admin/AdminRoleManagement";
 
 export default function App() {
   // useEffect(() =>{
@@ -63,13 +65,18 @@ export default function App() {
               <Dashboard />
             </ProtectedRoute>
           } */}
-        <Route path="/dashboard" element={<Dashboard />}
-        />
-        <Route path="/profile" element={<PatientProfile />}
-        />
-        <Route path="/doctorpage" element={<Doctor />}
-        
-        />
+
+
+        {/* FOR HOMEPAGE */}
+        <Route path="/login" element={<LogInPage />}></Route>
+        {/* for patient */}
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/profile" element={<PatientProfile />} />
+        <Route path="/doctorpage" element={<Doctor />} />
+
+        {/* For Admin page */}
+        <Route path="/admin_dashboard" element={<AdminDashboard />} />
+        <Route path="/admin_profile" element={<AdminRoleManagement />} />
         {/* <Route path="/profile" element={
             <ProtectedRoute
               allowedRoles={[
@@ -107,7 +114,7 @@ export default function App() {
         ></Route>
         <Route path="/about" element={<About />}></Route>
         <Route path="/services" element={<Services />}></Route>
-        <Route path="/login" element={<LogInPage />}></Route>
+
         <Route path="/sidebar" element={<Sidebar />}></Route>
       </Routes>
     </>

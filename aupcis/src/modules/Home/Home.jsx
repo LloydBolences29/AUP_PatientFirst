@@ -3,9 +3,9 @@ import "./Home.css";
 import { Navbar } from "../Navbar/Navbar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
-import Modal from "../../components/Modal";
 //import state from react
 import { useState, useEffect } from "react";
+import { NavLink } from "react-router-dom";
 const navlinks = [
   {
     label: "About",
@@ -23,7 +23,6 @@ const navlinks = [
 ];
 
 const Home = () => {
-
   return (
     <>
       <Navbar myProps={navlinks} />
@@ -43,12 +42,16 @@ const Home = () => {
           <div className="login-button">
             <div className="span-text-align">
               <div className="span-h-button">
-                <button
+                <NavLink to="/login" className="btn btn-outline-primary">
+                  <span >Log In</span>
+                </NavLink>
+
+                {/* <button
                   className="text-link btn"
-                  to="/login-register"
+                  to="/login"
                 >
                   <span className="text-wrapper">Log In</span>
-                </button>
+                </button> */}
               </div>
             </div>
           </div>

@@ -54,12 +54,8 @@ body {
   font-weight: 55;
 }
 
-.login-button {
-justify-items: center;
-  background-color: #2c3e50;
-  border: 2px solid;
-  border-color: #2c3e50;
-  border-radius: 32px;
+.span-text-align {
+  justify-items: center;
   display: inline-flex;
   flex-wrap: wrap;
   gap: 0px 0px;
@@ -71,48 +67,62 @@ justify-items: center;
   left: 150px;
 }
 
-.login-button .span-text-align {
+
+/*.span-text-align:hover {
+  background-color: #829cb5;
+  border-color: #829cb5;
+  color: #201961;
+  cursor: pointer;
+} */
+
+/* .login-button .span-text-align {
   align-items: flex-start;
   display: inline-flex;
   flex: 0 0 auto;
   flex-direction: column;
   position: relative;
-}
 
-.login-button .span-h-button {
-  align-items: center;
-  align-content: center;
+} */
+
+.span-text-align .span-h-button {
   /* align-self: stretch; */
   display: flex;
+  align-content: center;
   flex: 0 0 auto;
   padding: 0px 0px 0.5px;
-  position: relative;
+  /* position: relative; */
   width: 100%;
 }
 
-.login-button .text-wrapper {
+.text-wrapper {
   color: #fafafa;
   font-family: "Helvetica-Bold", Helvetica;
   font-size: 20px;
   font-weight: 700;
   letter-spacing: 0;
   line-height: 20px;
-  margin-top: -1.00px;
+  margin-top: -1px;
   position: relative;
   white-space: nowrap;
   width: fit-content;
   /* padding-bottom: 16px; */
+}
+
+/* .btn-link {
+  color: #fafafa;
+  font-size: 20px;
+  font-weight: 700;
  
 }
 
-.text-link{
+.link-text {
+  margin: 0;  
   text-decoration: none;
-  margin: 0;
-}
-.login-button:hover .text-wrapper {
-  color: #a5a3a280;
-  cursor: pointer;
-}
+  font-size: 25px;
+
+
+} */
+
 .service-content {
   display: flex;
   text-align: center;
@@ -187,23 +197,22 @@ justify-items: center;
 .footer .hoursSchedule div {
   flex: 1 1 100%;
   line-height: 0.5;
-
 }
 .footer .footer-contacts {
   width: 25%;
 }
-.contactsFooter{
+.contactsFooter {
   font-size: 20px;
   font-weight: 700;
   font-family: Arial, Helvetica, sans-serif;
 }
-#contact-info{
+#contact-info {
   margin: 0;
 }
 .footer .footer-thoughts {
   width: 25%;
 }
-.thoughtsFooter{
+.thoughtsFooter {
   font-size: 20px;
   font-weight: 700;
   font-family: Arial, Helvetica, sans-serif;
@@ -254,10 +263,11 @@ justify-items: center;
     margin-top: 5%;
   }
 }
-.modal-title{
+.modal-title {
   justify-items: center;
 }
 
-.modal-close-btn, .submit-modal-btn{
+.modal-close-btn,
+.submit-modal-btn {
   margin: 10px;
 }

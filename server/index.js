@@ -12,6 +12,7 @@ const cookieParser = require("cookie-parser");
 const authMiddleware = require("./middlewares/authMiddleware");
 const roleMiddleware = require("./middlewares/roleMiddleware");
 const protectedRoutes = require("./routes/protectedRoutes");
+const userRoles = require('./routes/roles-data')
 //initialize the user.js file
 const userRoutes = require("./routes/user-data");
 
@@ -28,6 +29,7 @@ app.use("/user", userRoutes);
 app.use("/api/auth", authMiddleware)
 app.use("/api/role", roleMiddleware)
 app.use("/protected", protectedRoutes)
+app.use("/api", userRoles)
 
 //cookie parser
 app.use(cookieParser());

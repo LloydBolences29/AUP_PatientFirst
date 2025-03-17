@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();  // Use router if this is a route file
 const newUserRole = require("../model/User");  // Import model
 
+
+//adding new user in the database
 router.post("/user", async (req, res) => {
     try {
         const { role_ID, password, fullname, address, city, role, zip } = req.body;
@@ -28,6 +30,8 @@ router.post("/user", async (req, res) => {
         res.status(500).json({ message: "Error saving user", error });
     }
 });
+
+
 
 // Export the router if this is a route file
 module.exports = router;

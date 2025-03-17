@@ -15,9 +15,14 @@ const protectedRoutes = require("./routes/protectedRoutes");
 const userRoles = require('./routes/roles-data')
 //initialize the user.js file
 const userRoutes = require("./routes/user-data");
+const staffRoute = require("./routes/staffRoute.js")
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:5173", // Your frontend URL
+  credentials: true, // Allow cookies to be sent
+})
+);
 app.use(express.json());
 app.use(cookieParser());
 
@@ -29,7 +34,9 @@ app.use("/user", userRoutes);
 app.use("/api/auth", authMiddleware)
 app.use("/api/role", roleMiddleware)
 app.use("/protected", protectedRoutes)
+//route for non patient
 app.use("/api", userRoles)
+app.use("/staff", staffRoute )
 
 //cookie parser
 app.use(cookieParser());

@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
 const UserSchema = new mongoose.Schema({
   role_ID: { type: String, required: true },
@@ -9,6 +10,17 @@ const UserSchema = new mongoose.Schema({
   zip: { type: String, required: true },
   role: { type: String, required: true, enum: ['Admin', 'Doctor', 'Nurse', 'Medical Records Officer', 'Cashier', 'Pharmacist']}
 }, { timestamps: true });
+
+UserSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 
 const User = mongoose.model("user", UserSchema);
 module.exports = User;

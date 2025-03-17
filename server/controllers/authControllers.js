@@ -1,4 +1,4 @@
-const User = require("../model/User");
+const Patient = require("../model/Patient");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const express = require("express");
@@ -72,7 +72,7 @@ const login = async (req, res) => {
     const { patient_ID, password } = req.body;
 
     //finds the user with the patient_ID and return the message "User not found" if the user is not found
-    const user = await User.findOne({ patient_ID });
+    const user = await Patient.findOne({ patient_ID });
     if (!user) return res.status(400).json({ message: "User not found" });
 
     //compares the password with the hashed password in the database and return the message "Invalid credentials" if the password is incorrect
@@ -101,10 +101,10 @@ const login = async (req, res) => {
   }
 };
 
-// ✅ Logout (Clear Cookie)
-// exports.logout = (req, res) => {
-//   res.clearCookie("token");
-//   res.json({ message: "Logged out successfully" });
-// };
+//✅ Logout (Clear Cookie)
+exports.logout = (req, res) => {
+  res.clearCookie("token");
+  res.json({ message: "Logged out successfully" });
+};
 
 module.exports = { addPatient, login };

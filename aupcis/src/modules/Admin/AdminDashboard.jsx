@@ -14,19 +14,7 @@ const AdminDashboard = () => {
     {
       label: "My Profile ",
       path: "/Admin_profile",
-    },
-    // {
-    //   label: "Appointments",
-    //   path: "/AppointmentHistory",
-    // },
-    {
-      label: "Medical Records",
-      path: "/",
-    },
-    {
-      label: "Billing",
-      path: "/",
-    },
+    }
   ];
   return (
     <div>

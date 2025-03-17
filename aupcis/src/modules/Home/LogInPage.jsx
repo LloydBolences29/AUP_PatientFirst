@@ -1,155 +1,151 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "./LogInPage.css";
 
 const LogInPage = () => {
   const [isRightPanelActive, setIsRightPanelActive] = useState(false);
-  //for patient registration
-  const [formData, setFormData] = useState({
+  const navigate = useNavigate();
+
+  // Patient Login State
+  const [patientLoginData, setPatientLoginData] = useState({
     patient_ID: "",
     password: "",
-    role: "patient", // Default role
   });
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  // Staff Login State
+  const [staffLoginData, setStaffLoginData] = useState({
+    role_ID: "",
+    password: "",
+  });
+
+  // Handle Input Changes
+  const handleChange = (e, setStateFunction) => {
+    setStateFunction((prevData) => ({ ...prevData, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = async (e) => {
+  // Patient Login Function
+  const handlePatientLogin = async (e) => {
     e.preventDefault();
-    await registerUser();
-  };
-
-  const registerUser = async () => {
     try {
-      const response = await axios.post("http://localhost:3000/user/signup", formData);
-      alert(response.data.message);
+      const response = await axios.post("http://localhost:3000/user/login", patientLoginData, {
+        withCredentials: true,
+      });
+
+      alert("Login Successful!");
+      navigate("/dashboard");
     } catch (error) {
-      console.error("Signup error:", error.response?.data || error.message);
-      alert("Signup failed. Please try again.");
+      console.error("Login error:", error.response?.data || error.message);
+      alert("Invalid patient credentials. Please try again.");
     }
   };
 
+  // Staff Login Function (Dynamic Redirect)
+  const handleStaffLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post("http://localhost:3000/staff/login", staffLoginData, {
+        withCredentials: true,
+      });
 
-  const handleRegisterClick = () => {
-    setIsRightPanelActive(true);
+      const { role, allowedPages } = response.data;
+
+      alert("Login Successful!");
+      
+      // Store role and allowed pages
+      localStorage.setItem("role", role);
+      localStorage.setItem("allowedPages", JSON.stringify(allowedPages));
+
+      // Redirect to first allowed page dynamically
+      if (allowedPages && allowedPages.length > 0) {
+        navigate(`/${allowedPages[0]}`);
+      } else {
+        navigate("/dashboard"); // Default route if no pages are assigned
+      }
+    } catch (error) {
+      console.error("Login error:", error.response?.data || error.message);
+      alert("Invalid staff credentials. Please try again.");
+    }
   };
 
-  const handleLoginClick = () => {
-    setIsRightPanelActive(false);
-  };
+  // Toggle Login Panels
+  const handleRegisterClick = () => setIsRightPanelActive(true);
+  const handleLoginClick = () => setIsRightPanelActive(false);
 
   return (
-    <>
-      <div className="body-form">
-        <div
-          className={` login-register-container ${
-            isRightPanelActive ? "right-panel-active" : ""
-          }`}
-          id="container"
-        >
-          {/* Register Form */}
-          <div className="login-register-form-container register-container">
-            <form className="login-register-form" onSubmit={handleSubmit}>
-              <h1 className="head-one">Register here.</h1>
-              <input
-                className="login-register-input"
-                type="text"
-                name="patient_ID"
-                placeholder="Patient ID"
-                value={formData.patient_ID}
-                onChange={handleChange}
-                required
-              />
-              <input
-                className="login-register-input"
-                type="password"
-                name="password"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />{" "}
-              <button className="login-register-btn" type="submit">
-                Register
-              </button>
-            </form>
-          </div>
+    <div className="body-form">
+      <div className={`login-register-container ${isRightPanelActive ? "right-panel-active" : ""}`} id="container">
+        
+        {/* Patient Login Form */}
+        <div className="login-register-form-container login-container">
+          <form className="login-register-form" onSubmit={handlePatientLogin}>
+            <h1 className="head-one">Patient Login</h1>
+            <input
+              className="login-register-input"
+              type="text"
+              name="patient_ID"
+              placeholder="Patient ID"
+              value={patientLoginData.patient_ID}
+              onChange={(e) => handleChange(e, setPatientLoginData)}
+              required
+            />
+            <input
+              className="login-register-input"
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={patientLoginData.password}
+              onChange={(e) => handleChange(e, setPatientLoginData)}
+              required
+            />
+            <button className="login-register-btn" type="submit">Login</button>
+          </form>
+        </div>
 
-          {/* Login Form */}
-          <div className="login-register-form-container login-container">
-            <form className="login-register-form" action="#">
-              <h1 className="head-one">Login here.</h1>
-              <input
-                className="login-register-input"
-                type="email"
-                placeholder="Email"
-              />
-              <input
-                className="login-register-input"
-                type="password"
-                placeholder="Password"
-              />
-              <div className="loginFormContent">
-                <div className="checkbox">
-                  <input
-                    className="login-register-input"
-                    type="checkbox"
-                    id="checkbox"
-                  />
-                  <label className="login-register-label" htmlFor="checkbox">
-                    Remember me
-                  </label>
-                </div>
-                <div className="pass-link">
-                  <a className="login-register-a" href="#">
-                    Forgot password?
-                  </a>
-                </div>
-              </div>
-              <button className="login-register-btn" type="button">
-                Login
-              </button>
-            </form>
-          </div>
+        {/* Staff Login Form */}
+        <div className="login-register-form-container register-container">
+          <form className="login-register-form" onSubmit={handleStaffLogin}>
+            <h1 className="head-one">Staff Login</h1>
+            <input
+              className="login-register-input"
+              type="text"
+              name="role_ID"
+              placeholder="Role ID"
+              value={staffLoginData.role_ID}
+              onChange={(e) => handleChange(e, setStaffLoginData)}
+              required
+            />
+            <input
+              className="login-register-input"
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={staffLoginData.password}
+              onChange={(e) => handleChange(e, setStaffLoginData)}
+              required
+            />
+            <button className="login-register-btn" type="submit">Login</button>
+          </form>
+        </div>
 
-          {/* Overlay Section */}
-          <div className="overlay-container">
-            <div className="overlay">
-              <div className="overlay-panel overlay-left">
-                <h1 className="title">
-                  Hello <br /> friends
-                </h1>
-                <p className="login-register-p">
-                  If you have an account, login here and have fun.
-                </p>
-                <button
-                  className="ghost login-register-btn"
-                  onClick={handleLoginClick}
-                >
-                  Login <i className="lni lni-arrow-left login"></i>
-                </button>
-              </div>
-              <div className="overlay-panel overlay-right">
-                <h1 className="head-one head-title">
-                  Start your <br /> journey now
-                </h1>
-                <p className="login-register-p">
-                  If you don't have an account yet, join us and start your
-                  journey.
-                </p>
-                <button
-                  className="ghost login-register-btn"
-                  onClick={handleRegisterClick}
-                >
-                  Register <i className="lni lni-arrow-right register"></i>
-                </button>
-              </div>
+        {/* Overlay Section */}
+        <div className="overlay-container">
+          <div className="overlay">
+            <div className="overlay-panel overlay-left">
+              <h1 className="title">Hello Friends</h1>
+              <p className="login-register-p">Patients login here.</p>
+              <button className="ghost login-register-btn" onClick={handleLoginClick}>Patient Login</button>
+            </div>
+            <div className="overlay-panel overlay-right">
+              <h1 className="head-one head-title">Staff Login</h1>
+              <p className="login-register-p">Only authorized staff can log in here.</p>
+              <button className="ghost login-register-btn" onClick={handleRegisterClick}>Staff Login</button>
             </div>
           </div>
         </div>
+
       </div>
-    </>
+    </div>
   );
 };
 

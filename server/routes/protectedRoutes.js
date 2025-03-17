@@ -12,7 +12,7 @@ const router = express.Router();
 const accessControl = {
   patient: ["dashboard", "analytics", "profile"],
   admin: ["admin-dashboard", "admin-management", "admin-analytics"],
-  nurse: ["nurse-dashboard", "patient-management", "nurse-analytics"],
+  nurse: ["nurse-dashboard", "patient_management", "nurse-analytics"],
   doctor: ["doctor-dashboard", "doctor-analytics"],
   cashier: ["cashier-dashboard", "payment"],
   pharmacy: ["pharma-dashboard", "medicines"],

@@ -5,15 +5,15 @@ const AdminDashboard = () => {
   const sidebarLinks = [
     {
       label: "Admin Dashboard",
-      path: "/admin_dashboard",
+      path: "/admin-dashboard",
     },
     // {
     //   label: "Doctor",
     //   path: "/doctorpage",
     // },
     {
-      label: "My Profile ",
-      path: "/Admin_profile",
+      label: "Admin Management ",
+      path: "/admin-management",
     }
   ];
   return (

@@ -8,6 +8,6 @@ const authMiddleware = require("../middlewares/authMiddleware");
 
 //this is the authentication routes
 router.post("/add-patient", authMiddleware, authController.addPatient);
-router.post("/login", authController.login);
+router.post("/login", authMiddleware, authController.login);
 
 module.exports = router;

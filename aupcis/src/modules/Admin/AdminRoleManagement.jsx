@@ -6,15 +6,15 @@ const AdminRoleManagement = () => {
   const sidebarLinks = [
     {
       label: "Admin Dashboard",
-      path: "/admin_dashboard",
+      path: "/admin-dashboard",
     },
     // {
     //   label: "Doctor",
     //   path: "/doctorpage",
     // },
     {
-      label: "My Profile ",
-      path: "/Admin_profile",
+      label: "Admin Management ",
+      path: "/admin-management",
     }
   ];
 
@@ -32,18 +32,14 @@ const AdminRoleManagement = () => {
 
   useEffect(() => {
     const fetchAdmin = async () => {
-      const response = await fetch("http://localhost:3000/api/user");
-      const text = await response.text(); // Read raw response
-      console.log("Raw response:", text);
-
+      const response = await fetch("http://localhost:3000/api/roles/user");
+    
       try {
-        const data = JSON.parse(text); // Try parsing as JSON
+        const data = await response.json(); // ✅ Read response only once
         console.log("Parsed JSON:", data);
       } catch (error) {
         console.error("Response is not JSON:", error);
       }
-      const data = await response.json();
-      console.log(data.user);
     };
     fetchAdmin();
   }, []);
@@ -57,7 +53,7 @@ const AdminRoleManagement = () => {
     e.preventDefault();
 
     console.log("Submitting FormData:", formData); // Debugging
-    const response = await fetch("http://localhost:3000/api/user", {
+    const response = await fetch("http://localhost:3000/api/roles/user", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -8,21 +8,11 @@ const Nursing = () => {
   const nurseSidebarLinks = [
     {
       label: "Dashboard",
-      path: "/dashboard",
+      path: "/nurse-dashboard",
     },
     {
-      label: "Forms",
-      path: "/doctorpage",
-      subMenu: [
-        {
-          label: "Form 1",
-          path: "/",
-        },
-        {
-          label: "Form 2",
-          path: "/",
-        },
-      ],
+      label: "Patient Management",
+      path: "/patient-management"
     },
   ];
 
@@ -142,7 +132,7 @@ const Nursing = () => {
   };
 
   try {
-    const response = await fetch("http://localhost:5000/user/add-patient", {
+    const response = await fetch("http://localhost:5000/patient/add-patient", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

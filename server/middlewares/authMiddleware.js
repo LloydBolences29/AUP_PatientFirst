@@ -15,7 +15,7 @@ const authMiddleware = (req, res, next) => {
   jwt.verify(token, JWT_SECRET, (err, decoded) => {
     if (err) return res.status(403).json({ message: "Forbidden" });
 
-    req.user = decoded; // { patient_ID, role }
+    req.user = decoded; // { payload of the token }
     next();
 
     //this is to check if the role of the user is included in the array of roles from the roleMiddleware

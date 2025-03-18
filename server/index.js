@@ -1,54 +1,49 @@
-// mongodb+srv://2051068:hindikoalam@29@cluster0.9whxj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
-//load the env file path
-const path = require('path');
-require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+// Load environment variables
+const path = require("path");
+require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
+
 const express = require("express");
 const mongoose = require("mongoose");
 const connectDB = require("./db.js");
-const itemModel = require("./model/Item.js");
 const cors = require("cors");
-const patientRoutes = require("./routes/patient-data");
 const cookieParser = require("cookie-parser");
-const authMiddleware = require("./middlewares/authMiddleware");
-const roleMiddleware = require("./middlewares/roleMiddleware");
+
+const patientRoutes = require("./routes/patient-data");
 const protectedRoutes = require("./routes/protectedRoutes");
-const userRoles = require('./routes/roles-data')
-//initialize the user.js file
+const userRoles = require("./routes/roles-data");
 const userRoutes = require("./routes/user-data");
-const staffRoute = require("./routes/staffRoute.js")
+const staffRoute = require("./routes/staffRoute.js");
+const authRoute = require("./routes/auth.js");
 
 const app = express();
+
+// ✅ Connect to MongoDB BEFORE initializing routes
+connectDB();
+
+// ✅ Middleware Setup
 app.use(cors({
-  origin: "http://localhost:5173", // Your frontend URL
+  origin: "http://localhost:5173", // Frontend URL
   credentials: true, // Allow cookies to be sent
-})
-);
+}));
 app.use(express.json());
 app.use(cookieParser());
 
-//Routes
-//patient Routes
-app.use("/patientname", patientRoutes);
-connectDB();
-app.use("/user", userRoutes);
-app.use("/api/auth", authMiddleware)
-app.use("/api/role", roleMiddleware)
-app.use("/protected", protectedRoutes)
-//route for non patient
-app.use("/api", userRoles)
-app.use("/staff", staffRoute )
+// ✅ Routes Setup
+app.use("/api/auth", authRoute); // Authentication routes
+app.use("/api", protectedRoutes); // Role-based protected routes
+app.use("/api/roles", userRoles); // Getting staff information and saving it to DB
+app.use("/staff", staffRoute); // Staff login API
+app.use("/patient", userRoutes); // Patient user-related routes
+app.use("/patientname", patientRoutes); // Patient data routes
 
-//cookie parser
-app.use(cookieParser());
-
-
-//API fetching for the Item Model
+// ✅ API for Fetching Items
 app.get("/", async (req, res) => {
   const response = await itemModel.find();
   return res.json({ items: response });
 });
 
-//run the server
-app.listen(3000, () => {
-  console.log("Server is running on port 3000");
+// ✅ Start the Server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });

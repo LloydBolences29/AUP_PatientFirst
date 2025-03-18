@@ -18,6 +18,7 @@ const addPatient = async (req, res) => {
           middleInitial,
           lastname,
           gender,
+          age,
           dob,
           civil_status,
           contact_number,
@@ -45,13 +46,14 @@ const addPatient = async (req, res) => {
           middleInitial,
           lastname,
           gender,
+          age,
           dob,
           civil_status,
           contact_number,
           home_address,
           religion,
           password: hashedPassword, // Hash the password before saving
-          role: "patient",
+          role: "Patient",
           mustChangePassword: true // Force user to change password on first login
       });
 

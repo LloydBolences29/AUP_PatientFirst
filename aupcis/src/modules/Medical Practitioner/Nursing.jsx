@@ -12,7 +12,7 @@ const Nursing = () => {
     },
     {
       label: "Patient Management",
-      path: "/patient-management"
+      path: "/patient-management",
     },
   ];
 
@@ -79,13 +79,21 @@ const Nursing = () => {
   };
 
   useEffect(() => {
+    if (!patients || patients.length === 0) return; // Prevents running filter on empty data
+
     setFilteredPatients(
-      patients.filter(
-        (patient) =>
-          patient.firstname.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          patient.age.toString().includes(searchTerm) ||
-          patient.gender.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      patients.filter((patient) => {
+        const firstName =
+          typeof patient.firstname === "string"
+            ? patient.firstname.toLowerCase()
+            : "";
+        const age = patient.age ? patient.age.toString() : "";
+
+        return (
+          firstName.includes(searchTerm.toLowerCase()) ||
+          age.includes(searchTerm)
+        );
+      })
     );
   }, [searchTerm, patients]);
 
@@ -95,7 +103,8 @@ const Nursing = () => {
     // Check if patient already exists in state (before making API call)
     const isDuplicate = patients.some(
       (patient) =>
-        patient.firstname.toLowerCase() === patientfName.toLowerCase() ||
+        (patient.firstname &&
+          patient.firstname.toLowerCase() === patientfName.toLowerCase()) ||
         patient.patientID === patientID
     );
 
@@ -105,80 +114,83 @@ const Nursing = () => {
       return; // Stop execution if duplicate found
     }
 
-    // Get token from cookies (assuming you're using js-cookie)
-  const token = Cookies.get("token"); // Ensure 'js-cookie' is imported
+    // ❌ REMOVE this because cookies are HTTP-only (not accessible in JS)
+    // const token = Cookies.get("token");
 
-  if (!token) {
-    setNotification("Unauthorized: Please login first.");
-    setTimeout(() => setNotification(""), 3000);
-    return;
-  }
+    // ❌ No need to check for token manually, browser will handle it
 
-  const newPatient = {
-    patient_ID: patientID, // Set patient_ID from form input
-    password: patientDOB.replace(/-/g, ""), // Set temporary password as Date of Birth (YYYYMMDD)
-    firstname: patientfName,
-    dob: patientDOB,
-    middleInitial: patientMiddleName,
-    lastname: patientLName,
-    contact_number: patientContact,
-    address: patientAddress,
-    civil_status: patientCivilStatus,
-    religion: patientReligion,
-    nationality: patientNationality,
-    age: patientAge,
-    gender: patientGender,
-    needsPasswordReset: true, // Flag to force password change
-  };
+    const newPatient = {
+      patientID: patientID, // Set patient_ID from form input
+      password: patientReligion, // Set temporary password as Date of Birth (YYYYMMDD)
+      firstname: patientfName,
+      dob: patientDOB,
+      middleInitial: patientMiddleName,
+      lastname: patientlastName,
+      contact_number: patientContact,
+      home_address: patientAddress,
+      civil_status: patientCivilStatus,
+      religion: patientReligion,
+      nationality: patientNationality,
+      age: patientAge,
+      gender: patientGender,
+      needsPasswordReset: true, // Flag to force password change
+    };
 
-  try {
-    const response = await fetch("http://localhost:5000/patient/add-patient", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`, // Set Authorization header
-      },
-      body: JSON.stringify(newPatient),
-    });
+    try {
+      const response = await fetch(
+        "http://localhost:3000/patient/add-patient",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            // ❌ REMOVE manually setting Authorization header
+          },
+          credentials: "include", // ✅ Ensure cookies are sent with the request
+          body: JSON.stringify(newPatient),
+        }
+      );
 
-    const responseData = await response.json();
+      const responseData = await response.json();
 
-    if (!response.ok) {
-      setNotification(responseData.message || "Failed to add patient.");
+      if (!response.ok) {
+        setNotification(responseData.message || "Failed to add patient.");
+        setTimeout(() => setNotification(""), 3000);
+        return;
+      }
+
+      setPatients((prevPatients) => [...prevPatients, responseData.patient]);
+      setNotification("Patient added successfully");
+
       setTimeout(() => setNotification(""), 3000);
-      return;
+
+      console.log("Updating patient with ID:", patientID);
+
+      // Clear form fields and close the modal
+      setIsOpen(false);
+      setPatientID("");
+      setPatientfName("");
+      setPatientMiddleName("");
+      setPatientlastName("");
+      setPatientContact("");
+      setPatientAddress("");
+      setPatientDOB("");
+      setPatientCivilStatus("");
+      setPatientReligion("");
+      setPatientNationality("");
+      setPatientAge("");
+      setPatientGender("");
+    } catch (error) {
+      console.error("Error adding patient:", error);
+      setNotification("An error occurred. Please try again.");
+      setTimeout(() => setNotification(""), 3000);
     }
-
-    setPatients((prevPatients) => [...prevPatients, responseData]);
-    setNotification("Patient added successfully");
-    setTimeout(() => setNotification(""), 3000);
-
-    // Clear form fields and close the modal
-    setIsOpen(false);
-    setPatientID("");
-    setPatientFName("");
-    setPatientMiddleName("");
-    setPatientLName("");
-    setPatientContact("");
-    setPatientAddress("");
-    setPatientDOB("");
-    setPatientCivilStatus("");
-    setPatientReligion("");
-    setPatientNationality("");
-    setPatientAge("");
-    setPatientGender("");
-  } catch (error) {
-    console.error("Error adding patient:", error);
-    setNotification("An error occurred. Please try again.");
-    setTimeout(() => setNotification(""), 3000);
-  }
-};
+  };
 
   const handleUpdatePatient = async (e) => {
     e.preventDefault();
 
     const updatedPatient = {
-      patient_id,
+      patient_id: patientID, // Corrected variable name
       firstname: patientfName,
       age: patientAge,
       gender: patientGender,
@@ -186,7 +198,7 @@ const Nursing = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/patientname/${patient_id}`,
+        `http://localhost:3000/patientname/${patientID}`, // Corrected variable name
         {
           method: "PUT",
           headers: {
@@ -207,17 +219,13 @@ const Nursing = () => {
       // Ensure state update is done correctly
       setPatients((prevPatients) =>
         prevPatients.map((patient) =>
-          patient.patient_id === responseData.patient_id
-            ? responseData
-            : patient
+          patient.patientID === responseData.patientID ? responseData : patient
         )
       );
 
       setFilteredPatients((prevFiltered) =>
         prevFiltered.map((patient) =>
-          patient.patient_id === responseData.patient_id
-            ? responseData
-            : patient
+          patient.patientID === responseData.patientID ? responseData : patient
         )
       );
 
@@ -615,9 +623,9 @@ const Nursing = () => {
                   <table className="table">
                     <thead>
                       <tr>
-                        <th onClick={() => handleSort("patientID")}>
+                        <th onClick={() => handleSort("patient_id")}>
                           Patient ID{" "}
-                          {sortConfig.key === "patientID"
+                          {sortConfig.key === "patient_id"
                             ? sortConfig.direction === "asc"
                               ? "▲"
                               : "▼"
@@ -653,10 +661,13 @@ const Nursing = () => {
 
                     {/*table body*/}
                     <tbody>
-                      {filteredPatients.map((i) => {
+                      {filteredPatients.map((i, index) => {
                         return (
-                          <tr key={i._id} onClick={() => handleRowClick(i)}>
-                            <td>{i.patientID}</td>
+                          <tr
+                            key={i._id || i._patient_id || index}
+                            onClick={() => handleRowClick(i)}
+                          >
+                            <td>{i.patient_id}</td>
                             <td>{i.firstname}</td>
                             <td>{i.gender}</td>
                             <td>{i.age}</td>

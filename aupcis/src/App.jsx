@@ -7,7 +7,6 @@ import Home from "./modules/Home/Home";
 import LogInPage from "./modules/Home/LogInPage";
 import Unauthorized from "./modules/Route/Unauthorized.jsx";
 import AdminDashboard from "./modules/Admin/AdminDashboard.jsx";
-import NurseDashboard from "./modules/Medical Practitioner/Nursing.jsx";
 import Dashboard from "./modules/Patient/Dashboard.jsx";
 import CashierDashboard from "./modules/Cashier/CashierDashboard.jsx";
 import PharmaDashboard from "./modules/Pharma/Pharma.jsx";

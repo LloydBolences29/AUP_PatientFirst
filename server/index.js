@@ -24,7 +24,8 @@ connectDB();
 app.use(cors({
   origin: "http://localhost:5173", // Frontend URL
   credentials: true, // Allow cookies to be sent
-}));
+},
+{ origin: "http://localhost:3000", credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
@@ -33,8 +34,8 @@ app.use("/api/auth", authRoute); // Authentication routes
 app.use("/api", protectedRoutes); // Role-based protected routes
 app.use("/api/roles", userRoles); // Getting staff information and saving it to DB
 app.use("/staff", staffRoute); // Staff login API
-app.use("/patient", userRoutes); // Patient user-related routes
-app.use("/patientname", patientRoutes); // Patient data routes
+app.use("/patient", userRoutes); // add patient and login route for patient
+app.use("/patientname", patientRoutes); // fetch, add, update and delete route for patient
 
 // ✅ API for Fetching Items
 app.get("/", async (req, res) => {

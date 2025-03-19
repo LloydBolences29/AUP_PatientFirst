@@ -11,6 +11,34 @@ router.get("/", async (req, res) => {
         res.status(500).json({ message: "Error fetching patients", error: error.message });
     }
 });
+// POST - Add new patient with validation
+// router.post("/", async (req, res) => {
+//     console.log("Headers:", req.headers);
+//     console.log("Body:", req.body);
+//     try {
+//         const { patientID, firstname, lastname, age, gender } = req.body;
+
+//         // Check if all required fields are provided
+//         if (!patientID || !firstname || !lastname || !age || !gender) {
+//             return res.status(400).json({ message: "All fields are required" });
+//         }
+
+//         // Check if a patient with the same first and last name exists
+//         const existingPatient = await patientModel.findOne({ firstname, lastname });
+//         if (existingPatient) {
+//             return res.status(400).json({ message: "Patient already exists" });
+//         }
+
+//         // Add new patient
+//         const newPatient = new patientModel(req.body);
+//         await newPatient.save();
+
+//         res.status(201).json({ message: "Patient added successfully", patient: newPatient });
+//     } catch (error) {
+//         res.status(500).json({ message: "Error adding patient", error: error.message });
+//     }
+// });
+
 
 // POST - Add new patient with validation
 router.post("/", async (req, res) => {
@@ -26,16 +54,18 @@ router.post("/", async (req, res) => {
     const newPatient = new patientModel(req.body);
     await newPatient.save();
     res.status(201).json(newPatient);
+    
+    
 });
 
 // 🔄 PUT - Update patient by ID
-router.put("/:patientID", async (req, res) => {
-  const patientID = parseInt(req.params.patientID, 10); // Convert to number
+router.put("/:patient_id", async (req, res) => {
+  const patientID = parseInt(req.params.patient_id, 10); // Convert to number
   const { firstname, age, gender } = req.body;
 
   try {
       const updatedPatient = await patientModel.findOneAndUpdate(
-          { patientID: patientID }, // ✅ Ensure numeric match
+          {patient_id: patientID} , // ✅ Ensure numeric match
           { firstname, age, gender },
           { new: true }
       );

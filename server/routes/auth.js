@@ -11,8 +11,8 @@ router.get("/me", authMiddleware, (req, res) => {
   const role = req.user.role; // Get role from decoded JWT
   const accessControl = {
     Patient: ["dashboard", "analytics", "profile"],
-    Admin: ["admin-dashboard", "admin-management", "admin-analytics"],
-    Nurse: ["nurse-dashboard", "patient-management", "nurse-analytics"],
+    Admin: ["/admin-dashboard", "/admin-management", "/admin-analytics"],
+    Nurse: ["/nurse-dashboard", "/patient-management", "/nurse-analytics"],
     Doctor: ["doctor-dashboard", "doctor-analytics"],
     Cashier: ["cashier-dashboard", "payment"],
     Pharmacy: ["pharma-dashboard", "medicines"]

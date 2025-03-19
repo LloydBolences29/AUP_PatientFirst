@@ -21,6 +21,7 @@ const addPatient = async (req, res) => {
           age,
           dob,
           civil_status,
+          nationality,
           contact_number,
           home_address
       } = req.body;
@@ -41,7 +42,7 @@ const addPatient = async (req, res) => {
 
       // Create the patient object
       const newPatient = new Patient({
-          patientID,
+          patient_id : patientID,
           firstname,
           middleInitial,
           lastname,
@@ -49,6 +50,7 @@ const addPatient = async (req, res) => {
           age,
           dob,
           civil_status,
+          nationality,
           contact_number,
           home_address,
           religion,

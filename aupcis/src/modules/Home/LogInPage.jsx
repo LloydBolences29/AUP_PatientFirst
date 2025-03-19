@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Route/AuthContext"; // Ensure correct import path
 import "./LogInPage.css";
+import Cookies from "js-cookie";
 
 const LogInPage = () => {
   const [isRightPanelActive, setIsRightPanelActive] = useState(false);
@@ -23,70 +24,79 @@ const LogInPage = () => {
 
   // Handle Input Changes
   const handleChange = (e, setStateFunction) => {
-    setStateFunction((prevData) => ({ ...prevData, [e.target.name]: e.target.value }));
+    setStateFunction((prevData) => ({
+      ...prevData,
+      [e.target.name]: e.target.value,
+    }));
   };
 
   // Function to handle login for both Patients & Staff
 
+  const handleLogin = async (e, isStaff) => {
+    e.preventDefault();
 
-const handleLogin = async (e, isStaff) => {
-  e.preventDefault();
-
-  if (isStaff) {
-    if (!staffLoginData.role_ID || !staffLoginData.password) {
-      alert("Please enter both Role ID and Password.");
-      return;
-    }
-  } else {
-    if (!patientLoginData.patient_ID || !patientLoginData.password) {
-      alert("Please enter both Patient ID and Password.");
-      return;
-    }
-  }
-
-  try {
-    const loginData = isStaff
-      ? { role_ID: staffLoginData.role_ID, password: staffLoginData.password }
-      : { patient_ID: patientLoginData.patient_ID, password: patientLoginData.password };
-
-    console.log("🟡 Sending Login Data:", loginData);
-
-    const url = isStaff
-      ? "http://localhost:3000/staff/login"
-      : "http://localhost:3000/patient/login";
-
-    const response = await axios.post(url, loginData, { withCredentials: true });
-
-    console.log("🟢 Login Response:", response.data);
-
-    console.log("🟢 Full Axios Response:", response);
-    console.log("🟢 Extracted Data:", response.data);
-
-    if (!response.data) {
-      console.error("🔴 No data received in response");
-      alert("Login failed. No response data.");
-      return;
+    if (isStaff) {
+      if (!staffLoginData.role_ID || !staffLoginData.password) {
+        alert("Please enter both Role ID and Password.");
+        return;
+      }
+    } else {
+      if (!patientLoginData.patient_ID || !patientLoginData.password) {
+        alert("Please enter both Patient ID and Password.");
+        return;
+      }
     }
 
-    const { allowedPages, token } = response.data;
+    try {
+      const loginData = isStaff
+        ? { role_ID: staffLoginData.role_ID, password: staffLoginData.password }
+        : {
+            patient_ID: patientLoginData.patient_ID,
+            password: patientLoginData.password,
+          };
 
-    if (!allowedPages || allowedPages.length === 0) {
-      
-      console.error("🔴 No allowed pages assigned!", response.data);
-      alert("Login successful, but no allowed pages found.");
-      return allowedPages = ["/"]; // Set a default pages
+      console.log("🟡 Sending Login Data:", loginData);
+
+      const url = isStaff
+        ? "http://localhost:3000/staff/login"
+        : "http://localhost:3000/patient/login";
+
+      const response = await axios.post(url, loginData, {
+        withCredentials: true,
+      });
+
+      console.log("🟢 Login Response:", response.data);
+
+      console.log("🟢 Full Axios Response:", response);
+      console.log("🟢 Extracted Data:", response.data);
+
+      if (!response.data) {
+        console.error("🔴 No data received in response");
+        alert("Login failed. No response data.");
+        return;
+      }
+
+      const { allowedPages, token } = response.data;
+
+      if (!allowedPages || allowedPages.length === 0) {
+        console.error("🔴 No allowed pages assigned!", response.data);
+        alert("Login successful, but no allowed pages found.");
+        return (allowedPages = ["/login"]); // Set a default pages
+      }
+
+      Cookies.set("token", token, {
+        path: "/",
+        secure: true,
+        sameSite: "Strict",
+      });
+      alert("Login Successful! Redirecting...");
+      console.log("Stored Token:", Cookies.get("token"));
+      navigate(`/${allowedPages[0]}`);
+    } catch (error) {
+      console.error("🔴 Login Error:", error.response?.data || error.message);
+      alert("Login failed. Check console for details.");
     }
-
-    localStorage.setItem("authToken", token);
-    alert("Login Successful! Redirecting...");
-    navigate(`/${allowedPages[0]}`);
-  } catch (error) {
-    console.error("🔴 Login Error:", error.response?.data || error.message);
-    alert("Login failed. Check console for details.");
-  }
-};
-
-
+  };
 
   // Toggle Login Panels
   const handleRegisterClick = () => setIsRightPanelActive(true);
@@ -94,11 +104,18 @@ const handleLogin = async (e, isStaff) => {
 
   return (
     <div className="body-form">
-      <div className={`login-register-container ${isRightPanelActive ? "right-panel-active" : ""}`} id="container">
-        
+      <div
+        className={`login-register-container ${
+          isRightPanelActive ? "right-panel-active" : ""
+        }`}
+        id="container"
+      >
         {/* Patient Login Form */}
         <div className="login-register-form-container login-container">
-          <form className="login-register-form" onSubmit={(e) => handleLogin(e, false)}>
+          <form
+            className="login-register-form"
+            onSubmit={(e) => handleLogin(e, false)}
+          >
             <h1 className="head-one">Patient Login</h1>
             <input
               className="login-register-input"
@@ -118,13 +135,18 @@ const handleLogin = async (e, isStaff) => {
               onChange={(e) => handleChange(e, setPatientLoginData)}
               required
             />
-            <button className="login-register-btn" type="submit">Login</button>
+            <button className="login-register-btn" type="submit">
+              Login
+            </button>
           </form>
         </div>
 
         {/* Staff Login Form */}
         <div className="login-register-form-container register-container">
-          <form className="login-register-form" onSubmit={(e) => handleLogin(e, true)}>
+          <form
+            className="login-register-form"
+            onSubmit={(e) => handleLogin(e, true)}
+          >
             <h1 className="head-one">Staff Login</h1>
             <input
               className="login-register-input"
@@ -144,7 +166,9 @@ const handleLogin = async (e, isStaff) => {
               onChange={(e) => handleChange(e, setStaffLoginData)}
               required
             />
-            <button className="login-register-btn" type="submit">Login</button>
+            <button className="login-register-btn" type="submit">
+              Login
+            </button>
           </form>
         </div>
 
@@ -154,16 +178,27 @@ const handleLogin = async (e, isStaff) => {
             <div className="overlay-panel overlay-left">
               <h1 className="title">Hello Friends</h1>
               <p className="login-register-p">Patients login here.</p>
-              <button className="ghost login-register-btn" onClick={handleLoginClick}>Patient Login</button>
+              <button
+                className="ghost login-register-btn"
+                onClick={handleLoginClick}
+              >
+                Patient Login
+              </button>
             </div>
             <div className="overlay-panel overlay-right">
               <h1 className="head-one head-title">Staff Login</h1>
-              <p className="login-register-p">Only authorized staff can log in here.</p>
-              <button className="ghost login-register-btn" onClick={handleRegisterClick}>Staff Login</button>
+              <p className="login-register-p">
+                Only authorized staff can log in here.
+              </p>
+              <button
+                className="ghost login-register-btn"
+                onClick={handleRegisterClick}
+              >
+                Staff Login
+              </button>
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );

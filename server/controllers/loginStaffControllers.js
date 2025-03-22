@@ -12,7 +12,7 @@ const accessControl = {
   Nurse: ["nurse-dashboard", "patient-management", "nurse-analytics"],
   Doctor: ["doctor-dashboard", "doctor-analytics"],
   Cashier: ["cashier-dashboard", "payment"],
-  Pharmacy: ["pharma-dashboard", "medicines"]
+  Pharmacist: ["pharma-dashboard", "medicines-management","medicine-list"]
 };
 
 
@@ -72,7 +72,7 @@ const loginStaff = async (req, res) => {
 
 // Logout function (fixed parameter order)
 const logOutUser = (req, res) => {
-  res.cookie("jwt", "", { httpOnly: true, expires: new Date(0) });
+  res.cookie("token", "", { httpOnly: true, expires: new Date(0) });
   res.json({ message: "Logout Successfully" });
 };
 

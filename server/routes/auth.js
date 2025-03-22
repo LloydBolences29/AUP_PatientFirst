@@ -11,11 +11,11 @@ router.get("/me", authMiddleware, (req, res) => {
   const role = req.user.role; // Get role from decoded JWT
   const accessControl = {
     Patient: ["dashboard", "analytics", "profile"],
-    Admin: ["/admin-dashboard", "/admin-management", "/admin-analytics"],
-    Nurse: ["/nurse-dashboard", "/patient-management", "/nurse-analytics"],
+    Admin: ["admin-dashboard", "admin-management", "admin-analytics"],
+    Nurse: ["nurse-dashboard", "patient-management", "nurse-analytics"],
     Doctor: ["doctor-dashboard", "doctor-analytics"],
     Cashier: ["cashier-dashboard", "payment"],
-    Pharmacy: ["pharma-dashboard", "medicines"]
+    Pharmacist: ["pharma-dashboard", "medicine-management", "medicine-list"]
   };
 
   res.json({
@@ -25,6 +25,6 @@ router.get("/me", authMiddleware, (req, res) => {
 });
 
 // ✅ LOGIN ROUTE (FIXED)
-router.post('/login', loginStaff);
+// router.post('/login', loginStaff);
 
 module.exports = router;

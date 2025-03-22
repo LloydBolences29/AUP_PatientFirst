@@ -2,33 +2,30 @@ import React from "react";
 import Sidebar from "../../components/Sidebar";
 import Card from "../../components/Card";
 import './dashboard.css'
+import { useParams } from "react-router-dom";
 
-const sidebarLinks = [
-  {
-    label: "Dashboard",
-    path: "/dashboard",
-  },
-  // {
-  //   label: "Doctor",
-  //   path: "/doctorpage",
-  // },
-  {
-    label: "My Profile ",
-    path: "/profile",
-  },
-  // {
-  //   label: "Appointments",
-  //   path: "/AppointmentHistory",
-  // },
-  {
-    label: "Medical Records",
-    path: "/",
-  },
-  {
-    label: "Billing",
-    path: "/",
-  },
-];
+
+const Dashboard = () => {
+  const { _id: patientID } = useParams(); // ✅ Get patient ID from URL
+
+  const sidebarLinks = [
+    {
+      label: "Dashboard",
+      path: "/dashboard",
+    },
+    {
+      label: "My Profile",
+      path: `/profile/${patientID}`, // ✅ Use patientID dynamically
+    },
+    {
+      label: "Medical Records",
+      path: "/",
+    },
+    {
+      label: "Billing",
+      path: "/",
+    },
+  ];
 
 const links = [
   {
@@ -36,7 +33,7 @@ const links = [
     path: "/home",
   },
 ];
-const Dashboard = () => {
+
   return (
     <>
       <div>

@@ -11,6 +11,28 @@ router.get("/", async (req, res) => {
         res.status(500).json({ message: "Error fetching patients", error: error.message });
     }
 });
+
+//for fetching patient data according to their id
+router.get("/:patient_id", async (req, res) => {
+    try {
+        const { patient_id } = req.params;
+
+        let patient = await patientModel.findOne({ patient_id }); // 🔎 Search by patient_id first
+
+        if (!patient) {
+            patient = await patientModel.findById(patient_id); // 🔎 Try searching by _id if not found
+        }// ✅ Pass the ID directly
+
+        if (!patient) {
+            return res.status(404).json({ message: "Patient not found" });
+        }
+
+        return res.json({ patient });
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching patient", error: error.message });
+    }
+});
+
 // POST - Add new patient with validation
 // router.post("/", async (req, res) => {
 //     console.log("Headers:", req.headers);

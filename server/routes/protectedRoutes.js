@@ -5,7 +5,7 @@ const roleMiddleware = require("../middlewares/roleMiddleware");
 
 // Define access control for each role
 const accessControl = {
-    Patient: ["dashboard", "analytics", "profile"],
+    Patient: ["dashboard", "analytics", `profile`],
     Admin: ["admin-dashboard", "admin-management", "admin-analytics"],
     Nurse: ["nurse-dashboard", "patient-management", "nurse-analytics"],
     Doctor: ["doctor-dashboard", "doctor-analytics"],

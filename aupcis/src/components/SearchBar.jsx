@@ -1,17 +1,25 @@
-import React from 'react'
+import React, { useState } from 'react';
 
-const SearchBar = ({ searchWords, setFilteredSearchWord }) => {
-    const [searchTerm, setSearchTerm] = useState("");
+const SearchBar = ({ 
+  searchWords, 
+  setFilteredSearchWord, 
+  placeholder, 
+  style = {}, 
+  filterFunction 
+}) => {
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleSearch = (event) => {
     const term = event.target.value.toLowerCase();
     setSearchTerm(term);
 
-    const filtered = searchWords.filter((searchWord) =>
-      Object.values(searchWord).some(
-        (value) => value && value.toString().toLowerCase().includes(term)
-      )
-    );
+    const filtered = filterFunction 
+      ? filterFunction(searchWords, term) 
+      : searchWords.filter((searchWord) =>
+          Object.values(searchWord).some(
+            (value) => value && value.toString().toLowerCase().includes(term)
+          )
+        );
 
     setFilteredSearchWord(filtered);
   };
@@ -19,7 +27,7 @@ const SearchBar = ({ searchWords, setFilteredSearchWord }) => {
   return (
     <input
       type="text"
-      placeholder="Search by Name, Age, or Gender..."
+      placeholder={placeholder}
       value={searchTerm}
       onChange={handleSearch}
       style={{
@@ -28,6 +36,7 @@ const SearchBar = ({ searchWords, setFilteredSearchWord }) => {
         borderRadius: "5px",
         border: "1px solid #ccc",
         marginBottom: "10px",
+        ...style,
       }}
     />
   );

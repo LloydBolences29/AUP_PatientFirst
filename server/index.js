@@ -14,6 +14,7 @@ const userRoles = require("./routes/roles-data");
 const userRoutes = require("./routes/user-data");
 const staffRoute = require("./routes/staffRoute.js");
 const authRoute = require("./routes/auth.js");
+const medicationRoute = require("./routes/pharma-route.js")
 
 const app = express();
 
@@ -36,6 +37,9 @@ app.use("/api/roles", userRoles); // Getting staff information and saving it to 
 app.use("/staff", staffRoute); // Staff login API
 app.use("/patient", userRoutes); // add patient and login route for patient
 app.use("/patientname", patientRoutes); // fetch, add, update and delete route for patient
+app.use("/api/pharma", medicationRoute) // fetch, add, update and delete medication and stock
+
+
 
 // ✅ API for Fetching Items
 app.get("/", async (req, res) => {

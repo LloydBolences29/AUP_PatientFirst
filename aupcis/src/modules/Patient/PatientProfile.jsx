@@ -1,43 +1,50 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import React from "react";
+import axios from "axios";
+import { useParams } from "react-router-dom"; // To get patient ID from URL
 import Sidebar from "../../components/Sidebar";
 import "../Patient/PatientProfile.css";
 
 const PatientProfile = () => {
+
+  const {patient_id} = useParams()
+  const [patient, setPatient] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
   const [activeIndex, setActiveIndex] = useState(null);
+
+  // ✅ Corrected Sidebar Links
   const menuLinks = [
-    {
-      label: "Dashboard",
-      path: "/dashboard",
-    },
-    // {
-    //   label: "Doctor",
-    //   path: "/doctorpage",
-    // },
-    {
-      label: "My Profile ",
-      path: "/profile",
-    },
-    // {
-    //   label: "Appointments",
-    //   path: "/AppointmentHistory",
-    // },
-    {
-      label: "Medical Records",
-      path: "/",
-    },
-    {
-      label: "Billing",
-      path: "/",
-    },
+    { label: "Dashboard", path: "/dashboard" },
+    { label: "My Profile", path: patient?._id ? `/profile/${patient._id}` : "#" }, // ✅ Use id from useParams
+    { label: "Medical Records", path: "/" },
+    { label: "Billing", path: "/" },
   ];
 
-  const links = [
-    {
-      label: "Log Out",
-      path: "/home",
-    },
-  ];
+  useEffect(() => {
+    console.log("Patient ID:", patient_id); // ✅ Debugging step    if (!patientID) {
+      if (!patient_id) {
+      setError("Patient ID is missing");
+      setLoading(false);
+      return;
+    }
+    const fetchPatientData = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(`http://localhost:3000/patientname/${patient_id}`); // ✅ Use id from useParams
+        setPatient(response.data);
+      } catch (err) {
+        setError("Error fetching patient data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPatientData();
+  }, [patient_id]);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
 
   return (
     <div>
@@ -54,55 +61,51 @@ const PatientProfile = () => {
                     <div className="grid-items item-1 patient-profile-img">
                       <img
                         id="patient-profile-img"
-                        src="../../../public/img/profile.jpg"
+                        src={patient?.profileImage || "../../../public/img/profile.jpg"}
                         alt="profile"
                       />
                     </div>
                     <div id="patient-info-wrapper">
                       <div className="grid-items item-2 patient-basic-info">
-                        <div className="patient-name"><h2 id="patient-name">Lloyd Bolences</h2></div>
+                        <div className="patient-name">
+                          <h2 id="patient-name">{patient?.firstname || "N/A"}</h2>
+                        </div>
                         <div className="additional-patient-info">
                           <div className="add-info-flex-items" id="gender">
-                            <p>Male</p>
+                            <p>{patient?.gender || "N/A"}</p>
                           </div>
-
                           <div className="add-info-flex-items" id="religion">
-                            <p>Seventh-day Adventist</p>
+                            <p>{patient?.religion || "N/A"}</p>
                           </div>
-
                           <div className="add-info-flex-items" id="patient-ID">
-                            <p>2051068</p>
+                            <p>{patient?.id || "N/A"}</p>
                           </div>
                         </div>
                       </div>
                       <div className="grid-items item-3 patient-vital-signs">
                         <div>
                           <label>BMI:</label>
-                          <p>120/80</p>
+                          <p>{patient?.bmi || "N/A"}</p>
                         </div>
                         <div>
                           <label>Weight:</label>
-                          <p>120/80</p>
+                          <p>{patient?.weight || "N/A"} kg</p>
                         </div>
                         <div>
                           <label>Heart Rate:</label>
-                          <p>120/80</p>
+                          <p>{patient?.heartRate || "N/A"} bpm</p>
                         </div>
                         <div>
                           <label>Temperature:</label>
-                          <p>120/80</p>
+                          <p>{patient?.temperature || "N/A"} °C</p>
                         </div>
                         <div>
                           <label>Pulse Rate:</label>
-                          <p>120/80</p>
-                        </div>
-                        <div>
-                          <label>Pulse Rate:</label>
-                          <p>120/80</p>
+                          <p>{patient?.pulseRate || "N/A"} bpm</p>
                         </div>
                         <div>
                           <label>Respiratory Rate:</label>
-                          <p>120/80</p>
+                          <p>{patient?.respiratoryRate || "N/A"} bpm</p>
                         </div>
                       </div>
                     </div>
@@ -112,9 +115,7 @@ const PatientProfile = () => {
                 <div className="button-wrapper">
                   <div className="btn">
                     <button
-                      className={`btn btn-outline-primary ${
-                        activeIndex === 0 ? "active" : ""
-                      }`}
+                      className={`btn btn-outline-primary ${activeIndex === 0 ? "active" : ""}`}
                       onClick={() => setActiveIndex(0)}
                     >
                       Personal Information
@@ -122,9 +123,7 @@ const PatientProfile = () => {
                   </div>
                   <div className="btn">
                     <button
-                      className={`btn btn-outline-primary ${
-                        activeIndex === 1 ? "active" : ""
-                      }`}
+                      className={`btn btn-outline-primary ${activeIndex === 1 ? "active" : ""}`}
                       onClick={() => setActiveIndex(1)}
                     >
                       Result
@@ -132,9 +131,7 @@ const PatientProfile = () => {
                   </div>
                   <div className="btn">
                     <button
-                      className={`btn btn-outline-primary ${
-                        activeIndex === 2 ? "active" : ""
-                      }`}
+                      className={`btn btn-outline-primary ${activeIndex === 2 ? "active" : ""}`}
                       onClick={() => setActiveIndex(2)}
                     >
                       Others
@@ -154,39 +151,33 @@ const PatientProfile = () => {
                       <div className="profile-data-wrapper">
                         <div className="grid-item patient-fullname">
                           <label>First Name:</label>
-                          <p>John Doe</p>
+                          <p>{patient?.firstName || "N/A"}</p>
                           <label>Middle Initial:</label>
-                          <p>John Doe</p>
+                          <p>{patient?.middleInitial || "N/A"}</p>
                           <label>Surname:</label>
-                          <p>John Doe</p>
+                          <p>{patient?.lastName || "N/A"}</p>
                         </div>
 
                         <div className="grid-item basic-additional-info">
                           <label>Address:</label>
-                          <p>
-                            Blk 30 L 80 Masipag St. Bria Homes Brgy. Banadero,
-                            Calamba City of Laguna
-                          </p>
+                          <p>{patient?.address || "N/A"}</p>
 
                           <label>Date of Birth:</label>
-                          <p>John Doe</p>
+                          <p>{patient?.dob || "N/A"}</p>
 
                           <label>Age:</label>
-                          <p>John Doe</p>
+                          <p>{patient?.age || "N/A"}</p>
                         </div>
 
                         <div className="grid-item additional-info">
                           <label>Phone Number:</label>
-                          <p>John Doe</p>
+                          <p>{patient?.phone || "N/A"}</p>
 
                           <label>Email:</label>
-                          <p>John Doe</p>
-
-                          <label>Gender:</label>
-                          <p>John Doe</p>
+                          <p>{patient?.email || "N/A"}</p>
 
                           <label>Blood Type:</label>
-                          <p>John Doe</p>
+                          <p>{patient?.bloodType || "N/A"}</p>
                         </div>
                       </div>
                     </div>
@@ -202,73 +193,17 @@ const PatientProfile = () => {
                             <div className="emergency-contact-data">
                               <div className="emergency-grid-items">
                                 <label>Full Name:</label>
-                                <p>John Doe</p>
+                                <p>{patient?.emergencyContact?.name || "N/A"}</p>
                               </div>
                               <div className="emergency-grid-items">
                                 <label>Relationship:</label>
-                                <p>John Doe</p>
+                                <p>{patient?.emergencyContact?.relationship || "N/A"}</p>
                               </div>
                               <div className="emergency-grid-items">
                                 <label>Phone Number:</label>
-                                <p>John Doe</p>
+                                <p>{patient?.emergencyContact?.phone || "N/A"}</p>
                               </div>
                             </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="health-information-container">
-                        <div className="health-information-wrapper">
-                          <div className="health-information-header">
-                            <h2>Health Information</h2>
-                          </div>
-
-                          <div className="health-information-data">
-                            <div className="health-grid-items">
-                              <label htmlFor="">
-                                Medical Record Number (MRN):
-                              </label>
-                              <p>John Doe</p>
-                            </div>
-
-                            <div className="health-grid-items">
-                              <label htmlFor="">Allergies:</label>
-                              <p>John Doe</p>
-                            </div>
-
-                            {/* <div className="health-grid-items">
-                              <label htmlFor="">Blood Pressure:</label>
-                              <p>John Doe</p>
-                            </div>
-
-                            <div className="health-grid-items">
-                              <label htmlFor="">Temperature:</label>
-                              <p>John Doe</p>
-                            </div>
-
-                            <div className="health-grid-items">
-                              <label htmlFor="">Heart Rate:</label>
-                              <p>John Doe</p>
-                            </div>
-                            <div className="health-grid-items">
-                              <label htmlFor="">R Rate:</label>
-                              <p>John Doe</p>
-                            </div>
-                            <div className="health-grid-items">
-                              <label htmlFor="">Pulse Rate:</label>
-                              <p>John Doe</p>
-                            </div>
-                            <div className="health-grid-items">
-                              <label htmlFor="">Weight:</label>
-                              <p>John Doe</p>
-                            </div>
-                            <div className="health-grid-items">
-                              <label htmlFor="">Height:</label>
-                              <p>John Doe</p>
-                            </div>
-                            <div className="health-grid-items">
-                              <label htmlFor="">LMP:</label>
-                              <p>John Doe</p>
-                            </div> */}
                           </div>
                         </div>
                       </div>

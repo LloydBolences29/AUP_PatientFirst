@@ -90,7 +90,7 @@ const LogInPage = () => {
         sameSite: "Strict",
       });
       alert("Login Successful! Redirecting...");
-      console.log("Stored Token:", Cookies.get("token"));
+      console.log("🚀 Redirecting to:", `/${allowedPages[0]}`);
       navigate(`/${allowedPages[0]}`);
     } catch (error) {
       console.error("🔴 Login Error:", error.response?.data || error.message);

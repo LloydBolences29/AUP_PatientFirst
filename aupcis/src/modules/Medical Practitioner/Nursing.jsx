@@ -160,6 +160,7 @@ const Nursing = () => {
 
       setPatients((prevPatients) => [...prevPatients, responseData.patient]);
       setNotification("Patient added successfully");
+      console.log(responseData.patient)
 
       setTimeout(() => setNotification(""), 3000);
 

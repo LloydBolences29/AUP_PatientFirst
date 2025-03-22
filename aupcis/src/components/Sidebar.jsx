@@ -1,3 +1,4 @@
+
 import React from "react";
 import "./Sidebar.css";
 import { NavLink } from "react-router-dom";
@@ -43,6 +44,23 @@ export const Sidebar = ({ props, pageContent }) => {
           )}
         </li>
   );
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/staff/logout", {
+        method: "POST",
+        credentials: "include", // Required to include cookies in the request
+      });
+
+      if (response.ok) {
+        navigate("/login"); // Redirect to login page
+      } else {
+        console.error("Logout failed");
+      }
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
     
   return (
     <>
@@ -64,7 +82,7 @@ export const Sidebar = ({ props, pageContent }) => {
               <ul className="user-menu-list-wrapper">
                 <NavLink to={"/"} className="user-menu-list">Settings</NavLink>
                 <NavLink to={"/"} className="user-menu-list">Feedback</NavLink>
-                <NavLink to={"/"} className="user-menu-list">Log Out</NavLink>
+                <NavLink to={"/"} onClick={handleLogout} className="user-menu-list">Log Out</NavLink>
               </ul>
             </div>
           </div>

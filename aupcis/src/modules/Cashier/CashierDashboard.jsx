@@ -1,13 +1,15 @@
 import React from 'react'
+import Sidebar from '../../components/Sidebar';
+import SearchBar from '../../components/SearchBar';
 
 const CashierDashboard = () => {
     const pharmasidebarLinks = [
         {
-          label: "Dashboard",
-          path: "/dashboard",
+          label: "Cashier Dashboard",
+          path: "/cashier-dashboard",
         },
         {
-          label: "Doctor",
+          label: "Transaction",
           path: "/doctorpage",
         },
         {
@@ -37,11 +39,12 @@ const CashierDashboard = () => {
                     <h1>Cashier</h1>
         
                     <div className="search-div">
+                      <h1>This is cashier dashboard</h1>
         
-                        <SearchBar 
+                        {/* <SearchBar 
                         searchWords={medicines}
                         setFilteredSearchWord={setFilteredmeds}
-                        ></SearchBar>
+                        ></SearchBar> */}
                     </div>
                     </>
                 }

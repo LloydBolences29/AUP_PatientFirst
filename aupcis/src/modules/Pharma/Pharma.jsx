@@ -1,41 +1,42 @@
 import React from 'react'
 import Sidebar from '../../components/Sidebar';
-import SearchBar from '../../components/SearchBar';
 import { useState, useEffect } from 'react';
 
 const Pharma = ({medicines}) => {
     const [filteredmeds, setFilteredmeds] = useState(medicines);
 
     useEffect(() => {
-        setFilteredPatients(medicines);
-      }, [medicines]);
+        setFilteredmeds(medicines);
+    }, [medicines]);
 
+    const handleSearch = (searchTerm) => {
+        const filtered = medicines.filter((med) =>
+            med.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredmeds(filtered);
+    };
 
     const pharmasidebarLinks = [
         {
-          label: "Dashboard",
-          path: "/dashboard",
+          label: "Pharmacy Dashboard",
+          path: "/pharma-dashboard",
         },
         {
-          label: "Doctor",
-          path: "/doctorpage",
+          label: "Medicine List",
+          path: "/medicine-list",
         },
         {
-          label: "My Profile ",
-          path: "/profile",
+          label: "Stock Management ",
+          path: "/medicine-inventory",
         },
         {
-          label: "Appointments",
-          path: "/AppointmentHistory",
+          label: "Transaction History",
+          path: "/pharma-transaction-history",
         },
         {
-          label: "Medical Records",
-          path: "/",
-        },
-        {
-          label: "Billing",
-          path: "/",
-        },
+          label: "Analytics and Reports",
+          path: "/pharma-analytics",
+        }
       ];
 
 
@@ -48,12 +49,26 @@ const Pharma = ({medicines}) => {
             <>
             <h1>Pharmacy</h1>
 
-            <div className="search-div">
-
+            {/* <div className="search-div">
                 <SearchBar 
-                searchWords={medicines}
-                setFilteredSearchWord={setFilteredmeds}
-                ></SearchBar>
+                searchWords={medicines.map(med => med.name)}
+                onSearch={handleSearch}
+                />
+            </div> */}
+
+            <div className="medicine-table">
+                <table className='table'>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                       
+                    </tbody>
+                </table>
             </div>
             </>
         }

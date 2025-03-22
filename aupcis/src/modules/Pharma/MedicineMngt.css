@@ -1,0 +1,13 @@
+.pharma-navbar {
+  display: flex;
+  justify-content: space-between;
+  margin: 1em;
+}
+
+
+.pharmaSearchBtn-Field {
+  display: flex;
+}
+.medicine-table {
+  margin: 2rem;
+}

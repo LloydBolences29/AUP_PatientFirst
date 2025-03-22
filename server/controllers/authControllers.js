@@ -5,110 +5,138 @@ const express = require("express");
 
 const router = express.Router();
 
+const accessControl = {
+  Patient: ["dashboard", "analytics", "profile"],
+  Admin: ["admin-dashboard", "admin-management", "admin-analytics"],
+  Nurse: ["nurse-dashboard", "patient-management", "nurse-analytics"],
+  Doctor: ["doctor-dashboard", "doctor-analytics"],
+  Cashier: ["cashier-dashboard", "payment"],
+  Pharmacy: ["pharma-dashboard", "medicines"],
+};
+
 // JWT Secret Key
 const JWT_SECRET = process.env.JWT_SECRET;
 
 // ✅ Signup (Register)
 const addPatient = async (req, res) => {
   try {
-      const {
-          patientID,
-          religion,
-          firstname,
-          middleInitial,
-          lastname,
-          gender,
-          age,
-          dob,
-          civil_status,
-          nationality,
-          contact_number,
-          home_address
-      } = req.body;
+    const {
+      patientID,
+      religion,
+      firstname,
+      middleInitial,
+      lastname,
+      gender,
+      age,
+      dob,
+      civil_status,
+      nationality,
+      contact_number,
+      home_address,
+    } = req.body;
 
-      // Validate required fields
-      if (!patientID || !firstname || !religion) {
-          return res.status(400).json({ message: "Patient ID, First Name, and Religion are required" });
-      }
+    // Validate required fields
+    if (!patientID || !firstname || !religion) {
+      return res
+        .status(400)
+        .json({ message: "Patient ID, First Name, and Religion are required" });
+    }
 
-      // Check if the patient ID already exists
-      const existingPatient = await Patient.findOne({ patientID });
-      if (existingPatient) {
-          return res.status(400).json({ message: "Patient ID already exists" });
-      }
+    // Check if the patient ID already exists
+    const existingPatient = await Patient.findOne({ patientID });
+    if (existingPatient) {
+      return res.status(400).json({ message: "Patient ID already exists" });
+    }
 
-      // Use religion as the temporary password
-      const hashedPassword = await bcrypt.hash(religion, 10);
+    // Use religion as the temporary password
+  
 
-      // Create the patient object
-      const newPatient = new Patient({
-          patient_id : patientID,
-          firstname,
-          middleInitial,
-          lastname,
-          gender,
-          age,
-          dob,
-          civil_status,
-          nationality,
-          contact_number,
-          home_address,
-          religion,
-          password: hashedPassword, // Hash the password before saving
-          role: "Patient",
-          mustChangePassword: true // Force user to change password on first login
+    // Create the patient object
+    const newPatient = new Patient({
+      patient_id: patientID,
+      firstname,
+      middleInitial,
+      lastname,
+      gender,
+      age,
+      dob,
+      civil_status,
+      nationality,
+      contact_number,
+      home_address,
+      religion,
+      password: religion, // Hash the password before saving
+      role: "Patient",
+      mustChangePassword: true, // Force user to change password on first login
+    });
+
+    // Save patient to database
+    await newPatient.save();
+
+    res
+      .status(201)
+      .json({
+        message: "Patient registered successfully",
+        patient: newPatient,
       });
-
-      // Save patient to database
-      await newPatient.save();
-
-      res.status(201).json({ message: "Patient registered successfully", patient: newPatient });
   } catch (error) {
-      console.error("Error adding patient:", error);
-      res.status(500).json({ message: "An error occurred while adding the patient" });
+    console.error("Error adding patient:", error);
+    res
+      .status(500)
+      .json({ message: "An error occurred while adding the patient" });
   }
 };
 
 // ✅ Login (Set JWT in HTTP-only Cookie)
 const login = async (req, res) => {
   try {
-    //gets the patient_ID and password from the request body
     const { patient_ID, password } = req.body;
 
-    //finds the user with the patient_ID and return the message "User not found" if the user is not found
-    const user = await Patient.findOne({ patient_ID });
-    if (!user) return res.status(400).json({ message: "User not found" });
+    console.log("🟡 Received Login Request:", { patient_ID, password });
 
-    //compares the password with the hashed password in the database and return the message "Invalid credentials" if the password is incorrect
+    // ✅ Check if the patient exists in the database
+    const user = await Patient.findOne({ patient_id: patient_ID });
+    console.log("🔍 Found User:", user);
+
+    if (!user) {
+      console.log("❌ User not found in database!");
+      return res.status(401).json({ message: "Unauthorized: User not found" });
+    }
+
+    // ✅ Check if password matches
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch)
-      return res.status(400).json({ message: "Invalid credentials" });
+    console.log("🔑 Password Match:", isMatch);
+
+    if (!isMatch) {
+      console.log("❌ Incorrect password!");
+      return res.status(401).json({ message: "Unauthorized: Invalid credentials" });
+    }
 
 
-    //creates a token with the patient_ID and role and sets the token in a HTTP-only cookie
-    const token = jwt.sign(
-      { patient_ID: user.patient_ID, role: user.role },
-      JWT_SECRET,
-      { expiresIn: "1h" }
-    );
-    //sets the token in a HTTP-only cookie
+    const allowedPages = accessControl[user.role] || []; 
+    console.log("🔍 Staff Role:", user.role);
+    // ✅ Generate JWT Token
+    const token = jwt.sign({ id: user.patient_id, role: user.role }, JWT_SECRET, { expiresIn: "1h" });
+
+    // ✅ Set Cookie
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "development",
+      secure: process.env.NODE_ENV === "production",
       sameSite: "Strict",
     });
 
-    res.json({ message: "Login successful", //show the patientID and role of the user
-    patient_ID: user.patient_ID, role: user.password, token });
+    res.json({ message: "Login successful", patient_ID: user.patient_id, role: user.role, token, allowedPages });
   } catch (error) {
-    res.status(500).json({ message: "Error logging in", error });
+    console.error("🔴 Login Error:", error);
+    res.status(500).json({ message: "Error logging in", error: error.message });
   }
 };
 
+
 //✅ Logout (Clear Cookie)
-exports.logout = (req, res) => {
-  res.clearCookie("token");
-  res.json({ message: "Logged out successfully" });
-};
+// exports.logout = (req, res) => {
+//   res.clearCookie("token");
+//   res.json({ message: "Logged out successfully" });
+// };
 
 module.exports = { addPatient, login };

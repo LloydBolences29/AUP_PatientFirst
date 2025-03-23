@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const pharmacyInventorySchema = new mongoose.Schema({
-    batchNo: { type: String, required: true, unique: true }, // Unique batch identifier
+    batchNo: { type: Number, required: true },
     medication: { type: mongoose.Schema.Types.ObjectId, ref: 'Medication', required: true }, // Reference to medication
     quantity: { type: Number, required: true }, // Batch quantity
     expiryDate: { type: Date, required: true }, // Expiry date of the batch

@@ -3,6 +3,8 @@ const router = express.Router();
 const Medication = require("../model/medication");
 const PharmacyInventory = require("../model/pharma-inventory");
 const PharmacyTransaction = require("../model/pharma-transac");
+const addStock = require("../controllers/medicineBatchTracker")
+
 
 // ✅ GET - Fetch all medicines with total stock left
 router.get("/medicines", async (req, res) => {
@@ -54,44 +56,7 @@ router.get("/getStock", async (req, res) => {
 });
 
 // ✅ POST - Add stock & auto-update medication quantity
-router.post("/add-stock", async (req, res) => {
-    try {
-        const { medicationId, quantity, expiryDate } = req.body;
-
-        let medication = await Medication.findById(medicationId);
-        if (!medication) {
-            return res.status(404).json({ message: "Medication not found" });
-        }
-
-        // ✅ Find the latest batch number & increment it
-        const lastBatch = await PharmacyInventory.findOne().sort({ batchNo: -1 });
-        let newBatchNo = lastBatch ? parseInt(lastBatch.batchNo) + 1 : 1; // Default to 1 if no batch exists
-
-        const newStock = new PharmacyInventory({ 
-            batchNo: newBatchNo.toString(), // Auto-increment batchNo
-            medication: medicationId, 
-            quantity, 
-            expiryDate 
-        });
-
-        await newStock.save();
-
-        medication.totalQuantityLeft += quantity;
-        await medication.save();
-
-        const savedStock = await PharmacyInventory.findById(newStock._id)
-            .populate("medication");
-
-        res.status(201).json({ 
-            message: "Stock added successfully", 
-            newStock: savedStock,   
-            updatedMedication: medication 
-        });
-
-    } catch (error) {
-        res.status(500).json({ message: "Error adding stock", error: error.message });
-    }
-});
+router.post("/add-stock", addStock.addStock);
 
 // ✅ PUT - Update medication details (e.g., price, brand)
 router.put("/medicine/:id", async (req, res) => {

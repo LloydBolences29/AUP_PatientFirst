@@ -1,7 +1,8 @@
-  const mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-  const medicationSchema = new mongoose.Schema({
-      name: { type: String, required: true, unique: true }, // Medication name (e.g., Paracetamol)
+const medicationSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true, unique: true }, // Medication name (e.g., Paracetamol)
     brand: { type: String }, // Brand name (e.g., Tylenol)
     manufacturer: { type: String }, // Manufacturer (e.g., Pfizer)
     dosageForm: { type: String, required: true }, // Tablet, Capsule, Syrup, etc.
@@ -11,7 +12,10 @@
     totalQuantityLeft: { type: Number, default: 0 }, // Tracks total stock left across batches
     description: { type: String }, // Optional details
     createdAt: { type: Date, default: Date.now }
-  }, { timestamps: true });
+  },
+  { timestamps: true }
+);
 
-  const medicationModel =  mongoose.model('Medication', medicationSchema)
-  module.exports = medicationModel
+
+const medicationModel = mongoose.model("Medication", medicationSchema);
+module.exports = medicationModel;

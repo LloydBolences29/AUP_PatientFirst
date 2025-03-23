@@ -5,6 +5,9 @@ import "../Pharma/MedicineMngt.css";
 import Modal from "../../components/Modal";
 
 const MedicineMngt = () => {
+  const [batchNo, setBatchNo] = useState("");
+  const [quantity, setQuantity] = useState("");
+  const [expiryDate, setExpiryDate] = useState("");
   const [medicines, setMedicines] = useState([]);
   const [filteredMedicines, setFilteredMedicines] = useState([]);
   const [selectedMedicine, setSelectedMedicine] = useState(null);
@@ -46,10 +49,14 @@ const MedicineMngt = () => {
 
   const fetchMedicines = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/pharma/medicines");
+      const response = await axios.get(
+        "http://localhost:3000/api/pharma/medicines"
+      );
       const medicinesWithQuantities = await Promise.all(
         response.data.medicines.map(async (medicine) => {
-          const batchResponse = await axios.get("http://localhost:3000/api/pharma/getStock");
+          const batchResponse = await axios.get(
+            "http://localhost:3000/api/pharma/getStock"
+          );
           const medicineBatches = batchResponse.data.filter(
             (stock) => stock.medication._id === medicine._id
           );
@@ -69,8 +76,12 @@ const MedicineMngt = () => {
 
   const fetchBatches = async (medicineId) => {
     try {
-      const response = await axios.get("http://localhost:3000/api/pharma/getStock");
-      const medicineBatches = response.data.filter((stock) => stock.medication._id === medicineId);
+      const response = await axios.get(
+        "http://localhost:3000/api/pharma/getStock"
+      );
+      const medicineBatches = response.data.filter(
+        (stock) => stock.medication._id === medicineId
+      );
       setBatches(medicineBatches);
     } catch (error) {
       console.error("Error fetching batches:", error);
@@ -90,6 +101,11 @@ const MedicineMngt = () => {
   };
 
   const openAddStockModal = (medicine) => {
+    console.log("Opening Add Stock Modal for Medicine:", medicine);
+    if (!medicine || !medicine._id) {
+      alert("Error: Medicine ID is missing!");
+      return;
+    }
     setSelectedMedicine(medicine);
     setStockData({ batchNo: "", quantity: "", expiryDate: "" });
     setShowAddStockModal(true);
@@ -102,46 +118,77 @@ const MedicineMngt = () => {
   };
 
   const handleAddStock = async (e) => {
-    e.preventDefault();
-    console.log("Stock Data Before Sending:", stockData); // Debugging
-  
-    if (!stockData.expirationDate) {
-      alert("Expiry date is required!");
+    e.preventDefault(); // Prevent form submission reload
+
+    // Debugging log
+    console.log("Stock Data:", stockData);
+
+    if (!selectedMedicine || !selectedMedicine._id) {
+      alert("Please select a valid medicine.");
       return;
     }
-  
+
+    if (!stockData.quantity || !stockData.expiryDate) {
+      alert("Quantity and expiry date are required.");
+      return;
+    }
+
+    const formattedDate = new Date(stockData.expiryDate)
+      .toISOString()
+      .split("T")[0];
+
+    const stockPayload = {
+      medicineId: selectedMedicine._id,
+      batchNo: stockData.batchNo.trim(),
+      quantity: parseInt(stockData.quantity, 10),
+      expiryDate: formattedDate,
+    };
+
+    console.log("Sending Stock Data:", stockPayload);
+
     try {
-      const response = await axios.post("http://localhost:3000/api/pharma/add-stock", {
-        batchNo: stockData.batchNo,
-        medicationId: selectedMedicine._id,
-        quantity: stockData.quantity,
-        expiryDate: stockData.expirationDate,
-      });
-  
-      console.log("Stock added successfully:", response.data);
-  
-      fetchMedicines();
-      fetchBatches(selectedMedicine._id);
+      const response = await axios.post(
+        "http://localhost:3000/api/pharma/add-stock",
+        stockPayload
+      );
+
+      
+      alert("Stock added successfully!"); // Notification for successful stock addition
+      setStockData({ batchNo: "", quantity: "", expiryDate: "" });
       closeAddStockModal();
     } catch (error) {
-      console.error("Error adding stock:", error);
+      console.error(
+        "Error adding stock:",
+        error.response?.data || error.message
+      );
+      alert("Failed to add stock. Check console for details.");
     }
+    fetchMedicines();
   };
 
   const handleAddMedicine = async (e) => {
     e.preventDefault();
     try {
       // Ensure all required fields are populated
-      if (!formData.name || !formData.brand || !formData.manufacturer || !formData.price) {
+      if (
+        !formData.name ||
+        !formData.brand ||
+        !formData.manufacturer ||
+        !formData.price
+      ) {
         console.error("Error: Missing required fields for adding medicine");
         return;
       }
 
       // API call to add a new medicine
-      await axios.post("http://localhost:3000/api/pharma/add-medicines", formData);
+      await axios.post(
+        "http://localhost:3000/api/pharma/add-medicines",
+        formData
+      );
 
       fetchMedicines(); // Refresh the medicine list
       closeAddMedicineModal(); // Close the modal
+      alert("New medicine added successfully!"); // Notification for successful medicine addition
     } catch (error) {
       console.error("Error adding medicine:", error);
     }
@@ -151,16 +198,26 @@ const MedicineMngt = () => {
     e.preventDefault();
     try {
       // Ensure all required fields are populated
-      if (!formData._id || !formData.name || !formData.brand || !formData.manufacturer || !formData.price) {
+      if (
+        !formData._id ||
+        !formData.name ||
+        !formData.brand ||
+        !formData.manufacturer ||
+        !formData.price
+      ) {
         console.error("Error: Missing required fields for updating medicine");
         return;
       }
 
       // API call to update an existing medicine
-      await axios.put(`http://localhost:3000/api/pharma/update-medicine/${formData._id}`, formData);
+      await axios.put(
+        `http://localhost:3000/api/pharma/update-medicine/${formData._id}`,
+        formData
+      );
 
       fetchMedicines(); // Refresh the medicine list
       closeAddMedicineModal(); // Close the modal
+      alert("Medicine updated successfully!"); // Notification for successful medicine update
     } catch (error) {
       console.error("Error updating medicine:", error);
     }
@@ -331,57 +388,58 @@ const MedicineMngt = () => {
               <Modal
                 show={showAddMedicineModal}
                 onClose={closeAddMedicineModal}
-
                 body={
-
                   <>
-                  <h4>{formData._id ? "Edit Medicine" : "Add New Medicine"}</h4>
-                <form
-                  onSubmit={
-                    formData._id ? handleUpdateMedicine : handleAddMedicine
-                  }
-                >
-                  {[
-                    "name",
-                    "brand",
-                    "manufacturer",
-                    "dosageForm",
-                    "strength",
-                    "price",
-                    "unit",
-                    "description",
-                  ].map((field) => (
-                    <div className="form-group" key={field}>
-                      <label>
-                        {field.charAt(0).toUpperCase() + field.slice(1)}
-                      </label>
-                      <input
-                        type={field === "price" ? "number" : "text"}
-                        className="form-control"
-                        value={formData[field]}
-                        onChange={(e) =>
-                          setFormData({ ...formData, [field]: e.target.value })
-                        }
-                        required
-                      />
-                    </div>
-                  ))}
-                  <button type="submit" className="btn btn-primary">
-                    {formData._id ? "Update Medicine" : "Add Medicine"}
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-secondary ms-2"
-                    onClick={closeAddMedicineModal}
-                  >
-                    Cancel
-                  </button>
-                </form>
+                    <h4>
+                      {formData._id ? "Edit Medicine" : "Add New Medicine"}
+                    </h4>
+                    <form
+                      onSubmit={
+                        formData._id ? handleUpdateMedicine : handleAddMedicine
+                      }
+                    >
+                      {[
+                        "name",
+                        "brand",
+                        "manufacturer",
+                        "dosageForm",
+                        "strength",
+                        "price",
+                        "unit",
+                        "description",
+                      ].map((field) => (
+                        <div className="form-group" key={field}>
+                          <label>
+                            {field.charAt(0).toUpperCase() + field.slice(1)}
+                          </label>
+                          <input
+                            type={field === "price" ? "number" : "text"}
+                            className="form-control"
+                            value={formData[field]}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                [field]: e.target.value,
+                              })
+                            }
+                            required
+                          />
+                        </div>
+                      ))}
+                      <button type="submit" className="btn btn-primary">
+                        {formData._id ? "Update Medicine" : "Add Medicine"}
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-secondary ms-2"
+                        onClick={closeAddMedicineModal}
+                      >
+                        Cancel
+                      </button>
+                    </form>
                   </>
                 }
-              >
-                
-              </Modal>
+              ></Modal>
             )}
 
             {/* Add Stock Modal */}
@@ -400,7 +458,10 @@ const MedicineMngt = () => {
                           className="form-control"
                           value={stockData.quantity}
                           onChange={(e) =>
-                            setStockData({ ...stockData, quantity: e.target.value })
+                            setStockData((prev) => ({
+                              ...prev,
+                              quantity: e.target.value,
+                            }))
                           }
                           required
                         />
@@ -410,9 +471,12 @@ const MedicineMngt = () => {
                         <input
                           type="date"
                           className="form-control"
-                          value={stockData.expirationDate}
+                          value={stockData.expiryDate}
                           onChange={(e) =>
-                            setStockData({ ...stockData, expirationDate: e.target.value })
+                            setStockData((prev) => ({
+                              ...prev,
+                              expiryDate: e.target.value,
+                            }))
                           }
                           required
                         />

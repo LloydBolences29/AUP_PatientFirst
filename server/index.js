@@ -15,6 +15,7 @@ const userRoutes = require("./routes/user-data");
 const staffRoute = require("./routes/staffRoute.js");
 const authRoute = require("./routes/auth.js");
 const medicationRoute = require("./routes/pharma-route.js")
+const visitRoute = require("./routes/visitTable.js")
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use("/staff", staffRoute); // Staff login API
 app.use("/patient", userRoutes); // add patient and login route for patient
 app.use("/patientname", patientRoutes); // fetch, add, update and delete route for patient
 app.use("/api/pharma", medicationRoute) // fetch, add, update and delete medication and stock
+app.use("/patient-visit", visitRoute) // for recording the vital signs of the patient every visit
 
 
 

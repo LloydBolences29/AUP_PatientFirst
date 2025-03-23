@@ -13,19 +13,21 @@ const VisitSchema = new mongoose.Schema({
   },
 
   // Vital Signs
-  bp: { type: String, required: true }, // Blood Pressure
+  blood_pressure: { type: String, required: true }, // Blood Pressure
   temperature: { type: Number, required: true }, // In Celsius
   pulse_rate: { type: Number, required: true },
-  rrate: { type: Number, required: true }, // Respiratory Rate
+  respiratory_rate: { type: Number, required: true }, // Respiratory Rate
 
   // Medical Information
-  chief_complaints: { type: String, required: true },
-  diagnosis: { type: String, required: true },
-  additional_notes: { type: String }, // Optional field for extra notes
+  chief_complaints: { type: String},
+  diagnosis: { type: String},
+  doctors_additional_notes: { type: String }, // Optional field for extra notes
 
   // Other Medical Data
   weight: { type: Number, required: true },
-  lmp: { type: String } // Last Menstrual Period (if applicable)
+  last_menstrual_period: { type: String } // Last Menstrual Period (if applicable)
 }, { timestamps: true });
 
-module.exports = mongoose.model("Visit", visitSchema);
+
+const VisitModel = mongoose.model("Visit", VisitSchema);
+module.exports = VisitModel;

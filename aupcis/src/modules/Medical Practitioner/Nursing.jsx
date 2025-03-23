@@ -36,6 +36,12 @@ const Nursing = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const [selectedPatient, setSelectedPatient] = useState(null);
+  const [isVisitModalOpen, setIsVisitModalOpen] = useState(false); // State for visit modal
+  const [visitData, setVisitData] = useState({
+    temperature: "",
+    heartRate: "",
+    pulseRate: "",
+  });
 
   useEffect(() => {
     const fetchPatientData = async () => {
@@ -293,6 +299,76 @@ const Nursing = () => {
     setIsOpen(true);
   };
 
+  // Handle input changes in the visit form
+  const handleVisitInputChange = (e) => {
+
+   
+    const { name, value } = e.target;
+    setVisitData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  // Handle form submission for adding a new visit
+  const handleAddVisit = async (e) => {
+    e.preventDefault();
+  
+    const newVisit = {
+      patient_id: selectedPatient._id, // Use selected patient's ID
+      purpose: visitData.purpose, // Purpose of the visit
+      blood_pressure: visitData.blood_pressure,
+      temperature: visitData.temperature,
+      pulse_rate: visitData.pulse_rate,
+      respiratory_rate: visitData.respiratory_rate,
+      weight: visitData.weight,
+    };
+  
+    try {
+      const response = await fetch("http://localhost:3000/patient-visit/create-visit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newVisit),
+      });
+  
+      const responseData = await response.json();
+  
+      if (!response.ok) {
+        console.error("Error adding visit:", responseData.message);
+        setNotification(responseData.message || "Failed to add visit.");
+        setTimeout(() => setNotification(""), 3000);
+        return;
+      }
+  
+      console.log("Visit added successfully:", responseData);
+      setNotification("Visit added successfully.");
+      setTimeout(() => setNotification(""), 3000);
+  
+      // Reset form and close modal
+      setIsVisitModalOpen(false);
+      setVisitData({
+        purpose: "",
+        blood_pressure: "",
+        temperature: "",
+        pulse_rate: "",
+        respiratory_rate: "",
+        weight: "",
+      });
+    } catch (error) {
+      console.error("Error adding visit:", error);
+      setNotification("An error occurred. Please try again.");
+      setTimeout(() => setNotification(""), 3000);
+    }
+  };
+  
+
+  const handleAddVisitClick = (patient) => {
+    setSelectedPatient(patient); // Set the selected patient details
+    setIsVisitModalOpen(true); // Open the visit modal
+  };
+
   return (
     <div>
       <Sidebar
@@ -401,7 +477,11 @@ const Nursing = () => {
                   ) : (
                     <div
                       className="form-container"
-                      style={{ maxWidth: "100%" }}
+                      style={{
+                        maxWidth: "100%",
+                        maxHeight: "80vh", // Limit modal height
+                        overflowY: "auto", // Add scroll for overflow
+                      }}
                     >
                       <div className="form-wrapper">
                         <div className="form-content">
@@ -628,14 +708,140 @@ const Nursing = () => {
             ></Modal>
             <br />
 
-            <div className="nurse-div-container container">
+            <Modal
+              show={isVisitModalOpen}
+              title={
+                <>
+                  <h2 className="modal-title text-center">Add New Visit</h2>
+                </>
+              }
+              body={
+                <div
+                  className="form-container"
+                  style={{
+                    maxWidth: "600px", // Set a fixed width for the modal
+                    margin: "0 auto", // Center the modal horizontally
+                    padding: "20px", // Add padding inside the modal
+                    backgroundColor: "#f8f9fa", // Light background color
+                    borderRadius: "8px", // Rounded corners
+                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // Subtle shadow for depth
+                    maxHeight: "80vh", // Limit modal height
+                    overflowY: "auto", // Add scroll for overflow
+                  }}
+                >
+                  <div className="form-wrapper">
+                    <div className="form-content">
+                      {/* Display selected patient details */}
+                      {selectedPatient && (
+                        <div className="patient-details mb-3">
+                          <p>
+                            <strong>Patient ID:</strong> {selectedPatient.patient_id}
+                          </p>
+                          <p>
+                            <strong>Name:</strong> {selectedPatient.firstname}{" "}
+                            {selectedPatient.middleInitial} {selectedPatient.lastname}
+                          </p>
+                          <p>
+                            <strong>Age:</strong> {selectedPatient.age}
+                          </p>
+                          <p>
+                            <strong>Gender:</strong> {selectedPatient.gender}
+                          </p>
+                        </div>
+                      )}
+                      <form onSubmit={handleAddVisit}>
+                        <div className="form-group">
+                          <label className="form-label">Purpose:</label>
+                          <select
+                            className="form-control"
+                            name="purpose"
+                            value={visitData.purpose || ""}
+                            onChange={handleVisitInputChange}
+                          >
+                            <option value="">Select Purpose</option>
+                            <option value="Checkup">Checkup</option>
+                            <option value="Medical Certificate">Medical Certificate</option>
+                            <option value="Emergency">Emergency</option>
+                          </select>
+                        </div>
+                        <div className="form-group">
+                          <label className="form-label">Blood Pressure:</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            name="blood_pressure"
+                            value={visitData.blood_pressure || ""}
+                            onChange={handleVisitInputChange}
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label className="form-label">Temperature:</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            name="temperature"
+                            value={visitData.temperature || ""}
+                            onChange={handleVisitInputChange}
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label className="form-label">Pulse Rate:</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            name="pulse_rate"
+                            value={visitData.pulse_rate || ""}
+                            onChange={handleVisitInputChange}
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label className="form-label">Respiratory Rate:</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            name="respiratory_rate"
+                            value={visitData.respiratory_rate || ""}
+                            onChange={handleVisitInputChange}
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label className="form-label">Weight:</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            name="weight"
+                            value={visitData.weight || ""}
+                            onChange={handleVisitInputChange}
+                          />
+                        </div>
+                        <br />
+                        <div className="btn-container text-center">
+                          <button type="submit" className="btn btn-primary mx-2">
+                            Submit
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-secondary mx-2"
+                            onClick={() => setIsVisitModalOpen(false)}
+                          >
+                            Close
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              }
+            />
+
+            <div className="nurse-div-container container mt-4">
               <div className="nurse-div-wrapper">
                 <div className="nurse-div-content">
-                  {/*table for patient data*/}
-                  <table className="table">
-                    <thead>
+                  {/* Table for patient data */}
+                  <table className="table table-striped table-bordered table-hover">
+                    <thead className="thead-dark">
                       <tr>
-                        <th onClick={() => handleSort("patient_id")}>
+                        <th onClick={() => handleSort("patient_id")} className="text-center">
                           Patient ID{" "}
                           {sortConfig.key === "patient_id"
                             ? sortConfig.direction === "asc"
@@ -643,7 +849,7 @@ const Nursing = () => {
                               : "▼"
                             : ""}
                         </th>
-                        <th onClick={() => handleSort("firstname")}>
+                        <th onClick={() => handleSort("firstname")} className="text-center">
                           Name{" "}
                           {sortConfig.key === "firstname"
                             ? sortConfig.direction === "asc"
@@ -651,7 +857,7 @@ const Nursing = () => {
                               : "▼"
                             : ""}
                         </th>
-                        <th onClick={() => handleSort("gender")}>
+                        <th onClick={() => handleSort("gender")} className="text-center">
                           Gender{" "}
                           {sortConfig.key === "gender"
                             ? sortConfig.direction === "asc"
@@ -659,7 +865,7 @@ const Nursing = () => {
                               : "▼"
                             : ""}
                         </th>
-                        <th onClick={() => handleSort("age")}>
+                        <th onClick={() => handleSort("age")} className="text-center">
                           Age{" "}
                           {sortConfig.key === "age"
                             ? sortConfig.direction === "asc"
@@ -667,11 +873,11 @@ const Nursing = () => {
                               : "▼"
                             : ""}
                         </th>
-                        <th>Actions</th>
+                        <th className="text-center">Actions</th>
                       </tr>
                     </thead>
 
-                    {/*table body*/}
+                    {/* Table body */}
                     <tbody>
                       {filteredPatients.map((i, index) => {
                         return (
@@ -679,13 +885,13 @@ const Nursing = () => {
                             key={`${i._id || i.patient_id}-${index}`} // Ensure unique key
                             onClick={() => handleRowClick(i)}
                           >
-                            <td>{i.patient_id}</td>
-                            <td>{i.firstname}</td>
-                            <td>{i.gender}</td>
-                            <td>{i.age}</td>
-                            <td>
+                            <td className="text-center">{i.patient_id}</td>
+                            <td className="text-center">{i.firstname}</td>
+                            <td className="text-center">{i.gender}</td>
+                            <td className="text-center">{i.age}</td>
+                            <td className="text-center">
                               <button
-                                className="btn btn-warning"
+                                className="btn btn-warning btn-sm mx-1"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleEditClick(i);
@@ -694,13 +900,22 @@ const Nursing = () => {
                                 Update
                               </button>
                               <button
-                                className="btn btn-danger"
+                                className="btn btn-danger btn-sm mx-1"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleDeletePatient(i._id);
                                 }}
                               >
                                 Delete
+                              </button>
+                              <button
+                                className="btn btn-success btn-sm mx-1"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleAddVisitClick(i); // Pass the patient details to the modal
+                                }}
+                              >
+                                Add New Visit
                               </button>
                             </td>
                           </tr>

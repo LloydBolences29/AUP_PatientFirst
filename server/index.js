@@ -16,7 +16,7 @@ const staffRoute = require("./routes/staffRoute.js");
 const authRoute = require("./routes/auth.js");
 const medicationRoute = require("./routes/pharma-route.js")
 const visitRoute = require("./routes/visitTable.js")
-
+const mroRoutes = require("./routes/mro-route")
 const app = express();
 
 // ✅ Connect to MongoDB BEFORE initializing routes
@@ -40,7 +40,7 @@ app.use("/patient", userRoutes); // add patient and login route for patient
 app.use("/patientname", patientRoutes); // fetch, add, update and delete route for patient
 app.use("/api/pharma", medicationRoute) // fetch, add, update and delete medication and stock
 app.use("/patient-visit", visitRoute) // for recording the vital signs of the patient every visit
-
+app.use("/mro", mroRoutes) // Routes for MRO
 
 
 // ✅ API for Fetching Items

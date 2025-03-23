@@ -16,6 +16,8 @@ import NursingDashboard from "./modules/Medical Practitioner/NursingDashboard.js
 import PatientProfile from "./modules/Patient/PatientProfile.jsx"
 import PharmaMedicines from "./modules/Pharma/MedicineMngt.jsx"
 import PharmacyTransactions from "./modules/Pharma/PharmacyTransactions.jsx";
+import MedicalRecordDashboard from "./modules/MRO/MedicalRecordDashboard.jsx";
+import MedicalRecordManagement from "./modules/MRO/MROMngt.jsx"
 
 export default function App() {
   return (
@@ -57,6 +59,12 @@ export default function App() {
       </Route>
       <Route element={<ProtectedRoute allowedRoles={["Pharmacist"]} />}>
         <Route path="/pharma-transaction" element={<PharmacyTransactions />} />
+      </Route>
+      <Route element={<ProtectedRoute allowedRoles={["MedicalRecordsOfficer"]} />}>
+        <Route path="/medicalRecord-dashboard" element={<MedicalRecordDashboard />} />
+      </Route>
+      <Route element={<ProtectedRoute allowedRoles={["MedicalRecordsOfficer"]} />}>
+        <Route path="/medicalRecord-management" element={<MedicalRecordManagement />} />
       </Route>
 
     </Routes>

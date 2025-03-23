@@ -12,6 +12,7 @@ router.get("/me", authMiddleware, (req, res) => {
   const accessControl = {
     Patient: ["dashboard", "analytics", "profile"],
     Admin: ["admin-dashboard", "admin-management", "admin-analytics"],
+    MedicalRecordsOfficer: ["medicalRecord-dashboard", "medicalRecord-management"],
     Nurse: ["nurse-dashboard", "patient-management", "nurse-analytics"],
     Doctor: ["doctor-dashboard", "doctor-analytics"],
     Cashier: ["cashier-dashboard", "payment"],

@@ -180,7 +180,7 @@ const AdminRoleManagement = () => {
                             <option value="">Choose...</option>
                             <option value="Nurse">Nurse</option>
                             <option value="Doctor">Doctor</option>
-                            <option value="Medical Records Officer">
+                            <option value="MedicalRecordsOfficer">
                               Medical Records Officer
                             </option>
                             <option value="Pharmacist">Pharmacist</option>

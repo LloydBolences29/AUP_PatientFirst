@@ -8,7 +8,7 @@ const UserSchema = new mongoose.Schema({
   address: { type: String, required: true },
   city: { type: String, required: true },
   zip: { type: String, required: true },
-  role: { type: String, required: true, enum: ['Admin', 'Doctor', 'Nurse', 'Medical Records Officer', 'Cashier', 'Pharmacist']}
+  role: { type: String, required: true, enum: ['Admin', 'Doctor', 'Nurse', 'MedicalRecordsOfficer', 'Cashier', 'Pharmacist']}
 }, { timestamps: true });
 
 UserSchema.pre("save", async function (next) {

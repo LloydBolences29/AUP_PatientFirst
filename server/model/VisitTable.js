@@ -2,7 +2,7 @@ const mongoose  = require("mongoose");
 
 
 const VisitSchema = new mongoose.Schema({
-    patient_id: { type: mongoose.Schema.Types.ObjectId, ref: "Patient", required: true }, // Link to patient
+    patient_id: { type: mongoose.Schema.Types.ObjectId, ref: "patientname", required: true }, // Link to patient
 
   visit_date: { type: Date, default: Date.now }, // Timestamp for visit
 

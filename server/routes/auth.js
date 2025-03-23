@@ -15,7 +15,7 @@ router.get("/me", authMiddleware, (req, res) => {
     Nurse: ["nurse-dashboard", "patient-management", "nurse-analytics"],
     Doctor: ["doctor-dashboard", "doctor-analytics"],
     Cashier: ["cashier-dashboard", "payment"],
-    Pharmacist: ["pharma-dashboard", "medicine-management", "medicine-list"]
+    Pharmacist: ["pharma-dashboard", "pharma-transaction", "medicine-list"]
   };
 
   res.json({

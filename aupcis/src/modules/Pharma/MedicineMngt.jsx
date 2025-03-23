@@ -256,8 +256,7 @@ const MedicineMngt = () => {
   const pharmasidebarLinks = [
     { label: "Pharmacy Dashboard", path: "/pharma-dashboard" },
     { label: "Medicine List", path: "/medicine-list" },
-    { label: "Stock Management", path: "/medicine-inventory" },
-    { label: "Transaction History", path: "/pharma-transaction-history" },
+    { label: "Pharmacy Transaction", path: "/pharma-transaction" },
     { label: "Analytics and Reports", path: "/pharma-analytics" },
   ];
 

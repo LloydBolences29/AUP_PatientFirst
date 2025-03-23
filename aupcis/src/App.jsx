@@ -15,7 +15,7 @@ import Nursing from "./modules/Medical Practitioner/Nursing.jsx";
 import NursingDashboard from "./modules/Medical Practitioner/NursingDashboard.jsx";
 import PatientProfile from "./modules/Patient/PatientProfile.jsx"
 import PharmaMedicines from "./modules/Pharma/MedicineMngt.jsx"
-import PharmaInventory from "./modules/Pharma/PharmaInventory.jsx";
+import PharmacyTransactions from "./modules/Pharma/PharmacyTransactions.jsx";
 
 export default function App() {
   return (
@@ -56,7 +56,7 @@ export default function App() {
         <Route path="/medicine-list" element={<PharmaMedicines />} />
       </Route>
       <Route element={<ProtectedRoute allowedRoles={["Pharmacist"]} />}>
-        <Route path="/medicine-inventory" element={<PharmaInventory />} />
+        <Route path="/pharma-transaction" element={<PharmacyTransactions />} />
       </Route>
 
     </Routes>

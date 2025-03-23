@@ -17,28 +17,11 @@ const Pharma = ({medicines}) => {
     };
 
     const pharmasidebarLinks = [
-        {
-          label: "Pharmacy Dashboard",
-          path: "/pharma-dashboard",
-        },
-        {
-          label: "Medicine List",
-          path: "/medicine-list",
-        },
-        {
-          label: "Stock Management ",
-          path: "/medicine-inventory",
-        },
-        {
-          label: "Transaction History",
-          path: "/pharma-transaction-history",
-        },
-        {
-          label: "Analytics and Reports",
-          path: "/pharma-analytics",
-        }
-      ];
-
+      { label: "Pharmacy Dashboard", path: "/pharma-dashboard" },
+      { label: "Medicine List", path: "/medicine-list" },
+      { label: "Pharmacy Transaction", path: "/pharma-transaction" },
+      { label: "Analytics and Reports", path: "/pharma-analytics" },
+    ];
 
   return (
     <div>

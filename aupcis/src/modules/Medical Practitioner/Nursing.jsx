@@ -98,7 +98,9 @@ const Nursing = () => {
   }, [searchTerm, patients]);
 
   const handleAddPatient = async (e) => {
+
     e.preventDefault();
+    const formattedDate = new Date(patientDOB).toISOString().split("T")[0];
 
     // Check if patient already exists in state (before making API call)
     const isDuplicate = patients.some(
@@ -123,7 +125,7 @@ const Nursing = () => {
       patientID: patientID, // Set patient_ID from form input
       password: patientReligion, // Set temporary password as Date of Birth (YYYYMMDD)
       firstname: patientfName,
-      dob: patientDOB,
+      dob: formattedDate,
       middleInitial: patientMiddleName,
       lastname: patientlastName,
       contact_number: patientContact,
@@ -160,7 +162,7 @@ const Nursing = () => {
 
       setPatients((prevPatients) => [...prevPatients, responseData.patient]);
       setNotification("Patient added successfully");
-      console.log(responseData.patient)
+      console.log(responseData.patient);
 
       setTimeout(() => setNotification(""), 3000);
 
@@ -196,6 +198,7 @@ const Nursing = () => {
       age: patientAge,
       gender: patientGender,
     };
+    console.log("Updating patient with ID:", patientID);
 
     try {
       const response = await fetch(
@@ -220,13 +223,13 @@ const Nursing = () => {
       // Ensure state update is done correctly
       setPatients((prevPatients) =>
         prevPatients.map((patient) =>
-          patient.patientID === responseData.patientID ? responseData : patient
+          patient.patient_id === responseData.patient_id ? responseData : patient
         )
       );
 
       setFilteredPatients((prevFiltered) =>
         prevFiltered.map((patient) =>
-          patient.patientID === responseData.patientID ? responseData : patient
+          patient.patient_id === responseData.patient_id ? responseData : patient
         )
       );
 
@@ -271,8 +274,16 @@ const Nursing = () => {
   const handleEditClick = (patient) => {
     setPatientID(patient.patient_id);
     setPatientfName(patient.firstname);
-    setPatientAge(patient.age);
-    setPatientGender(patient.gender);
+    setPatientMiddleName(patient.middleInitial || ""); // Handle optional fields
+    setPatientlastName(patient.lastname || "");
+    setPatientContact(patient.contact_number || "");
+    setPatientAddress(patient.home_address || "");
+    setPatientDOB(patient.dob || "");
+    setPatientCivilStatus(patient.civil_status || "");
+    setPatientReligion(patient.religion || "");
+    setPatientNationality(patient.nationality || "");
+    setPatientAge(patient.age || "");
+    setPatientGender(patient.gender || "");
     setIsEditing(true);
     setIsOpen(true);
   };
@@ -351,17 +362,17 @@ const Nursing = () => {
                       </p>
                       <p>
                         <strong>Contact:</strong>{" "}
-                        {selectedPatient.contactNumber}
+                        {selectedPatient.contact_number}
                       </p>
                       <p>
-                        <strong>Address:</strong> {selectedPatient.homeAddress}
+                        <strong>Address:</strong> {selectedPatient.home_address}
                       </p>
                       <p>
                         <strong>DOB:</strong> {selectedPatient.dob}
                       </p>
                       <p>
                         <strong>Civil Status:</strong>{" "}
-                        {selectedPatient.civilStatus}
+                        {selectedPatient.civil_status}
                       </p>
                       <p>
                         <strong>Religion:</strong> {selectedPatient.religion}
@@ -665,7 +676,7 @@ const Nursing = () => {
                       {filteredPatients.map((i, index) => {
                         return (
                           <tr
-                            key={i._id || i._patient_id || index}
+                            key={`${i._id || i.patient_id}-${index}`} // Ensure unique key
                             onClick={() => handleRowClick(i)}
                           >
                             <td>{i.patient_id}</td>

@@ -3,8 +3,10 @@ import React from "react";
 import "./Sidebar.css";
 import { NavLink } from "react-router-dom";
 import Navbar from "../modules/Navbar/Navbar";
+import { useNavigate } from "react-router-dom";
 
 export const Sidebar = ({ props, pageContent }) => {
+  const navigate = useNavigate();
   let mySidebarFunction = (item, index) => 
   (
     <li key={index} className={`sidebar-item ${item.subMenu ? "dropdown" : ""}`}>

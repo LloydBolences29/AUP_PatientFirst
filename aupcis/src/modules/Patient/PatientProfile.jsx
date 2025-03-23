@@ -17,22 +17,17 @@ const PatientProfile = () => {
   // ✅ Corrected Sidebar Links
   const menuLinks = [
     { label: "Dashboard", path: "/dashboard" },
-    { label: "My Profile", path: patient?._id ? `/profile/${patient._id}` : "#" }, // ✅ Use id from useParams
+    { label: "My Profile", path: "/profile/${patient.id}" }, 
     { label: "Medical Records", path: "/" },
     { label: "Billing", path: "/" },
   ];
 
   useEffect(() => {
-    console.log("Patient ID:", patient_id); // ✅ Debugging step    if (!patientID) {
-      if (!patient_id) {
-      setError("Patient ID is missing");
-      setLoading(false);
-      return;
-    }
     const fetchPatientData = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`http://localhost:3000/patientname/${patient_id}`); // ✅ Use id from useParams
+        // Fetch the patient data using their ID
+        const response = await axios.get(`http://localhost:3000/patientname/profile/${patient_id}`);
         setPatient(response.data);
       } catch (err) {
         setError("Error fetching patient data.");
@@ -40,10 +35,20 @@ const PatientProfile = () => {
         setLoading(false);
       }
     };
-    fetchPatientData();
+
+    // Check if patient_id exists before fetching data
+    if (patient_id) {
+      fetchPatientData();
+    } else {
+      setError("Patient ID is missing");
+      setLoading(false);
+    }
   }, [patient_id]);
 
+  // If loading, display loading message
   if (loading) return <p>Loading...</p>;
+
+  // If error, display error message
   if (error) return <p>{error}</p>;
 
   return (

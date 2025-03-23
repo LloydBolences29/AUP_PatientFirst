@@ -4,33 +4,37 @@ const patientModel = require("../model/Patient.js");
 
 // GET - Fetch all patients
 router.get("/", async (req, res) => {
-    try {
-        const response = await patientModel.find();
-        return res.json({ patientname: response });
-    } catch (error) {
-        res.status(500).json({ message: "Error fetching patients", error: error.message });
-    }
+  try {
+    const response = await patientModel.find();
+    return res.json({ patientname: response });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error fetching patients", error: error.message });
+  }
 });
 
 //for fetching patient data according to their id
 router.get("/:patient_id", async (req, res) => {
-    try {
-        const { patient_id } = req.params;
+  try {
+    const { patient_id } = req.params;
 
-        let patient = await patientModel.findOne({ patient_id }); // 🔎 Search by patient_id first
+    let patient = await patientModel.findOne({ patient_id }); // 🔎 Search by patient_id first
 
-        if (!patient) {
-            patient = await patientModel.findById(patient_id); // 🔎 Try searching by _id if not found
-        }// ✅ Pass the ID directly
+    if (!patient) {
+      patient = await patientModel.findById(patient_id); // 🔎 Try searching by _id if not found
+    } // ✅ Pass the ID directly
 
-        if (!patient) {
-            return res.status(404).json({ message: "Patient not found" });
-        }
-
-        return res.json({ patient });
-    } catch (error) {
-        res.status(500).json({ message: "Error fetching patient", error: error.message });
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
     }
+
+    return res.json({ patient });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error fetching patient", error: error.message });
+  }
 });
 
 // POST - Add new patient with validation
@@ -61,60 +65,62 @@ router.get("/:patient_id", async (req, res) => {
 //     }
 // });
 
-
 // POST - Add new patient with validation
 router.post("/", async (req, res) => {
-    const { firstname } = req.body;
+  const { firstname } = req.body;
 
-    // Check if patient already exists
-    const existingPatient = await patientModel.findOne({ firstname });
-    if (existingPatient) {
-        return res.status(400).json({ message: "Patient already exists" });
-    }
+  // Check if patient already exists
+  const existingPatient = await patientModel.findOne({ firstname });
+  if (existingPatient) {
+    return res.status(400).json({ message: "Patient already exists" });
+  }
 
-    // Add new patient
-    const newPatient = new patientModel(req.body);
-    await newPatient.save();
-    res.status(201).json(newPatient);
-    
-    
+  // Add new patient
+  const newPatient = new patientModel(req.body);
+  await newPatient.save();
+  res.status(201).json(newPatient);
 });
 
 // 🔄 PUT - Update patient by ID
 router.put("/:patient_id", async (req, res) => {
-  const patientID = parseInt(req.params.patient_id, 10); // Convert to number
+  const patientID = req.params.patient_id; // Convert to number
   const { firstname, age, gender } = req.body;
 
   try {
-      const updatedPatient = await patientModel.findOneAndUpdate(
-          {patient_id: patientID} , // ✅ Ensure numeric match
-          { firstname, age, gender },
-          { new: true }
-      );
+    console.log("Searching for patient with ID:", patientID);
+    const updatedPatient = await patientModel.findOneAndUpdate(
+      { patient_id: patientID }, // ✅ Ensure numeric match
+      { firstname, age, gender },
+      { new: true }
+    );
 
-      if (!updatedPatient) {
-          return res.status(404).json({ message: "Patient not found" });
-      }
+    if (!updatedPatient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
 
-      res.json(updatedPatient);
+    res.json(updatedPatient);
   } catch (error) {
-      res.status(500).json({ message: "Error updating patient", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error updating patient", error: error.message });
   }
 });
 
 // DELETE - Remove patient by ID
 router.delete("/:id", async (req, res) => {
-    try {
-        const deletedPatient = await patientModel.findByIdAndDelete(req.params.id);
+  try {
+    const deletedPatient = await patientModel.findByIdAndDelete(req.params.id);
 
-        if (!deletedPatient) {
-            return res.status(404).json({ message: "Patient not found" });
-        }
-
-        res.json({ message: "Patient deleted successfully" });
-    } catch (error) {
-        res.status(500).json({ message: "Error deleting patient", error: error.message });
+    if (!deletedPatient) {
+      return res.status(404).json({ message: "Patient not found" });
     }
+
+    res.json({ message: "Patient deleted successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error deleting patient", error: error.message });
+  }
 });
 
 module.exports = router;

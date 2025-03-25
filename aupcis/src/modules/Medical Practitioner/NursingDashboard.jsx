@@ -15,7 +15,7 @@ const NursingDashboard = () => {
   return (
     <div>
         <Sidebar
-                props={nurseSidebarLinks}
+                links={nurseSidebarLinks}
                 pageContent={
                   <>
                     <h1>This is the dashboard for the Nurses</h1>{" "}

@@ -372,7 +372,7 @@ const Nursing = () => {
   return (
     <div>
       <Sidebar
-        props={nurseSidebarLinks}
+        links={nurseSidebarLinks}
         activeLink="Nurse Page"
         pageContent={
           <>

@@ -7,7 +7,7 @@ import "../Patient/PatientProfile.css";
 
 const PatientProfile = () => {
 
-  const {patient_id} = useParams()
+  const { _id } = useParams(); // Use _id instead of patient_id
   const [patient, setPatient] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -17,33 +17,31 @@ const PatientProfile = () => {
   // ✅ Corrected Sidebar Links
   const menuLinks = [
     { label: "Dashboard", path: "/dashboard" },
-    { label: "My Profile", path: "/profile/${patient.id}" }, 
-    { label: "Medical Records", path: "/" },
-    { label: "Billing", path: "/" },
+    { label: "Symptom Checker", path: "/symptomChecker" },
+    { label: "My Profile", path: `/profile/${patient?._id || ""}` }, 
+
   ];
 
   useEffect(() => {
     const fetchPatientData = async () => {
       setLoading(true);
       try {
-        // Fetch the patient data using their ID
-        const response = await axios.get(`http://localhost:3000/patientname/profile/${patient_id}`);
+        console.log("Retrieved _id:", _id); // Debug log to verify _id
+        if (!_id || _id === "undefined") {
+          throw new Error("Invalid or missing Patient ID (_id)");
+        }
+        // Fetch the patient data using their MongoDB _id
+        const response = await axios.get(`http://localhost:3000/patientname/profile/${_id}`);
         setPatient(response.data);
       } catch (err) {
-        setError("Error fetching patient data.");
+        setError(err.message || "Error fetching patient data.");
       } finally {
         setLoading(false);
       }
     };
 
-    // Check if patient_id exists before fetching data
-    if (patient_id) {
-      fetchPatientData();
-    } else {
-      setError("Patient ID is missing");
-      setLoading(false);
-    }
-  }, [patient_id]);
+    fetchPatientData();
+  }, [_id]);
 
   // If loading, display loading message
   if (loading) return <p>Loading...</p>;

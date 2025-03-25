@@ -4,7 +4,7 @@ const mongoose  = require("mongoose");
 const VisitSchema = new mongoose.Schema({
     patient_id: { type: mongoose.Schema.Types.ObjectId, ref: "patientname", required: true }, // Link to patient
 
-  visit_date: { type: Date, default: Date.now }, // Timestamp for visit
+  visit_date: { type: Date, default: () => new Date(new Date().toISOString()) }, // Timestamp for visit
 
   purpose: { 
     type: String, 

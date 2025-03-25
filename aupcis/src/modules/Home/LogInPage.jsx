@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Route/AuthContext"; // Ensure correct import path
@@ -32,71 +32,80 @@ const LogInPage = () => {
 
   // Function to handle login for both Patients & Staff
 
-  const handleLogin = async (e, isStaff) => {
-    e.preventDefault();
+  const [allowedPages, setAllowedPages] = useState([]);
 
-    if (isStaff) {
-      if (!staffLoginData.role_ID || !staffLoginData.password) {
-        alert("Please enter both Role ID and Password.");
-        return;
-      }
-    } else {
-      if (!patientLoginData.patient_ID || !patientLoginData.password) {
-        alert("Please enter both Patient ID and Password.");
-        return;
-      }
+const handleLogin = async (e, isStaff) => {
+  e.preventDefault();
+
+  // Validate input fields before proceeding
+  if (isStaff) {
+    if (!staffLoginData.role_ID || !staffLoginData.password) {
+      alert("Please enter both Role ID and Password.");
+      return;
+    }
+  } else {
+    if (!patientLoginData.patient_ID || !patientLoginData.password) {
+      alert("Please enter both Patient ID and Password.");
+      return;
+    }
+  }
+
+  try {
+    const loginData = isStaff
+      ? { role_ID: staffLoginData.role_ID, password: staffLoginData.password }
+      : {
+          patient_ID: patientLoginData.patient_ID,
+          password: patientLoginData.password,
+        };
+
+    console.log("🟡 Sending Login Data:", loginData);
+
+    const url = isStaff
+      ? "http://localhost:3000/staff/login"
+      : "http://localhost:3000/patient/login";
+
+    const response = await axios.post(url, loginData, {
+      withCredentials: true,
+    });
+
+    console.log("🟢 Login Response:", response.data);
+
+    if (!response.data) {
+      console.error("🔴 No data received in response");
+      alert("Login failed. No response data.");
+      return;
     }
 
-    try {
-      const loginData = isStaff
-        ? { role_ID: staffLoginData.role_ID, password: staffLoginData.password }
-        : {
-            patient_ID: patientLoginData.patient_ID,
-            password: patientLoginData.password,
-          };
+    const { allowedPages: responsePages, token } = response.data;
 
-      console.log("🟡 Sending Login Data:", loginData);
+    // ✅ Ensure allowedPages is always an array with a default fallback
+    const safeAllowedPages = responsePages && responsePages.length > 0 ? responsePages : ["/login"];
+    
+    setAllowedPages(safeAllowedPages); // ✅ Set state for useEffect handling
 
-      const url = isStaff
-        ? "http://localhost:3000/staff/login"
-        : "http://localhost:3000/patient/login";
+    // Store token in cookies
+    Cookies.set("token", token, {
+      path: "/",
+      secure: true,
+      sameSite: "Strict",
+    });
 
-      const response = await axios.post(url, loginData, {
-        withCredentials: true,
-      });
+    alert("Login Successful! Redirecting...");
+  } catch (error) {
+    console.error("🔴 Login Error:", error.response?.data || error.message);
+    alert("Login failed. Check console for details.");
+  }
+};
 
-      console.log("🟢 Login Response:", response.data);
+// ✅ Automatically navigate when allowedPages updates
+useEffect(() => {
+  if (allowedPages.length > 0) {
+    console.log("🚀 Redirecting to:", `/${allowedPages[0]}`);
+    navigate(`/${allowedPages[0]}`);
+  }
+}, [allowedPages]); // Runs when allowedPages updates
 
-      console.log("🟢 Full Axios Response:", response);
-      console.log("🟢 Extracted Data:", response.data);
-
-      if (!response.data) {
-        console.error("🔴 No data received in response");
-        alert("Login failed. No response data.");
-        return;
-      }
-
-      const { allowedPages, token } = response.data;
-
-      if (!allowedPages || allowedPages.length === 0) {
-        console.error("🔴 No allowed pages assigned!", response.data);
-        alert("Login successful, but no allowed pages found.");
-        return (allowedPages = ["/login"]); // Set a default pages
-      }
-
-      Cookies.set("token", token, {
-        path: "/",
-        secure: true,
-        sameSite: "Strict",
-      });
-      alert("Login Successful! Redirecting...");
-      console.log("🚀 Redirecting to:", `/${allowedPages[0]}`);
-      navigate(`/${allowedPages[0]}`);
-    } catch (error) {
-      console.error("🔴 Login Error:", error.response?.data || error.message);
-      alert("Login failed. Check console for details.");
-    }
-  };
+  
 
   // Toggle Login Panels
   const handleRegisterClick = () => setIsRightPanelActive(true);

@@ -26,7 +26,7 @@ const MROMngt = () => {
   return (
     <div>
       <Sidebar
-        props={MROsidebarLinks}
+        links={MROsidebarLinks}
         pageContent={
           <>
             <div className="container mt-4">

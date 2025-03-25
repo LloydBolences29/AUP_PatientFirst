@@ -85,7 +85,7 @@ const AdminRoleManagement = () => {
   return (
     <div>
       <Sidebar
-        props={sidebarLinks}
+        links={sidebarLinks}
         pageContent={
           <>
             {/* Wrapper for the admin page */}

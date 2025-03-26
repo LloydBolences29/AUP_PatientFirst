@@ -7,13 +7,13 @@ const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const accessControl = {
-  Patient: ["dashboard", "analytics", "profile"],
-    Admin: ["admin-dashboard", "admin-management", "admin-analytics"],
-    MedicalRecordsOfficer: ["medicalRecord-dashboard", "medicalRecord-management"],
-    Nurse: ["nurse-dashboard", "patient-management", "nurse-analytics"],
-    Doctor: ["doctor-dashboard", "doctor-analytics"],
-    Cashier: ["cashier-dashboard", "payment"],
-    Pharmacist: ["pharma-dashboard", "pharma-transaction", "medicine-list"]
+  Patient: ["/dashboard", "/analytics", "/profile"],
+    Admin: ["/admin-dashboard", "/admin-management", "/admin-analytics"],
+    MedicalRecordsOfficer: ["/medicalRecord-dashboard", "/medicalRecord-management"],
+    Nurse: ["/nurse-dashboard", "/patient-management", "/nurse-analytics"],
+    Doctor: ["/doctor-dashboard", "/doctor-patient-management"],
+    Cashier: ["/cashier-dashboard", "/payment"],
+    Pharmacist: ["/pharma-dashboard", "/pharma-transaction", "/medicine-list"]
 };
 
 

@@ -32,6 +32,7 @@ const Nursing = () => {
   const [patientReligion, setPatientReligion] = useState("");
   const [patientAge, setPatientAge] = useState("");
   const [patientGender, setPatientGender] = useState("");
+  const [chiefComplaints, setChiefComplaints] = useState("");
   const [notification, setNotification] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
@@ -42,6 +43,8 @@ const Nursing = () => {
     heartRate: "",
     pulseRate: "",
   });
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [patientToDelete, setPatientToDelete] = useState(null);
 
   useEffect(() => {
     const fetchPatientData = async () => {
@@ -301,13 +304,15 @@ const Nursing = () => {
 
   // Handle input changes in the visit form
   const handleVisitInputChange = (e) => {
-
-   
     const { name, value } = e.target;
     setVisitData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
+  };
+
+  const handleChiefComplaintsChange = (e) => {
+    setChiefComplaints(e.target.value); // Update chief complaints state
   };
 
   // Handle form submission for adding a new visit
@@ -322,6 +327,8 @@ const Nursing = () => {
       pulse_rate: visitData.pulse_rate,
       respiratory_rate: visitData.respiratory_rate,
       weight: visitData.weight,
+      status: "Waiting",
+      chiefComplaints: chiefComplaints, // Correctly pass chiefComplaints
     };
   
     try {
@@ -356,6 +363,7 @@ const Nursing = () => {
         respiratory_rate: "",
         weight: "",
       });
+      setChiefComplaints(""); // Reset chief complaints
     } catch (error) {
       console.error("Error adding visit:", error);
       setNotification("An error occurred. Please try again.");
@@ -367,6 +375,40 @@ const Nursing = () => {
   const handleAddVisitClick = (patient) => {
     setSelectedPatient(patient); // Set the selected patient details
     setIsVisitModalOpen(true); // Open the visit modal
+  };
+
+  const handleDeleteClick = (patient) => {
+    setPatientToDelete(patient);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDeletePatient = async () => {
+    if (!patientToDelete) return;
+  
+    try {
+      const response = await fetch(
+        `http://localhost:3000/patientname/${patientToDelete._id}`,
+        {
+          method: "DELETE",
+        }
+      );
+      if (response.ok) {
+        const updatedPatients = patients.filter(
+          (patient) => patient._id !== patientToDelete._id
+        );
+        setPatients(updatedPatients);
+        setFilteredPatients(updatedPatients);
+        setNotification("Deleted successfully");
+        setTimeout(() => setNotification(""), 3000);
+      } else {
+        console.error("Error deleting patient:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error deleting patient:", error);
+    } finally {
+      setIsDeleteModalOpen(false);
+      setPatientToDelete(null);
+    }
   };
 
   return (
@@ -814,6 +856,17 @@ const Nursing = () => {
                             onChange={handleVisitInputChange}
                           />
                         </div>
+                        <div className="form-group">
+                          <label className="form-label">Chief Complaints:</label>
+                          <textarea
+                            className="form-control"
+                            name="chiefComplaints"
+                            value={chiefComplaints}
+                            onChange={handleChiefComplaintsChange}
+                            rows="3"
+                            placeholder="Enter chief complaints"
+                          ></textarea>
+                        </div>
                         <br />
                         <div className="btn-container text-center">
                           <button type="submit" className="btn btn-primary mx-2">
@@ -829,6 +882,33 @@ const Nursing = () => {
                         </div>
                       </form>
                     </div>
+                  </div>
+                </div>
+              }
+            />
+
+            <Modal
+              show={isDeleteModalOpen}
+              title={<h2 className="modal-title text-center">Confirm Delete</h2>}
+              body={
+                <div className="text-center">
+                  <p>Are you sure you want to delete this patient?</p>
+                  <p>
+                    <strong>{patientToDelete?.firstname} {patientToDelete?.lastname}</strong>
+                  </p>
+                  <div className="btn-container">
+                    <button
+                      className="btn btn-danger mx-2"
+                      onClick={confirmDeletePatient}
+                    >
+                      Yes, Delete
+                    </button>
+                    <button
+                      className="btn btn-secondary mx-2"
+                      onClick={() => setIsDeleteModalOpen(false)}
+                    >
+                      Cancel
+                    </button>
                   </div>
                 </div>
               }
@@ -903,7 +983,7 @@ const Nursing = () => {
                                 className="btn btn-danger btn-sm mx-1"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleDeletePatient(i._id);
+                                  handleDeleteClick(i);
                                 }}
                               >
                                 Delete

@@ -52,7 +52,7 @@ const PatientProfile = () => {
   return (
     <div>
       <Sidebar
-        props={menuLinks}
+        links={menuLinks}
         activeLink="Profile"
         pageContent={
           <>

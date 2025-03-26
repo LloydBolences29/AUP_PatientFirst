@@ -50,8 +50,10 @@ const MedicalRecordDashboard = () => {
     }
   }, [selectedDate, selectedType]);
 
-
-  const totalPatients = patientCounts.reduce((sum, item) => sum + (item.count || 0), 0);
+  const totalPatients = patientCounts.reduce(
+    (sum, item) => sum + (item.count || 0),
+    0
+  );
   return (
     <div>
       <Sidebar
@@ -66,7 +68,17 @@ const MedicalRecordDashboard = () => {
               <div className="d-flex justify-content-center mb-3">
                 <DatePicker
                   selected={selectedDate}
-                  onChange={(date) => setSelectedDate(new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())))}
+                  onChange={(date) =>
+                    setSelectedDate(
+                      new Date(
+                        Date.UTC(
+                          date.getFullYear(),
+                          date.getMonth(),
+                          date.getDate()
+                        )
+                      )
+                    )
+                  }
                   className="form-control"
                   dateFormat="yyyy-MM-dd"
                 />
@@ -82,8 +94,8 @@ const MedicalRecordDashboard = () => {
                 </select>
               </div>
 
-                            {/* Display Results */}
-                            {loading ? (
+              {/* Display Results */}
+              {loading ? (
                 <p className="text-center">Loading...</p>
               ) : (
                 <table className="table table-bordered">
@@ -119,15 +131,28 @@ const MedicalRecordDashboard = () => {
                 </table>
               )}
             </div>
+            <div className="mro-charts-wrapper">
+              {/* Chart */}
+              <div id="mro-patient-visit-per-purpose">
+                <CustomBarChart
+                  title={`Patient Count (${selectedType})`}
+                  data={patientCounts.map((item) => ({
+                    label: item._id || "Unknown",
+                    value: item.count || 0,
+                  }))}
+                />
+              </div>
 
-            {/* Chart */}
-            <CustomBarChart
-              title={`Patient Count (${selectedType})`}
-              data={patientCounts.map((item) => ({
-                label: item._id || "Unknown",
-                value: item.count || 0,
-              }))}
-            />
+              <div id="mro-total-patient-visit">
+                <CustomBarChart
+                  title={`Patient Count (${selectedType})`}
+                  data={patientCounts.map((item) => ({
+                    label: item._id || "Unknown",
+                    value: item.count || 0,
+                  }))}
+                />
+              </div>
+            </div>
           </>
         }
       />

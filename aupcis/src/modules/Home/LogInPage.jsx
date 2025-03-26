@@ -34,78 +34,70 @@ const LogInPage = () => {
 
   const [allowedPages, setAllowedPages] = useState([]);
 
-const handleLogin = async (e, isStaff) => {
-  e.preventDefault();
-
-  // Validate input fields before proceeding
-  if (isStaff) {
-    if (!staffLoginData.role_ID || !staffLoginData.password) {
-      alert("Please enter both Role ID and Password.");
-      return;
-    }
-  } else {
-    if (!patientLoginData.patient_ID || !patientLoginData.password) {
-      alert("Please enter both Patient ID and Password.");
-      return;
-    }
-  }
-
-  try {
-    const loginData = isStaff
-      ? { role_ID: staffLoginData.role_ID, password: staffLoginData.password }
-      : {
-          patient_ID: patientLoginData.patient_ID,
-          password: patientLoginData.password,
-        };
-
-    console.log("🟡 Sending Login Data:", loginData);
-
-    const url = isStaff
-      ? "http://localhost:3000/staff/login"
-      : "http://localhost:3000/patient/login";
-
-    const response = await axios.post(url, loginData, {
-      withCredentials: true,
-    });
-
-    console.log("🟢 Login Response:", response.data);
-
-    if (!response.data) {
-      console.error("🔴 No data received in response");
-      alert("Login failed. No response data.");
-      return;
-    }
-
-    const { allowedPages: responsePages, token } = response.data;
-
-    // ✅ Ensure allowedPages is always an array with a default fallback
-    const safeAllowedPages = responsePages && responsePages.length > 0 ? responsePages : ["/login"];
-    
-    setAllowedPages(safeAllowedPages); // ✅ Set state for useEffect handling
-
-    // Store token in cookies
-    Cookies.set("token", token, {
-      path: "/",
-      secure: true,
-      sameSite: "Strict",
-    });
-
-    alert("Login Successful! Redirecting...");
-  } catch (error) {
-    console.error("🔴 Login Error:", error.response?.data || error.message);
-    alert("Login failed. Check console for details.");
-  }
-};
-
-// ✅ Automatically navigate when allowedPages updates
-useEffect(() => {
-  if (allowedPages.length > 0) {
-    console.log("🚀 Redirecting to:", `/${allowedPages[0]}`);
-    navigate(`/${allowedPages[0]}`);
-  }
-}, [allowedPages]); // Runs when allowedPages updates
-
+  const handleLogin = async (e, isStaff) => {
+    e.preventDefault();
   
+    // Validate input fields before proceeding
+    if (isStaff) {
+      if (!staffLoginData.role_ID || !staffLoginData.password) {
+        alert("Please enter both Role ID and Password.");
+        return;
+      }
+    } else {
+      if (!patientLoginData.patient_ID || !patientLoginData.password) {
+        alert("Please enter both Patient ID and Password.");
+        return;
+      }
+    }
+  
+    try {
+      const loginData = isStaff
+        ? { role_ID: staffLoginData.role_ID, password: staffLoginData.password }
+        : {
+            patient_ID: patientLoginData.patient_ID,
+            password: patientLoginData.password,
+          };
+  
+      console.log("🟡 Sending Login Data:", loginData);
+  
+      const userData = await login(loginData, isStaff); // ✅ Use login() from AuthContext
+  
+      console.log("🟢 User Data from AuthContext:", userData);
+  
+      if (!userData || !userData.allowedPages || userData.allowedPages.length === 0) {
+        console.error("🔴 No allowed pages received!");
+        alert("Login successful, but no access pages found.");
+        return;
+      }
+  
+      // ✅ Set default page to the first allowed page
+      const targetPath = userData.allowedPages[0];
+  
+      console.log("🚀 Redirecting to:", targetPath);
+      navigate(targetPath, { replace: true }); // ✅ Redirect immediately
+  
+    } catch (error) {
+      console.error("🔴 Login Error:", error.response?.data || error.message);
+      alert("Login failed. Check console for details.");
+    }
+  };
+
+useEffect(() => {
+  if (allowedPages && allowedPages.length > 0) {
+    console.log("✅ Allowed Pages:", allowedPages); // Debugging the allowedPages array
+
+    const targetPath = allowedPages[0].startsWith("/")
+      ? allowedPages[0] // Use as-is if it starts with "/"
+      : `/${allowedPages[0]}`; // Ensure it starts with "/"
+
+    console.log("🚀 Redirecting to:", targetPath); // Debugging the target path
+    navigate(targetPath, { replace: true }); // Navigate to the sanitized target path
+  }
+}, [allowedPages, navigate]); // Ensure 'navigate' is included in dependencies
+
+
+
+
 
   // Toggle Login Panels
   const handleRegisterClick = () => setIsRightPanelActive(true);

@@ -19,7 +19,8 @@ import PharmacyTransactions from "./modules/Pharma/PharmacyTransactions.jsx";
 import MedicalRecordDashboard from "./modules/MRO/MedicalRecordDashboard.jsx";
 import MedicalRecordManagement from "./modules/MRO/MROMngt.jsx"
 import SymptomChecker from "./modules/Infermedica/SymptomChecker.jsx";
-
+import DoctorDashboard from "./modules/Medical Practitioner/Doctors.jsx"
+import DoctorPatientManagement from "./modules/Medical Practitioner/DoctorPatient.jsx"
 
 export default function App() {
   return (
@@ -46,6 +47,12 @@ export default function App() {
       </Route>
       <Route element={<ProtectedRoute allowedRoles={["Nurse"]} />}>
         <Route path="/patient-management" element={<Nursing />} />
+      </Route>
+      <Route element={<ProtectedRoute allowedRoles={["Doctor"]} />}>
+        <Route path="/doctor-dashboard" element={<DoctorDashboard />} />
+      </Route>
+      <Route element={<ProtectedRoute allowedRoles={["Doctor"]} />}>
+        <Route path="/doctor-patient-management" element={<DoctorPatientManagement />} />
       </Route>
 
       <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>

@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 // Create Auth Context
 const AuthContext = createContext();
@@ -13,10 +14,11 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
+        // 🔹 Fetch user session from the backend (JWT in HTTP-only cookies)
         const response = await axios.get("http://localhost:3000/api/auth/me", {
-          withCredentials: true,
+          withCredentials: true, // ✅ This sends the stored cookie automatically
         });
-
+  
         setUser(response.data.user);
       } catch (error) {
         console.error("Auth error:", error);
@@ -25,7 +27,7 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
       }
     };
-
+  
     fetchUser();
   }, []);
 
@@ -39,8 +41,17 @@ export const AuthProvider = ({ children }) => {
       withCredentials: true,
     });
 
-    setUser(response.data.user);
-    localStorage.setItem("role", response.data.role);
+    console.log("🟢 Login response:", response.data);
+
+    // ✅ Properly store user data
+    const newUser = {
+      role: response.data.role,
+      role_ID: response.data.role_ID || response.data.patient_ID,
+      allowedPages: response.data.allowedPages,
+    };
+
+    setUser(newUser);
+    localStorage.setItem("user", JSON.stringify(newUser));
     localStorage.setItem("allowedPages", JSON.stringify(response.data.allowedPages));
 
     return response.data;
@@ -50,8 +61,9 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     await axios.post("http://localhost:3000/auth/logout", {}, { withCredentials: true });
     setUser(null);
-    localStorage.removeItem("role");
+    localStorage.removeItem("user");
     localStorage.removeItem("allowedPages");
+    Cookies.remove("token");
   };
 
   return (

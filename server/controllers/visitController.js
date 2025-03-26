@@ -14,6 +14,7 @@ const createVisit = async (req, res) => {
           respiratory_rate,
           weight,
           last_menstrual_period,
+          chiefComplaints
         } = req.body;
     
         // ✅ Check if patient exists
@@ -32,6 +33,8 @@ const createVisit = async (req, res) => {
           respiratory_rate,
           weight,
           last_menstrual_period,
+          status: "Waiting",
+          chiefComplaints
         });
     
         // ✅ Save to database

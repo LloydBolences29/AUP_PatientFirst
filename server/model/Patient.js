@@ -22,6 +22,12 @@ const PatientSchema = new mongoose.Schema({
   religion: { type: String, required: true },
   passwordChanged: { type: Boolean, default: false },
 
+  medical_history: {type: [String], default: null},
+  surgical_history: {type: [String], default: null},
+  allergies: {type: [String], default: null},
+  medications: {type: [String], default: null},
+  vax_history: {type: [String], default: null},
+
   // Optional Fields
   student_id: { type: String, default: null },
   campus_address: { type: String, default: null },
@@ -45,5 +51,5 @@ PatientSchema.pre("save", async function (next) {
 // PatientSchema.index({ patientID: 1 }, { unique: true });
 // PatientSchema.index({ firstname: 1 }, { unique: true });
 
-const patientModel = mongoose.model("patientname", PatientSchema);
+const patientModel = mongoose.models.patientModel || mongoose.model("patientname", PatientSchema);
 module.exports = patientModel;

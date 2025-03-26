@@ -78,40 +78,42 @@ const PharmacyTransactions = () => {
   ];
 
   return (
-    <div>
+    <div className="d-flex flex-column flex-md-row">
       <Sidebar
-        props={pharmasidebarLinks}
+        links={pharmasidebarLinks}
         pageContent={
           <div className="container mt-4">
-            <h2>Pharmacy Transactions</h2>
+            <h2 className="text-center">Pharmacy Transactions</h2>
             <button
               className="btn btn-primary mb-3"
               onClick={() => setShowModal(true)}
             >
               Add Transaction
             </button>
-            <table className="table table-bordered">
-              <thead>
-                <tr>
-                  <th>Medicine</th>
-                  <th>Type</th>
-                  <th>Quantity</th>
-                  <th>Date</th>
-                  <th>Price</th>
-                </tr>
-              </thead>
-              <tbody>
-                {transactions.map((tx) => (
-                  <tr key={tx._id}>
-                    <td>{tx.medication.name}</td>
-                    <td>{tx.type}</td>
-                    <td>{tx.quantity}</td>
-                    <td>{new Date(tx.transactionDate).toLocaleDateString()}</td>
-                    <td>{tx.type === "Sold" ? `₱${tx.price}` : "-"}</td>
+            <div className="table-responsive">
+              <table className="table table-bordered table-striped">
+                <thead className="thead-dark">
+                  <tr>
+                    <th>Medicine</th>
+                    <th>Type</th>
+                    <th>Quantity</th>
+                    <th>Date</th>
+                    <th>Price</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {transactions.map((tx) => (
+                    <tr key={tx._id}>
+                      <td>{tx.medication.name}</td>
+                      <td>{tx.type}</td>
+                      <td>{tx.quantity}</td>
+                      <td>{new Date(tx.transactionDate).toLocaleDateString()}</td>
+                      <td>{tx.type === "Sold" ? `₱${tx.price}` : "-"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
             {/* Add Transaction Modal */}
             {showModal && (
@@ -119,10 +121,10 @@ const PharmacyTransactions = () => {
                 show={showModal}
                 onClose={() => setShowModal(false)}
                 body={
-                  <>
-                    <h4>Add New Transaction</h4>
+                  <div className="p-3">
+                    <h4 className="text-center mb-4">Add New Transaction</h4>
                     <select
-                      className="form-control mb-2"
+                      className="form-control mb-3"
                       onChange={(e) =>
                         setSelectedMedicine(
                           medicines.find((med) => med._id === e.target.value)
@@ -137,7 +139,7 @@ const PharmacyTransactions = () => {
                       ))}
                     </select>
                     <select
-                      className="form-control mb-2"
+                      className="form-control mb-3"
                       value={transactionType}
                       onChange={(e) => setTransactionType(e.target.value)}
                     >
@@ -149,7 +151,7 @@ const PharmacyTransactions = () => {
                     </select>
                     <input
                       type="number"
-                      className="form-control mb-2"
+                      className="form-control mb-3"
                       placeholder="Quantity"
                       value={quantity}
                       onChange={(e) => setQuantity(e.target.value)}
@@ -157,19 +159,27 @@ const PharmacyTransactions = () => {
                     {transactionType === "Sold" && (
                       <input
                         type="number"
-                        className="form-control mb-2"
+                        className="form-control mb-3"
                         placeholder="Price"
                         value={price}
                         onChange={(e) => setPrice(e.target.value)}
                       />
                     )}
-                    <button
-                      className="btn btn-primary"
-                      onClick={handleTransactionSubmit}
-                    >
-                      Submit
-                    </button>
-                  </>
+                    <div className="d-flex justify-content-between">
+                      <button
+                        className="btn btn-primary"
+                        onClick={handleTransactionSubmit}
+                      >
+                        Submit
+                      </button>
+                      <button
+                        className="btn btn-secondary"
+                        onClick={() => setShowModal(false)}
+                      >
+                        Close
+                      </button>
+                    </div>
+                  </div>
                 }
               ></Modal>
             )}

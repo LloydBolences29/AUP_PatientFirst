@@ -54,7 +54,7 @@ const Dashboard = () => {
     <>
       <div>
         <Sidebar
-          props={sidebarLinks}
+          links={sidebarLinks}
           activeLink="Dashboard"
           pageContent={
             <>

@@ -26,7 +26,7 @@ const Pharma = ({medicines}) => {
   return (
     <div>
         <Sidebar
-        props={pharmasidebarLinks}
+        links={pharmasidebarLinks}
         activeLink="Dashboard"
         pageContent={
             <>

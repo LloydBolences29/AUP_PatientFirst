@@ -51,5 +51,5 @@ PatientSchema.pre("save", async function (next) {
 // PatientSchema.index({ patientID: 1 }, { unique: true });
 // PatientSchema.index({ firstname: 1 }, { unique: true });
 
-const patientModel = mongoose.models.patientModel || mongoose.model("patientname", PatientSchema);
+const patientModel = mongoose.models.patientname || mongoose.model("patientname", PatientSchema);
 module.exports = patientModel;

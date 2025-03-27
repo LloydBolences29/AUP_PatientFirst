@@ -22,6 +22,7 @@ const typeOfVisitReportRoute = require ("./routes/typeOfPatientVisitReport.js")
 const doctorRoutes = require ("./routes/doctorRoutes.js")
 const icdRoutes = require("./routes/icdCode.js")
 const checkUpRoutes = require ("./routes/checkupRoutes.js")
+const prescriptionRoutes = require("./routes/prescriptionRoutes.js")
 const app = express();
 
 // ✅ Connect to MongoDB BEFORE initializing routes
@@ -51,6 +52,7 @@ app.use("/type-of-visit-report", typeOfVisitReportRoute) // routes for getting t
 app.use("/doctor", doctorRoutes)
 app.use("/icd", icdRoutes) //For icd 10 code routes
 app.use("/checkup", checkUpRoutes) // for checkup routes
+app.use("/prescriptions", prescriptionRoutes)
 
 
 

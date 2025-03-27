@@ -17,11 +17,12 @@ const Pharma = ({medicines}) => {
     };
 
     const pharmasidebarLinks = [
-      { label: "Pharmacy Dashboard", path: "/pharma-dashboard" },
-      { label: "Medicine List", path: "/medicine-list" },
-      { label: "Pharmacy Transaction", path: "/pharma-transaction" },
-      { label: "Analytics and Reports", path: "/pharma-analytics" },
-    ];
+        { label: "Pharmacy Dashboard", path: "/pharma-dashboard" },
+        { label: "Medicine List", path: "/medicine-list" },
+        { label: "Pharmacy Transaction", path: "/pharma-transaction" },
+        { label: "Prescriptions", path: "/prescription-page" },
+        { label: "Analytics and Reports", path: "/pharma-analytics" },
+      ];
 
   return (
     <div>

@@ -1,0 +1,57 @@
+/* Accordion Container - Full Width Inside Modal */
+.accordion-container {
+  width: 100%; /* Takes full width of modal */
+  margin: 0; /* No extra margins */
+  border-radius: 8px;
+}
+
+/* Accordion Item */
+.accordion-item {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+/* Accordion Header */
+.accordion-header {
+  width: 100%;
+  background-color: rgba(44, 62, 80, 1);
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: left;
+  padding: 12px 16px;
+  border: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+
+.accordion-header:hover {
+  background-color: rgb(69, 95, 121);
+}
+
+/* Accordion Body */
+.accordion-body {
+  background-color: #f8f9fa;
+  color: #333;
+  font-size: 16px;
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
+}
+
+
+/* Arrow Rotation */
+.arrow {
+  font-size: 11px;
+  transition: transform 0.3s ease;
+}
+
+.rotate {
+  transform: rotate(180deg);
+}

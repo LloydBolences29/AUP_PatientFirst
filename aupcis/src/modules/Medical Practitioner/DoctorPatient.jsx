@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../../components/Sidebar";
 import Modal from "../../components/Modal";
+import axios from "axios";
+import AccordionComponents from "../../components/AccordionComponents";
+import { Form, Button, Container, Row, Col } from "react-bootstrap";
 
 const DoctorPatient = () => {
   const doctorSidebarLinks = [
@@ -13,8 +16,30 @@ const DoctorPatient = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [icdQuery, setIcdQuery] = useState("");
   const [icdResults, setIcdResults] = useState([]);
-  const [selectedICD, setSelectedICD] = useState(null);
+  const [selectedICD, setSelectedICD] = useState([]);
   const [doctorNote, setDoctorNote] = useState(""); // New state for doctor's note
+  const [chiefComplaint, setChiefComplaint] = useState(""); // New state for chief complaint
+  const [isEditingChiefComplaint, setIsEditingChiefComplaint] = useState(false); // New state for edit mode
+  const [prescriptions, setPrescriptions] = useState([]);
+
+  const addPrescription = (type) => {
+    setPrescriptions([
+      ...prescriptions,
+      type === "medicinal"
+        ? {
+            type: "medicinal",
+            medication: "",
+            dosage: "",
+            frequency: "",
+            duration: "",
+          }
+        : {
+            type: "non-medicinal",
+            recommendation: "",
+            notes: "",
+          },
+    ]);
+  };
 
   useEffect(() => {
     fetchVisits();
@@ -31,25 +56,9 @@ const DoctorPatient = () => {
     }
   };
 
-  const fetchICDCodes = async (query) => {
-    try {
-      if (query.length < 3) {
-        setIcdResults([]);
-        return;
-      }
-      const response = await fetch(
-        `http://localhost:3000/icd/icd10/search?q=${query}`
-      );
-      const data = await response.json();
-      console.log("ICD-10 Search Results:", data); // Debugging
-      setIcdResults(data);
-    } catch (error) {
-      console.error("Error fetching ICD codes:", error);
-    }
-  };
-
   const handleRowClick = (visit) => {
     setSelectedVisit(visit);
+    setChiefComplaint(visit.chiefComplaints || ""); // Initialize chief complaint
     setIsModalOpen(true);
   };
 
@@ -67,7 +76,7 @@ const DoctorPatient = () => {
     if (query.length > 1) {
       try {
         const response = await axios.get(
-          `http://localhost:3000/api/icd/search?q=${query}`
+          `http://localhost:3000/icd/icd10/search?q=${query}`
         );
         setIcdResults(response.data); // Assume response returns [{ code, shortdescription }]
       } catch (error) {
@@ -79,31 +88,15 @@ const DoctorPatient = () => {
   };
 
   const handleICDSelect = (icd) => {
-    if (!selectedICD.some((selected) => selected.code === icd.code)) {
-      setSelectedICDs([...selectedICD, icd]); // Add new ICD code
+    if (!selectedICD?.some((selected) => selected.code === icd.code)) {
+      setSelectedICD([...selectedICD, icd]); // Add new ICD code
     }
     setIcdQuery(""); // Clear search input
     setIcdResults([]); // Hide search results
   };
 
   const handleICDRemove = (icd) => {
-    setSelectedICDs(selectedICD.filter((item) => item.code !== icd.code));
-  };
-
-  // 🟢 Submit Selected ICDs with Form Data
-  const handleSubmit = async () => {
-    try {
-      const visitData = {
-        patientId: selectedPatientId,
-        icd: selectedICD.map((icd) => icd.code), // Send array of ICD codes
-      };
-
-      await axios.post("http://localhost:3000/checkup", visitData);
-      alert("Visit recorded successfully!");
-      setSelectedICDs([]); // Reset selected ICDs
-    } catch (error) {
-      console.error("Error submitting visit:", error);
-    }
+    setSelectedICD(selectedICD.filter((item) => item.code !== icd.code));
   };
 
   const handleCompleteVisit = async (visitId) => {
@@ -128,6 +121,36 @@ const DoctorPatient = () => {
 
   const handleNoteChange = (e) => {
     setDoctorNote(e.target.value);
+  };
+
+  const handleChiefComplaintChange = (e) => {
+    setChiefComplaint(e.target.value);
+  };
+
+  const toggleChiefComplaintEdit = () => {
+    setIsEditingChiefComplaint(!isEditingChiefComplaint);
+  };
+
+  const handleSubmitVisitDetails = async () => {
+    try {
+      const visitData = {
+        patientId: selectedVisit.patient_id?._id,
+        icd: (selectedICD || []).map((icd) => icd._id),
+        additionalNotes: doctorNote,
+        prescriptions, // ✅ Send prescriptions directly
+      };
+  
+      await axios.post("http://localhost:3000/checkup/create-new", visitData);
+      alert("Visit recorded successfully!");
+      setSelectedICD([]); // Reset selected ICDs
+    } catch (error) {
+      console.error("Error submitting visit:", error);
+    }
+  };
+  const handleChange = (index, field, value) => {
+    const updatedPrescriptions = [...prescriptions]; // Copy current prescriptions
+    updatedPrescriptions[index][field] = value; // Update specific field
+    setPrescriptions(updatedPrescriptions); // Save updated state
   };
 
   return (
@@ -272,78 +295,253 @@ const DoctorPatient = () => {
                               </div>
                             </div>
                           </div>
-
-                          <div className="details-for-doctors">
-                            <div
-                              className="details-for-doctors-wrapper"
-                              style={{ backgroundColor: "whitesmoke" }}
-                            >
-                              <div
-                                className="details-for-doctors-content"
-                                style={{ padding: "10px" }}
-                              >
-                                <p>
-                                  <strong>Chief Complaints:</strong> "
-                                  {selectedVisit.chiefComplaints}""
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                          {/* Add more details as needed */}
-
-                          {/* 🔍 ICD-10 SEARCH BAR */}
                           <div>
-                            <label>
-                              <strong>Diagnosis (ICD-10):</strong>
-                            </label>
-                            <input
-                              type="text"
-                              value={icdQuery}
-                              onChange={handleICDSearch}
-                              placeholder="Search ICD-10 codes..."
-                              className="form-control"
-                            />
-
-                            {/* ICD-10 Search Results */}
-                            {icdResults.length > 0 && (
-                              <ul
-                                className="list-group"
-                                style={{
-                                  maxHeight: "150px",
-                                  overflowY: "scroll",
-                                  cursor: "pointer",
-                                }}
-                              >
-                                {icdResults.map((icd) => (
-                                  <li
-                                    key={icd.code}
-                                    className="list-group-item"
-                                    onClick={() => handleICDSelect(icd)}
+                            <div>
+                              <div className="details-for-doctors">
+                                <div className="details-for-doctors-wrapper">
+                                  <div
+                                    className="details-for-doctors-content"
+                                    style={{ padding: "10px" }}
                                   >
-                                    {icd.code} - {icd.shortdescription}
-                                  </li>
-                                ))}
-                              </ul>
-                            )}
-
-                            {/* Selected ICD-10 Codes */}
-                            {selectedICD.length > 0 && (
-                              <div className="mt-2">
-                                <strong>Selected Diagnoses:</strong>
-                                <div className="d-flex flex-wrap">
-                                  {selectedICD.map((icd) => (
-                                    <span
-                                      key={icd.code}
-                                      className="badge bg-primary m-1"
-                                      style={{ cursor: "pointer" }}
-                                      onClick={() => handleICDRemove(icd)}
-                                    >
-                                      {icd.code} - {icd.shortdescription} ✖
-                                    </span>
-                                  ))}
+                                    <AccordionComponents
+                                      items={[
+                                        {
+                                          title: (
+                                            <>
+                                              <label>Chief Complaints:</label>
+                                              <button
+                                                className="btn btn-link btn-sm"
+                                                onClick={
+                                                  toggleChiefComplaintEdit
+                                                }
+                                                style={{ marginLeft: "10px" }}
+                                              >
+                                                {isEditingChiefComplaint
+                                                  ? "Cancel"
+                                                  : "Edit"}
+                                              </button>
+                                            </>
+                                          ),
+                                          content: (
+                                            <>
+                                              {isEditingChiefComplaint ? (
+                                                <textarea
+                                                  value={chiefComplaint}
+                                                  onChange={
+                                                    handleChiefComplaintChange
+                                                  }
+                                                  placeholder="Edit chief complaints here..."
+                                                  className="form-control"
+                                                  rows="3"
+                                                />
+                                              ) : (
+                                                <p>
+                                                  {`"${
+                                                    chiefComplaint ||
+                                                    "No chief complaints provided."
+                                                  }"`}
+                                                </p>
+                                              )}
+                                            </>
+                                          ),
+                                        },
+                                        {
+                                          title: "Medical History",
+                                          content: "Content 1",
+                                        },
+                                        {
+                                          title:
+                                            "Previous Consultations and Treatments",
+                                          content: "Content 1",
+                                        },
+                                      ]}
+                                    />
+                                  </div>
                                 </div>
                               </div>
-                            )}
+
+                              {/* Add more details as needed */}
+
+                              {/* 🔍 ICD-10 SEARCH BAR */}
+                              <div>
+                                <label>
+                                  <strong>Diagnosis (ICD-10):</strong>
+                                </label>
+                                <input
+                                  type="text"
+                                  value={icdQuery}
+                                  onChange={handleICDSearch}
+                                  placeholder="Search ICD-10 codes..."
+                                  className="form-control"
+                                />
+
+                                {/* ICD-10 Search Results */}
+                                {icdResults.length > 0 && (
+                                  <ul
+                                    className="list-group"
+                                    style={{
+                                      maxHeight: "150px",
+                                      overflowY: "scroll",
+                                      cursor: "pointer",
+                                    }}
+                                  >
+                                    {icdResults.map((icd) => (
+                                      <li
+                                        key={icd.code}
+                                        className="list-group-item"
+                                        onClick={() => handleICDSelect(icd)}
+                                      >
+                                        {icd.code} - {icd.shortdescription}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                )}
+
+                                {/* Selected ICD-10 Codes */}
+                                {selectedICD?.length > 0 && (
+                                  <div className="mt-2">
+                                    <strong>Selected Diagnoses:</strong>
+                                    <div className="d-flex flex-wrap">
+                                      {selectedICD.map((icd) => (
+                                        <span
+                                          key={icd.code}
+                                          className="badge bg-primary m-1"
+                                          style={{ cursor: "pointer" }}
+                                          onClick={() => handleICDRemove(icd)}
+                                        >
+                                          {icd.code} - {icd.shortdescription} ✖
+                                        </span>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+
+                                <Container>
+                                  <h2 className="my-4">Prescription Form</h2>
+                                  {prescriptions.map((pres, index) => (
+                                    <Row
+                                      key={index}
+                                      className="prescription-entry mb-3"
+                                    >
+                                      {pres.type === "medicinal" ? (
+                                        <>
+                                          <Col md={3}>
+                                            <Form.Control
+                                              type="text"
+                                              placeholder="Medication"
+                                              value={pres.medication}
+                                              onChange={(e) =>
+                                                handleChange(
+                                                  index,
+                                                  "medication",
+                                                  e.target.value
+                                                )
+                                              }
+                                            />
+                                          </Col>
+                                          <Col md={2}>
+                                            <Form.Control
+                                              type="text"
+                                              placeholder="Dosage"
+                                              value={pres.dosage}
+                                              onChange={(e) =>
+                                                handleChange(
+                                                  index,
+                                                  "dosage",
+                                                  e.target.value
+                                                )
+                                              }
+                                            />
+                                          </Col>
+                                          <Col md={2}>
+                                            <Form.Control
+                                              type="text"
+                                              placeholder="Frequency"
+                                              value={pres.frequency}
+                                              onChange={(e) =>
+                                                handleChange(
+                                                  index,
+                                                  "frequency",
+                                                  e.target.value
+                                                )
+                                              }
+                                            />
+                                          </Col>
+                                          <Col md={2}>
+                                            <Form.Control
+                                              type="text"
+                                              placeholder="Duration"
+                                              value={pres.duration}
+                                              onChange={(e) =>
+                                                handleChange(
+                                                  index,
+                                                  "duration",
+                                                  e.target.value
+                                                )
+                                              }
+                                            />
+                                          </Col>
+                                        </>
+                                      ) : (
+                                        <>
+                                          <Col md={6}>
+                                            <Form.Control
+                                              type="text"
+                                              placeholder="Recommendation"
+                                              value={pres.recommendation}
+                                              onChange={(e) =>
+                                                handleChange(
+                                                  index,
+                                                  "recommendation",
+                                                  e.target.value
+                                                )
+                                              }
+                                            />
+                                          </Col>
+                                          <Col md={6}>
+                                            <Form.Control
+                                              type="text"
+                                              placeholder="Notes"
+                                              value={pres.notes}
+                                              onChange={(e) =>
+                                                handleChange(
+                                                  index,
+                                                  "notes",
+                                                  e.target.value
+                                                )
+                                              }
+                                            />
+                                          </Col>
+                                        </>
+                                      )}
+                                    </Row>
+                                  ))}
+
+                                  <Row className="mt-4">
+                                    <Col>
+                                      <Button
+                                        variant="primary"
+                                        onClick={() =>
+                                          addPrescription("medicinal")
+                                        }
+                                        className="me-2"
+                                      >
+                                        + Add Medicinal
+                                      </Button>
+                                      <Button
+                                        variant="secondary"
+                                        onClick={() =>
+                                          addPrescription("non-medicinal")
+                                        }
+                                        className="me-2"
+                                      >
+                                        + Add Non-Medicinal
+                                      </Button>
+                                    </Col>
+                                  </Row>
+                                </Container>
+                              </div>
+                            </div>
                           </div>
 
                           {selectedICD && (
@@ -379,7 +577,7 @@ const DoctorPatient = () => {
                       </button>
                       <button
                         type="button"
-                        className="btn btn-success"
+                        className="btn btn-primary"
                         onClick={() => {
                           if (
                             window.confirm(
@@ -387,11 +585,12 @@ const DoctorPatient = () => {
                             )
                           ) {
                             handleCompleteVisit(selectedVisit._id);
+                            handleSubmitVisitDetails();
                             closeModal();
                           }
                         }}
                       >
-                        Mark as Complete
+                        Submit
                       </button>
                     </div>
                   </div>

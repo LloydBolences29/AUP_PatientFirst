@@ -4,6 +4,7 @@ const Medication = require("../model/medication");
 const PharmacyInventory = require("../model/pharma-inventory");
 const PharmacyTransaction = require("../model/pharma-transac");
 const addStock = require("../controllers/medicineBatchTracker")
+const Prescription = require("../model/Prescription")
 
 
 // ✅ GET - Fetch all medicines with total stock left
@@ -182,58 +183,17 @@ router.post("/add-transactions", async (req, res) => {
     }
 });
 
-// // ✅ POST - Handle transactions (Purchase, Sold, Emergency Dispense, Remove)
-// router.post("/add-transaction", async (req, res) => {
-//     try {
-//         const { type, medication, quantity, price } = req.body;
+router.get("/pharmacyPrescriptions", async (req, res) => {
+    try {
+      const prescriptions = await Prescription.find({ "prescriptions.type": "medicinal" })
+        .populate("patientId", "firstname age gender");
+  
+      res.status(200).json(prescriptions);
+    } catch (error) {
+      console.error("Error fetching prescriptions:", error);
+      res.status(500).json({ message: "Server error." });
+    }
+  });
 
-//         let foundMedication = await Medication.findById(medication);
-//         if (!foundMedication) {
-//             return res.status(404).json({ message: "Medication not found" });
-//         }
-
-//         if (type === "Purchase") {
-//             // ✅ Find the latest batch number & increment it
-//             const lastBatch = await PharmacyInventory.findOne().sort({ batchNo: -1 });
-//             let newBatchNo = lastBatch ? parseInt(lastBatch.batchNo) + 1 : 1; 
-
-//             const newStock = new PharmacyInventory({ 
-//                 batchNo: newBatchNo.toString(), // Auto-increment batchNo
-//                 medication, 
-//                 quantity, 
-//                 expiryDate: req.body.expiryDate 
-//             });
-
-//             await newStock.save();
-//             foundMedication.totalQuantityLeft += quantity;
-//             await foundMedication.save();
-//         } 
-//         else if (type === "Sold" || type === "Emergency Dispense" || type === "Remove") {
-//             const stock = await PharmacyInventory.findOne({ medication }).sort({ expiryDate: 1 });
-
-//             if (!stock || stock.quantity < quantity) {
-//                 return res.status(400).json({ message: "Not enough stock available" });
-//             }
-
-//             stock.quantity -= quantity;
-//             if (stock.quantity <= 0) {
-//                 await PharmacyInventory.findByIdAndDelete(stock._id);
-//             } else {
-//                 await stock.save();
-//             }
-
-//             foundMedication.totalQuantityLeft -= quantity;
-//             if (foundMedication.totalQuantityLeft < 0) foundMedication.totalQuantityLeft = 0;
-//             await foundMedication.save();
-//         }
-
-//         const newTransaction = new PharmacyTransaction({ type, medication, quantity, price });
-//         await newTransaction.save();
-
-//         res.status(201).json({ message: "Transaction recorded successfully", transaction: newTransaction });
-//     } catch (error) {
-//         res.status(500).json({ message: "Error processing transaction", error: error.message });
-//     }
-// });
 
 module.exports = router;

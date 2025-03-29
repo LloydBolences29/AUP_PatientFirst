@@ -1,17 +1,42 @@
 const express = require("express");
 const Prescription = require("../model/Prescription");
+const CheckupModel = require("../model/checkup");
 const router = express.Router();
+
+router.get("/fetchPrescriptions", async (req, res) => {
+  try {
+    const { status } = req.query;
+    
+    const prescriptions = await Prescription.find({
+      status: { $regex: new RegExp(`^${status}$`, "i") }, 
+      // patientType: "Outpatient", // Only Outpatients can pick up prescriptions
+      prescriptions: { $elemMatch: { type: "medicinal" } }, // Match inside prescriptions array
+    })
+    .populate("patientId")
+    .populate("checkupId");
+
+    return res.json({ prescriptions });
+  } catch (error) {
+    console.error("Error fetching prescriptions:", error);
+    return res.status(500).json({ message: "Error fetching prescriptions" });
+  }
+});
+
+
+
 
 // Create Prescription
 router.post("/createPrescription", async (req, res) => {
   try {
-    const { checkupId, patientId, doctorId, prescriptions } = req.body;
+    const { checkupId, patientId, patientType, prescriptions } = req.body;
 
     const newPrescription = new Prescription({
       checkupId,
       patientId,
-      doctorId,
       prescriptions,
+      patientType, // Store patient type
+      status: patientType === "Inpatient" ? "completed" : "pending" // Inpatients do not pick up their meds
+
     });
 
     await newPrescription.save();
@@ -21,5 +46,37 @@ router.post("/createPrescription", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+router.put("/update/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body; // "dispensed" or "rejected"
+
+    // Validate status input
+    if (!["pending", "dispensed"].includes(status.toLowerCase())) {
+      return res.status(400).json({ message: "Invalid status value" });
+    }
+
+    // Find and update the prescription
+    const updatedPrescription = await Prescription.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedPrescription) {
+      return res.status(404).json({ message: "Prescription not found" });
+    }
+
+    return res.status(200).json({
+      message: `Prescription marked as ${status}`,
+      prescription: updatedPrescription,
+    });
+  } catch (error) {
+    console.error("Error updating prescription status:", error);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
 
 module.exports = router;

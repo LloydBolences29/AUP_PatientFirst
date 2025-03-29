@@ -3,6 +3,7 @@ const router = express.Router();
 const Checkup = require("../model/checkup");
 const Patient = require("../model/patient"); // Import Patient model
 const ICD = require("../model/icdcode"); // Import ICD-10 model
+const Billing = require ("../model/BillingModel")
 const Prescription = require("../model/Prescription");
 
 
@@ -45,8 +46,9 @@ router.get("/icd10/search", async (req, res) => {
 // 🔹 Create a new checkup with multiple ICD-10 codes
 router.post("/create-new", async (req, res) => {
   try {
-    const { patientId, icd, prescriptions, additionalNotes } = req.body;
+    const { patientId, doctorFee, icd, additionalNotes, patientType } = req.body;
 
+    // ✅ Validate Inputs
     if (!patientId || !Array.isArray(icd) || icd.length === 0) {
       return res.status(400).json({ message: "Patient ID and at least one ICD code are required." });
     }
@@ -63,34 +65,46 @@ router.post("/create-new", async (req, res) => {
       return res.status(400).json({ message: "Some ICD codes are invalid." });
     }
 
-    // ✅ Create Checkup First
+    // ✅ Create Checkup Record (No prescriptions here)
     const newCheckup = new Checkup({
       patientId,
-      icd, 
+      icd, // Stores ICD-10 codes as an array of ObjectIds
       additionalNotes,
+      patientType,
     });
 
-    await newCheckup.save(); // ✅ Save to get the new `_id`
-
-    // ✅ Now Create Prescription with the Checkup ID
-    const newPrescription = await Prescription.create({
-      patientId,
-      checkupId: newCheckup._id, // ✅ Assign the newly created checkup ID
-      prescriptions,
-    });
-
-    // ✅ Update Checkup with Prescription ID (Optional)
-    newCheckup.prescriptionId = newPrescription._id;
     await newCheckup.save();
 
-    res.status(201).json({ message: "Checkup and prescription recorded successfully!" });
+    // **2. Automatically Generate Billing for Doctor’s Fee**
+    const doctorBilling = new Billing({
+      patientId,
+      department: "Consultation",
+      items: [{
+        type: "doctor-fee",
+        name: "Doctor's Consultation Fee",
+        price: doctorFee,
+        quantity: 1,
+        total: doctorFee
+      }],
+      totalAmount: doctorFee,
+      status: "pending"
+    });
 
+    await doctorBilling.save();
+
+    res.status(201).json({ 
+      message: "Checkup recorded & doctor's fee billed successfully", 
+      checkup: newCheckup, 
+      billing: doctorBilling ,
+      checkupId: newCheckup._id
+    });
+
+    // ✅ Return the created checkup _id
   } catch (error) {
     console.error("Error creating checkup:", error);
     res.status(500).json({ message: "Server error" });
   }
 });
-
 
 // 🟢 Get All Checkups with ICD-10 Details
 router.get("/getCheckup", async (req, res) => {
@@ -105,5 +119,31 @@ router.get("/getCheckup", async (req, res) => {
     res.status(500).json({ message: "Server error." });
   }
 });
+
+router.put("/updatePatientType/:checkupId", async (req, res) => {
+  try {
+    const { checkupId } = req.params;
+    const { patientType } = req.body;
+
+    if (!["Outpatient", "Inpatient"].includes(patientType)) {
+      return res.status(400).json({ message: "Invalid patient type" });
+    }
+
+    const updatedCheckup = await Checkup.findByIdAndUpdate(
+      checkupId,
+      { patientType },
+      { new: true }
+    );
+
+    if (!updatedCheckup) {
+      return res.status(404).json({ message: "Checkup not found" });
+    }
+
+    res.json({ message: "Patient type updated successfully", checkup: updatedCheckup });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating patient type", error: error.message });
+  }
+});
+
 
 module.exports = router;

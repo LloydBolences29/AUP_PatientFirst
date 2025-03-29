@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const pharmacyTransactionSchema = new mongoose.Schema({
-    type: { type: String, enum: [ 'Emergency Dispense', 'Sold', 'Remove'], required: true },
+    type: { type: String, enum: [ 'Inpatient Dispense','Emergency Dispense', 'Sold', 'Remove'], required: true },
     medication: { type: mongoose.Schema.Types.ObjectId, ref: 'Medication' },
     quantity: { type: Number, required: true },
     transactionDate: { type: Date, default: Date.now },

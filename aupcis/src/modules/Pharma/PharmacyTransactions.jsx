@@ -145,6 +145,9 @@ const PharmacyTransactions = () => {
                       onChange={(e) => setTransactionType(e.target.value)}
                     >
                       <option value="Sold">Sold</option>
+                      <option value="Inpatient Dispense">
+                        Inpatient Dispense
+                      </option>
                       <option value="Emergency Dispense">
                         Emergency Dispense
                       </option>

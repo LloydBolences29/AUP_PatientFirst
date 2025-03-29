@@ -21,6 +21,10 @@ const DoctorPatient = () => {
   const [chiefComplaint, setChiefComplaint] = useState(""); // New state for chief complaint
   const [isEditingChiefComplaint, setIsEditingChiefComplaint] = useState(false); // New state for edit mode
   const [prescriptions, setPrescriptions] = useState([]);
+  const [doctorFee, setDoctorFee] = useState("");
+  const [patientType, setPatientType] = useState("Outpatient");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const addPrescription = (type) => {
     setPrescriptions([
@@ -132,21 +136,41 @@ const DoctorPatient = () => {
   };
 
   const handleSubmitVisitDetails = async () => {
+    setLoading(true);
+    setMessage("");
     try {
-      const visitData = {
-        patientId: selectedVisit.patient_id?._id,
-        icd: (selectedICD || []).map((icd) => icd._id),
-        additionalNotes: doctorNote,
-        prescriptions, // ✅ Send prescriptions directly
-      };
-  
-      await axios.post("http://localhost:3000/checkup/create-new", visitData);
+      const checkupResponse = await axios.post(
+        "http://localhost:3000/checkup/create-new",
+        {
+          patientId: selectedVisit.patient_id?._id,
+          icd: selectedICD.map((icd) => icd._id),
+          additionalNotes: doctorNote,
+          doctorFee: parseFloat(doctorFee),
+          patientType, // Include patient type in creation request
+
+        }
+      );
+      const checkupId = checkupResponse.data.checkupId;
+
+      await axios.post(
+        "http://localhost:3000/prescriptions/createPrescription",
+        {
+          checkupId, // Reference the existing checkup
+          patientId: selectedVisit.patient_id?._id,
+          prescriptions,
+        }
+      );
+
       alert("Visit recorded successfully!");
       setSelectedICD([]); // Reset selected ICDs
+      setPrescriptions([]); // Clear prescriptions
+      setDoctorFee("");
+      setDoctorNote(""); // Clear doctor's note
     } catch (error) {
       console.error("Error submitting visit:", error);
     }
   };
+
   const handleChange = (index, field, value) => {
     const updatedPrescriptions = [...prescriptions]; // Copy current prescriptions
     updatedPrescriptions[index][field] = value; // Update specific field
@@ -416,6 +440,30 @@ const DoctorPatient = () => {
                                   </div>
                                 )}
 
+                                <div className="p-4 border rounded">
+                                  <h3 className="text-lg font-bold">
+                                    Change Patient Type
+                                  </h3>
+                                  {message && (
+                                    <p className="text-green-600">{message}</p>
+                                  )}
+                                  <select
+                                    value={patientType}
+                                    onChange={(e) => setPatientType(e.target.value)}
+                                    className="p-2 border rounded"
+                                    disabled={loading} // Disables during API call
+                                  >
+                                    <option value="Outpatient">
+                                      Outpatient
+                                    </option>
+                                    <option value="Inpatient">Inpatient</option>
+                                  </select>
+                                  {loading && (
+                                    <p className="text-blue-500">Updating...</p>
+                                  )}{" "}
+                                  {/* Show loading message */}
+                                </div>
+
                                 <Container>
                                   <h2 className="my-4">Prescription Form</h2>
                                   {prescriptions.map((pres, index) => (
@@ -453,32 +501,21 @@ const DoctorPatient = () => {
                                               }
                                             />
                                           </Col>
+
                                           <Col md={2}>
                                             <Form.Control
-                                              type="text"
-                                              placeholder="Frequency"
-                                              value={pres.frequency}
+                                              as="textarea"
+                                              placeholder="Instruction"
+                                              value={pres.instruction}
                                               onChange={(e) =>
                                                 handleChange(
                                                   index,
-                                                  "frequency",
+                                                  "instruction",
                                                   e.target.value
                                                 )
                                               }
-                                            />
-                                          </Col>
-                                          <Col md={2}>
-                                            <Form.Control
-                                              type="text"
-                                              placeholder="Duration"
-                                              value={pres.duration}
-                                              onChange={(e) =>
-                                                handleChange(
-                                                  index,
-                                                  "duration",
-                                                  e.target.value
-                                                )
-                                              }
+                                              rows={3} // Optional: Adjust the number of rows
+                                              style={{ resize: "horizontal" }} // Allow horizontal resizing
                                             />
                                           </Col>
                                         </>
@@ -562,6 +599,19 @@ const DoctorPatient = () => {
                               placeholder="Add additional notes here..."
                               className="form-control"
                               rows="4"
+                            />
+                          </div>
+                          <div>
+                            <label>
+                              <strong>Doctor's Fee: </strong>
+                            </label>
+                            <input
+                              type="number"
+                              placeholder="Doctor's Fee"
+                              value={doctorFee}
+                              onChange={(e) => setDoctorFee(e.target.value)}
+                              className="w-full p-2 mb-2 border rounded"
+                              required
                             />
                           </div>
                         </>

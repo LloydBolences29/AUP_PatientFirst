@@ -68,9 +68,7 @@ export const Sidebar = forwardRef(({ links, pageContent }, ref) => {
       console.error("Error logging out:", error);
     }
   };
-  console.log("Sidebar pageContent:", pageContent);
-  console.log("Type of pageContent:", typeof pageContent);
-  console.log("Is pageContent a valid React element?", React.isValidElement(pageContent));
+  
 
   return (
     <>

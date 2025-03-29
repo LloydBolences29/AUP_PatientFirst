@@ -11,14 +11,15 @@ const PrescriptionSchema = new mongoose.Schema({
       // Fields for medicinal prescriptions
       medication: { type: String }, 
       dosage: { type: String },
-      frequency: { type: String },
-      duration: { type: String },
+      instruction: { type: String },
+      
       
       // Fields for non-medicinal prescriptions
       recommendation: { type: String },
       notes: { type: String },
     }
   ],
+  status: { type: String, enum: ["pending", "dispensed", "completed"], default: "pending"},
 
   createdAt: { type: Date, default: Date.now },
 });

@@ -1,7 +1,7 @@
 import React from "react";
 import Sidebar from "../../components/Sidebar";
 import { useState, useEffect } from "react";
-import { Form, Button, Container, Row, Col } from "react-bootstrap";
+import { Form, Button, Container, Row, Col, Modal } from "react-bootstrap";
 import axios from "axios";
 
 const Prescriptions = () => {
@@ -16,164 +16,291 @@ const Prescriptions = () => {
   const [prescriptions, setPrescriptions] = useState([]);
   const [checkupId, setCheckupId] = useState(null);
   const [patientId, setPatientId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filter, setFilter] = useState("all");
+  const [selectedPrescription, setSelectedPrescription] = useState(null);
 
+  const [filteredPrescriptions, setFilteredPrescriptions] = useState([]);
+  const [selectedStatus, setSelectedStatus] = useState("pending"); // Default to Pending
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [prescriptionToDispense, setPrescriptionToDispense] = useState(null);
 
-  const addPrescription = (type) => {
-    setPrescriptions([
-      ...prescriptions,
-      type === "medicinal"
-        ? {
-            type: "medicinal",
-            medication: "",
-            dosage: "",
-            frequency: "",
-            duration: "",
-          }
-        : {
-            type: "non-medicinal",
-            recommendation: "",
-            notes: "",
-          },
-    ]);
+  const fetchPrescriptions = async () => {
+    try {
+      const res = await fetch(
+        `http://localhost:3000/prescriptions/fetchPrescriptions?status=${selectedStatus}`
+      );
+      const data = await res.json();
+      console.log("Fetched Data:", data);
+      setPrescriptions(data.prescriptions || []); // Ensure it doesn't break
+      setFilteredPrescriptions(data.prescriptions || []);
+    } catch (error) {
+      console.error("Error fetching prescriptions:", error);
+    }
   };
+  useEffect(() => {
+    fetchPrescriptions();
+  }, [selectedStatus]);
 
-  const handleChange = (index, field, value) => {
-    const updatedPrescriptions = [...prescriptions];
-    updatedPrescriptions[index][field] = value;
-    setPrescriptions(updatedPrescriptions);
-  };
+  const handleSearch = (e) => {
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
 
-  const handleSubmit = async () => {
-    if (!checkupId || !patientId) {
-      alert("Missing required data! Checkup ID or Patient ID is missing.");
-      console.error("Error: Missing checkupId or patientId", { checkupId, patientId });
+    if (!Array.isArray(prescriptions)) {
+      setFilteredPrescriptions([]);
       return;
     }
-  
-    try {
-      await axios.post(
-        "http://localhost:3000/prescriptions/createPrescription",
-        { checkupId, patientId, prescriptions }
+
+    const filtered = prescriptions.filter((pres) => {
+      const firstName = pres.patientId?.firstname?.toLowerCase() || "";
+      const lastName = pres.patientId?.lastname?.toLowerCase() || "";
+      const patientId = pres.patientId?.patient_id || "";
+      const prescriptionId = pres._id.toLowerCase();
+
+      return (
+        firstName.includes(query) ||
+        lastName.includes(query) ||
+        patientId.includes(query) ||
+        prescriptionId.includes(query)
       );
-      alert("Prescription saved successfully!");
-    } catch (error) {
-      console.error("Error saving prescription:", error);
-    }
+    });
+
+    setFilteredPrescriptions(filtered);
   };
 
   useEffect(() => {
-    if (patientId) {
-      axios
-        .get(`http://localhost:3000/checkups/latest?patientId=${patientId}`)
-        .then((response) => {
-          if (response.data?.checkupId) {
-            setCheckupId(response.data.checkupId);
-          }
-        })
-        .catch((error) => console.error("Error fetching checkupId:", error));
+    if (searchQuery === "") {
+      setFilteredPrescriptions(prescriptions);
     }
-  }, [patientId]);
+  }, [prescriptions, searchQuery]);
+
+  const handleFilterChange = (status) => {
+    setSelectedStatus(status); // No need to fetch here
+    setSelectedPrescription(null); // Close prescription details
+  };
+
+  const handleMarkAsDispensed = async (prescriptionId, status) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/prescriptions/update/${prescriptionId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to update status");
+      }
+
+      alert(`Prescription marked as ${status}!`);
+
+      // Close prescription details and refresh prescriptions after update
+      setSelectedPrescription(null);
+      fetchPrescriptions();
+    } catch (error) {
+      console.error("Error updating prescription status:", error);
+      alert("Error updating prescription status");
+    }
+  };
+
+  const handleRejectPrescription = (prescriptionId) => {
+    // Logic to reject prescription
+  };
+
+  const handleConfirmDispense = (prescriptionId) => {
+    setPrescriptionToDispense(prescriptionId);
+    setShowConfirmModal(true);
+  };
+
+  const confirmDispense = () => {
+    if (prescriptionToDispense) {
+      handleMarkAsDispensed(prescriptionToDispense, "dispensed");
+    }
+    setShowConfirmModal(false);
+    setPrescriptionToDispense(null);
+  };
+
+  const cancelDispense = () => {
+    setShowConfirmModal(false);
+    setPrescriptionToDispense(null);
+  };
 
   return (
     <div>
       <Sidebar
         links={pharmasidebarLinks}
         pageContent={
-          <Container>
-            <h2 className="my-4">Prescription Form</h2>
-            {prescriptions.map((pres, index) => (
-              <Row key={index} className="prescription-entry mb-3">
-                {pres.type === "medicinal" ? (
-                  <>
-                    <Col md={3}>
-                      <Form.Control
-                        type="text"
-                        placeholder="Medication"
-                        value={pres.medication}
-                        onChange={(e) =>
-                          handleChange(index, "medication", e.target.value)
-                        }
-                      />
-                    </Col>
-                    <Col md={2}>
-                      <Form.Control
-                        type="text"
-                        placeholder="Dosage"
-                        value={pres.dosage}
-                        onChange={(e) =>
-                          handleChange(index, "dosage", e.target.value)
-                        }
-                      />
-                    </Col>
-                    <Col md={2}>
-                      <Form.Control
-                        type="text"
-                        placeholder="Frequency"
-                        value={pres.frequency}
-                        onChange={(e) =>
-                          handleChange(index, "frequency", e.target.value)
-                        }
-                      />
-                    </Col>
-                    <Col md={2}>
-                      <Form.Control
-                        type="text"
-                        placeholder="Duration"
-                        value={pres.duration}
-                        onChange={(e) =>
-                          handleChange(index, "duration", e.target.value)
-                        }
-                      />
-                    </Col>
-                  </>
-                ) : (
-                  <>
-                    <Col md={6}>
-                      <Form.Control
-                        type="text"
-                        placeholder="Recommendation"
-                        value={pres.recommendation}
-                        onChange={(e) =>
-                          handleChange(index, "recommendation", e.target.value)
-                        }
-                      />
-                    </Col>
-                    <Col md={6}>
-                      <Form.Control
-                        type="text"
-                        placeholder="Notes"
-                        value={pres.notes}
-                        onChange={(e) =>
-                          handleChange(index, "notes", e.target.value)
-                        }
-                      />
-                    </Col>
-                  </>
-                )}
+          <Container className="mt-4">
+            <h1 className="mb-4">Prescription Lookup</h1>
+            <Form className="mb-4">
+              <Row>
+                <Col md={8} className="mb-2">
+                  <Form.Control
+                    type="text"
+                    placeholder="Search by Patient ID, Name, or Visit ID"
+                    value={searchQuery}
+                    onChange={handleSearch}
+                  />
+                </Col>
+                <Col md={4} className="mb-2">
+                  <Button variant="primary" onClick={handleSearch}>
+                    Search
+                  </Button>
+                </Col>
               </Row>
-            ))}
+            </Form>
 
-            <Row className="mt-4">
-              <Col>
-                <Button
-                  variant="primary"
-                  onClick={() => addPrescription("medicinal")}
-                  className="me-2"
-                >
-                  + Add Medicinal
-                </Button>
+            <div className="mb-4">
+              <Button
+                variant={
+                  selectedStatus === "pending" ? "primary" : "outline-primary"
+                }
+                className="me-2"
+                onClick={() => handleFilterChange("pending")}
+              >
+                Pending
+              </Button>
+              <Button
+                variant={
+                  selectedStatus === "dispensed" ? "primary" : "outline-primary"
+                }
+                className="me-2"
+                onClick={() => handleFilterChange("dispensed")}
+              >
+                Dispensed
+              </Button>
+            </div>
+
+            <table className="table mb-4">
+              <thead>
+                <tr>
+                  <th>Patient ID</th>
+                  <th>Patient Name</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {Array.isArray(filteredPrescriptions) &&
+                filteredPrescriptions.length > 0 ? (
+                  filteredPrescriptions.map((prescription) => (
+                    <tr key={prescription._id}>
+                      <td>{prescription.patientId?.patient_id}</td>
+                      <td>
+                        {prescription.patientId
+                          ? `${prescription.patientId?.firstname} ${prescription.patientId?.lastname}`
+                          : "Unknown"}
+                      </td>
+                      <td>
+                        <span
+                          className={`badge ${
+                            prescription.status === "pending"
+                              ? "bg-warning"
+                              : "bg-info"
+                          }`}
+                        >
+                          {prescription.status}
+                        </span>
+                      </td>
+                      <td>
+                        <Button
+                          variant="info"
+                          onClick={() => setSelectedPrescription(prescription)}
+                        >
+                          View Details
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="4" className="text-center text-muted">
+                      No prescriptions found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+
+            {selectedPrescription && (
+              <div className="mt-4">
+                <h2 className="mb-3">Prescription Details</h2>
                 <Button
                   variant="secondary"
-                  onClick={() => addPrescription("non-medicinal")}
-                  className="me-2"
+                  className="mb-3"
+                  onClick={() => setSelectedPrescription(null)}
                 >
-                  + Add Non-Medicinal
+                  Close
                 </Button>
-                <Button variant="success" onClick={handleSubmit}>
-                  Submit Prescription
+                {/* Loop through medications in the prescription */}
+                {selectedPrescription.prescriptions?.map((med, index) => (
+                  <div key={index} className="mb-3">
+                    <p>
+                      <strong>Medication:</strong> {med.medication}
+                    </p>
+                    <p>
+                      <strong>Dosage:</strong> {med.dosage}
+                    </p>
+                    <p>
+                      <strong>Instructions:</strong> {med.instruction}
+                    </p>
+                  </div>
+                ))}
+
+                <p>
+                  <strong>Checkup Details:</strong>{" "}
+                  {selectedPrescription.checkupId?.additionalNotes || "N/A"}
+                </p>
+
+                {selectedPrescription.status === "pending" && (
+                  <>
+                    <Button
+                      variant="success"
+                      className="me-2"
+                      onClick={() =>
+                        handleConfirmDispense(selectedPrescription._id)
+                      }
+                    >
+                      Mark as Dispensed
+                    </Button>
+                    <Button
+                      variant="warning"
+                      className="me-2"
+                      onClick={() =>
+                        alert("Billing functionality not implemented yet.")
+                      }
+                    >
+                      Generate Bill
+                    </Button>
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* Confirmation Modal */}
+            <Modal show={showConfirmModal} onHide={cancelDispense}>
+              <Modal.Header closeButton>
+                <Modal.Title>Confirm Dispense</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                Are you sure you want to mark this prescription as dispensed?
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={cancelDispense}>
+                  Cancel
                 </Button>
-              </Col>
-            </Row>
+                <Button variant="success" onClick={confirmDispense}>
+                  Confirm
+                </Button>
+              </Modal.Footer>
+            </Modal>
           </Container>
         }
       />

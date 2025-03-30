@@ -2,6 +2,8 @@
 const path = require("path");
 require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
+const fs = require("fs");
+const https = require("https");
 const express = require("express");
 const mongoose = require("mongoose");
 const connectDB = require("./db.js");
@@ -27,10 +29,13 @@ const app = express();
 
 // ✅ Connect to MongoDB BEFORE initializing routes
 connectDB();
+const privateKey = fs.readFileSync("server.key", "utf8");
+const certificate = fs.readFileSync("server.cert", "utf8");
+const credentials = { key: privateKey, cert: certificate };
 
 // ✅ Middleware Setup
 app.use(cors({
-  origin: ["http://localhost:5173","http://localhost:3000"], // Frontend URL
+  origin: ["https://localhost:5173","https://localhost:3000"], // Frontend URL
   credentials: true, // Allow cookies to be sent
 },
 ));
@@ -61,18 +66,20 @@ app.use("/prescriptions", prescriptionRoutes)
 
 
 
-
-
-
-
-// ✅ API for Fetching Items
-app.get("/", async (req, res) => {
-  const response = await itemModel.find();
-  return res.json({ items: response });
+app.get("/", (req, res) => {
+  res.send("✅ HTTPS is working!");
 });
+
+
+// const options = {
+//   key: fs.readFileSync("server.key"), // Update with your SSL key file
+//   cert: fs.readFileSync("server.cert"), // Update with your SSL cert file
+// };
+
+
 
 // ✅ Start the Server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+https.createServer(credentials, app).listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

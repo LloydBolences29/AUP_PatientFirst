@@ -51,7 +51,7 @@ const DoctorPatient = () => {
 
   const fetchVisits = async () => {
     try {
-      const response = await fetch("http://localhost:3000/doctor/get-patients");
+      const response = await fetch("https://localhost:3000/doctor/get-patients");
       if (!response.ok) throw new Error("Failed to fetch visits");
       const data = await response.json();
       setVisits(data);
@@ -80,7 +80,7 @@ const DoctorPatient = () => {
     if (query.length > 1) {
       try {
         const response = await axios.get(
-          `http://localhost:3000/icd/icd10/search?q=${query}`
+          `https://localhost:3000/icd/icd10/search?q=${query}`
         );
         setIcdResults(response.data); // Assume response returns [{ code, shortdescription }]
       } catch (error) {
@@ -106,7 +106,7 @@ const DoctorPatient = () => {
   const handleCompleteVisit = async (visitId) => {
     try {
       const response = await fetch(
-        `http://localhost:3000/doctor/visits/${visitId}/complete`,
+        `https://localhost:3000/doctor/visits/${visitId}/complete`,
         { method: "PUT" }
       );
 
@@ -140,7 +140,7 @@ const DoctorPatient = () => {
     setMessage("");
     try {
       const checkupResponse = await axios.post(
-        "http://localhost:3000/checkup/create-new",
+        "https://localhost:3000/checkup/create-new",
         {
           patientId: selectedVisit.patient_id?._id,
           icd: selectedICD.map((icd) => icd._id),
@@ -153,7 +153,7 @@ const DoctorPatient = () => {
       const checkupId = checkupResponse.data.checkupId;
 
       await axios.post(
-        "http://localhost:3000/prescriptions/createPrescription",
+        "https://localhost:3000/prescriptions/createPrescription",
         {
           checkupId, // Reference the existing checkup
           patientId: selectedVisit.patient_id?._id,

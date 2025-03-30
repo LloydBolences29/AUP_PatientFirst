@@ -50,12 +50,12 @@ const MedicineMngt = () => {
   const fetchMedicines = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/pharma/medicines"
+        "https://localhost:3000/api/pharma/medicines"
       );
       const medicinesWithQuantities = await Promise.all(
         response.data.medicines.map(async (medicine) => {
           const batchResponse = await axios.get(
-            "http://localhost:3000/api/pharma/getStock"
+            "https://localhost:3000/api/pharma/getStock"
           );
           const medicineBatches = batchResponse.data.filter(
             (stock) => stock.medication._id === medicine._id
@@ -77,7 +77,7 @@ const MedicineMngt = () => {
   const fetchBatches = async (medicineId) => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/pharma/getStock"
+        "https://localhost:3000/api/pharma/getStock"
       );
       const medicineBatches = response.data.filter(
         (stock) => stock.medication._id === medicineId
@@ -148,7 +148,7 @@ const MedicineMngt = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/pharma/add-stock",
+        "https://localhost:3000/api/pharma/add-stock",
         stockPayload
       );
 
@@ -182,7 +182,7 @@ const MedicineMngt = () => {
 
       // API call to add a new medicine
       await axios.post(
-        "http://localhost:3000/api/pharma/add-medicines",
+        "https://localhost:3000/api/pharma/add-medicines",
         formData
       );
 
@@ -211,7 +211,7 @@ const MedicineMngt = () => {
 
       // API call to update an existing medicine
       await axios.put(
-        `http://localhost:3000/api/pharma/update-medicine/${formData._id}`,
+        `https://localhost:3000/api/pharma/update-medicine/${formData._id}`,
         formData
       );
 

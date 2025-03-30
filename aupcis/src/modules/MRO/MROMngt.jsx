@@ -11,7 +11,7 @@ const MROMngt = () => {
   const fetchPatientData = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/mro/patient-data"
+        "https://localhost:3000/mro/patient-data"
       );
       setVisits(response.data);
     } catch (error) {

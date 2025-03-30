@@ -19,6 +19,7 @@ const PatientSchema = new mongoose.Schema({
   gender: { type: String, required: true, enum: ["Male", "Female", "Other"] },
   civil_status: { type: String, required: true, enum: ["Single", "Married", "Divorced", "Widowed"] },
   nationality: { type: String, required: true },
+  bloodType: {type: String, default: null},
   religion: { type: String, required: true },
   passwordChanged: { type: Boolean, default: false },
 
@@ -32,7 +33,12 @@ const PatientSchema = new mongoose.Schema({
   student_id: { type: String, default: null },
   campus_address: { type: String, default: null },
   guardian_name: { type: String, default: null },
-  guardian_contact: { type: String, default: null }
+  guardian_contact: { type: String, default: null },
+
+  //for emergency contacts
+  emergency_name: { type: String, default: null },
+  emergency_relationship: { type: String, default: null },
+  emergency_phone: { type: String, default: null },
 }, { timestamps: true });
 
 // Hash password before saving
@@ -47,8 +53,8 @@ PatientSchema.pre("save", async function (next) {
     }
 });
 
-// Create an index to enforce uniqueness in the database
-// PatientSchema.index({ patientID: 1 }, { unique: true });
+// // Create an index to enforce uniqueness in the database
+// PatientSchema.index({ patient_id: 1 }, { unique: true });
 // PatientSchema.index({ firstname: 1 }, { unique: true });
 
 const patientModel = mongoose.models.patientname || mongoose.model("patientname", PatientSchema);

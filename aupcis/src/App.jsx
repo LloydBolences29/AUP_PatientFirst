@@ -37,7 +37,7 @@ export default function App() {
         <Route path="/dashboard" element={<Dashboard />} />
       </Route>
       <Route element={<ProtectedRoute allowedRoles={["Patient"]} />}>
-      <Route path="/profile" element={<PatientProfile />} />
+      <Route path="/profile/:id" element={<PatientProfile />} />
       </Route>
       {/* <Route element={<ProtectedRoute allowedRoles={["Patient"]} />}>
       <Route path="/symptomChecker" element={<SymptomChecker />} />

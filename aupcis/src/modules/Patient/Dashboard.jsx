@@ -3,53 +3,45 @@ import Sidebar from "../../components/Sidebar";
 import Card from "../../components/Card";
 import "./dashboard.css";
 import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 const Dashboard = () => {
-  // const { _id: patientID } = useParams(); // ✅ Get patient ID from URL
-
-  const sidebarLinks = [
-    { label: "Dashboard", path: "/dashboard" },
-    { label: "Symptom Checker", path: "/symptomChecker" },
-    { label: "My Profile", path: `/profile` },
-  ];
-
+  const { patient_id } = useParams();
+  const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [patientCounts, setPatientCounts] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  // Handle My Profile click
+
+
+  // Sidebar links
+  const sidebarLinks = [
+    { label: "Dashboard", path: "/dashboard" },
+    { label: "Symptom Checker", path: "/symptomChecker" },
+    { label: "My Profile", path: `/profile/${patient_id}`},
+  ];
+
+  // Fetch patient counts
   const fetchPatientCounts = async () => {
     setLoading(true);
-    const formattedDate = selectedDate.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+    const formattedDate = selectedDate.toISOString().split("T")[0];
+
     try {
       const response = await fetch(
-        `http://localhost:3000/type-of-visit-report/checkUpPatientperMonth/count?date=${formattedDate}`
+        `https://localhost:3000/type-of-visit-report/checkUpPatientperMonth/count?date=${formattedDate}`
       );
       const data = await response.json();
-      console.log("API Response:", data); // ✅ Debug API response
-
+      console.log("API Response:", data);
       setPatientCounts(data);
     } catch (error) {
       console.error("Error fetching patient counts:", error);
     }
     setLoading(false);
   };
-
-  // const handleDateChange = (date) => {
-  //   console.log("New Date Selected:", date);
-  //   setSelectedDate(date);
-  // };
-  console.log("Selected Date:", selectedDate);
-
-  // const links = [
-  //   {
-  //     label: "Log Out",
-  //     path: "/home",
-  //   },
-  // ];
-
   return (
     <>
       <div>

@@ -12,7 +12,7 @@ const SymptomChecker = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:3000/infermedica-api/analyze-symptoms",
+        "https://localhost:3000/infermedica-api/analyze-symptoms",
         {
           symptoms,
         }

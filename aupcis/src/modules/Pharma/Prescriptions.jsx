@@ -28,7 +28,7 @@ const Prescriptions = () => {
   const fetchPrescriptions = async () => {
     try {
       const res = await fetch(
-        `http://localhost:3000/prescriptions/fetchPrescriptions?status=${selectedStatus}`
+        `https://localhost:3000/prescriptions/fetchPrescriptions?status=${selectedStatus}`
       );
       const data = await res.json();
       console.log("Fetched Data:", data);
@@ -82,7 +82,7 @@ const Prescriptions = () => {
   const handleMarkAsDispensed = async (prescriptionId, status) => {
     try {
       const response = await fetch(
-        `http://localhost:3000/prescriptions/update/${prescriptionId}`,
+        `https://localhost:3000/prescriptions/update/${prescriptionId}`,
         {
           method: "PUT",
           headers: {

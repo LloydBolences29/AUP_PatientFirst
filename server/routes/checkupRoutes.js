@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Checkup = require("../model/checkup");
-const Patient = require("../model/patient"); // Import Patient model
+const Patient = require("../model/Patient"); // Import Patient model
 const ICD = require("../model/icdcode"); // Import ICD-10 model
 const Billing = require ("../model/BillingModel")
 const Prescription = require("../model/Prescription");

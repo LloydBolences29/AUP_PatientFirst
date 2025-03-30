@@ -20,7 +20,7 @@ const PharmacyTransactions = () => {
   const fetchTransactions = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/pharma/transactions"
+        "https://localhost:3000/api/pharma/transactions"
       );
       setTransactions(response.data);
     } catch (error) {
@@ -31,7 +31,7 @@ const PharmacyTransactions = () => {
   const fetchMedicines = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/pharma/medicines"
+        "https://localhost:3000/api/pharma/medicines"
       );
       setMedicines(response.data.medicines);
     } catch (error) {
@@ -58,7 +58,7 @@ const PharmacyTransactions = () => {
 
     try {
       await axios.post(
-        "http://localhost:3000/api/pharma/add-transactions",
+        "https://localhost:3000/api/pharma/add-transactions",
         transactionData
       );
       alert("Transaction added successfully!");

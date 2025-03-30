@@ -36,7 +36,7 @@ const AdminDashboard = () => {
       console.log("📅 Sending API request with:", formattedDate, "Type:", type);
 
       const response = await axios.get(
-        `http://localhost:3000/type-of-visit-report/checkUpPatientperMonth/count?date=${formattedDate}&type=${type}`
+        `https://localhost:3000/type-of-visit-report/checkUpPatientperMonth/count?date=${formattedDate}&type=${type}`
       );
 
       if (Array.isArray(response.data)) {

@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router(); // ✅ Use express.Router()
 const patientModel = require("../model/Patient.js");
+const jwt = require("jsonwebtoken");
+
+
 
 // GET - Fetch all patients
 router.get("/", async (req, res) => {
@@ -22,10 +25,6 @@ router.get("/:patient_id", async (req, res) => {
     let patient = await patientModel.findOne({ patient_id }); // 🔎 Search by patient_id first
 
     if (!patient) {
-      patient = await patientModel.findById(patient_id); // 🔎 Try searching by _id if not found
-    } // ✅ Pass the ID directly
-
-    if (!patient) {
       return res.status(404).json({ message: "Patient not found" });
     }
 
@@ -36,34 +35,6 @@ router.get("/:patient_id", async (req, res) => {
       .json({ message: "Error fetching patient", error: error.message });
   }
 });
-
-// POST - Add new patient with validation
-// router.post("/", async (req, res) => {
-//     console.log("Headers:", req.headers);
-//     console.log("Body:", req.body);
-//     try {
-//         const { patientID, firstname, lastname, age, gender } = req.body;
-
-//         // Check if all required fields are provided
-//         if (!patientID || !firstname || !lastname || !age || !gender) {
-//             return res.status(400).json({ message: "All fields are required" });
-//         }
-
-//         // Check if a patient with the same first and last name exists
-//         const existingPatient = await patientModel.findOne({ firstname, lastname });
-//         if (existingPatient) {
-//             return res.status(400).json({ message: "Patient already exists" });
-//         }
-
-//         // Add new patient
-//         const newPatient = new patientModel(req.body);
-//         await newPatient.save();
-
-//         res.status(201).json({ message: "Patient added successfully", patient: newPatient });
-//     } catch (error) {
-//         res.status(500).json({ message: "Error adding patient", error: error.message });
-//     }
-// });
 
 // POST - Add new patient with validation
 router.post("/", async (req, res) => {
@@ -83,28 +54,36 @@ router.post("/", async (req, res) => {
 
 // 🔄 PUT - Update patient by ID
 router.put("/:patient_id", async (req, res) => {
-  const patientID = req.params.patient_id; // Convert to number
-  const { firstname, age, gender } = req.body;
+  const { patient_id } = req.params; // Extract patient_id from URL
+  const updateData = req.body; // Extract only the fields sent in request
 
   try {
-    console.log("Searching for patient with ID:", patientID);
+    console.log("🔄 Updating patient with ID:", patient_id);
+
+    // Ensure the request body isn't empty
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({ message: "⚠️ No update data provided." });
+    }
+
+    // Find and update patient
     const updatedPatient = await patientModel.findOneAndUpdate(
-      { patient_id: patientID }, // ✅ Ensure numeric match
-      { firstname, age, gender },
-      { new: true }
+      { patient_id }, // Search by patient_id
+      { $set: updateData }, // Update only provided fields
+      { new: true } // Return updated document
     );
 
     if (!updatedPatient) {
-      return res.status(404).json({ message: "Patient not found" });
+      return res.status(404).json({ message: "❌ Patient not found" });
     }
 
-    res.json(updatedPatient);
+    res.json({ message: "✅ Patient updated successfully", patient: updatedPatient });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error updating patient", error: error.message });
+    console.error("❌ Error updating patient:", error);
+    res.status(500).json({ message: "⚠️ Error updating patient", error: error.message });
   }
 });
+
+
 
 // DELETE - Remove patient by ID
 router.delete("/:id", async (req, res) => {
@@ -120,6 +99,20 @@ router.delete("/:id", async (req, res) => {
     res
       .status(500)
       .json({ message: "Error deleting patient", error: error.message });
+  }
+});
+
+router.get("/auth/me", (req, res) => {
+  try {
+    console.log("Cookies received:", req.cookies); // Debug
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ error: "No token provided" });
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    res.json({ id: decoded.id });
+  } catch (err) {
+    console.error("JWT Verification Failed:", err);
+    res.status(403).json({ error: "Invalid token" });
   }
 });
 

@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
     const fetchUser = async () => {
       try {
         // 🔹 Fetch user session from the backend (JWT in HTTP-only cookies)
-        const response = await axios.get("http://localhost:3000/api/auth/me", {
+        const response = await axios.get("https://localhost:3000/api/auth/me", {
           withCredentials: true, // ✅ This sends the stored cookie automatically
         });
   
@@ -34,8 +34,8 @@ export const AuthProvider = ({ children }) => {
   // Login function
   const login = async (credentials, isStaff) => {
     const url = isStaff
-      ? "http://localhost:3000/staff/login"
-      : "http://localhost:3000/patient/login";
+      ? "https://localhost:3000/staff/login"
+      : "https://localhost:3000/patient/login";
 
     const response = await axios.post(url, credentials, {
       withCredentials: true,
@@ -59,7 +59,7 @@ export const AuthProvider = ({ children }) => {
 
   // Logout function
   const logout = async () => {
-    await axios.post("http://localhost:3000/auth/logout", {}, { withCredentials: true });
+    await axios.post("https://localhost:3000/auth/logout", {}, { withCredentials: true });
     setUser(null);
     localStorage.removeItem("user");
     localStorage.removeItem("allowedPages");

@@ -19,12 +19,12 @@ const authRoute = require("./routes/auth.js");
 const medicationRoute = require("./routes/pharma-route.js")
 const visitRoute = require("./routes/visitTable.js")
 const mroRoutes = require("./routes/mro-route")
-const infermedicaRoutes = require("./routes/infermedica.js")
 const typeOfVisitReportRoute = require ("./routes/typeOfPatientVisitReport.js")
 const doctorRoutes = require ("./routes/doctorRoutes.js")
 const icdRoutes = require("./routes/icdCode.js")
 const checkUpRoutes = require ("./routes/checkupRoutes.js")
 const prescriptionRoutes = require("./routes/prescriptionRoutes.js")
+const infermedicaRoutes = require("./routes/infermedica.js")
 const app = express();
 
 // ✅ Connect to MongoDB BEFORE initializing routes
@@ -35,10 +35,11 @@ const credentials = { key: privateKey, cert: certificate };
 
 // ✅ Middleware Setup
 app.use(cors({
-  origin: ["https://localhost:5173","https://localhost:3000"], // Frontend URL
-  credentials: true, // Allow cookies to be sent
-},
-));
+  origin: ["https://localhost:5173", "https://localhost:3000"], // Ensure HTTP, not HTTPS
+  methods: ["GET", "POST", "PUT","OPTIONS"], // Explicitly allow POST requests
+  allowedHeaders: ["Content-Type", "Authorization"], // Allow necessary headers
+  credentials: true // Allow cookies & authentication headers
+}));
 app.use(express.json());
 app.use(cookieParser());
 
@@ -57,25 +58,16 @@ app.use("/type-of-visit-report", typeOfVisitReportRoute) // routes for getting t
 app.use("/doctor", doctorRoutes)
 app.use("/icd", icdRoutes) //For icd 10 code routes
 app.use("/checkup", checkUpRoutes) // for checkup routes
-app.use("/prescriptions", prescriptionRoutes)
+app.use("/prescriptions", prescriptionRoutes) //Routes for the prescription HTTP Methods
+app.use("/infermedica-api", infermedicaRoutes) //For AI infermedica ROutes
 
 
-
-
-
-
-
-
+// app.use(express.json({ limit: "1mb" })); // Increase limit to 1MB
+// app.use(express.urlencoded({ extended: true, limit: "1mb" })); 
+//for testing the HTTPS
 app.get("/", (req, res) => {
   res.send("✅ HTTPS is working!");
 });
-
-
-// const options = {
-//   key: fs.readFileSync("server.key"), // Update with your SSL key file
-//   cert: fs.readFileSync("server.cert"), // Update with your SSL cert file
-// };
-
 
 
 // ✅ Start the Server

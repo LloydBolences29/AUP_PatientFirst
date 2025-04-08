@@ -16,5 +16,14 @@ const BillingSchema = new mongoose.Schema({
     status: { type: String, enum: ["pending", "paid"], default: "pending" },
   }, { timestamps: true });
 
+  BillingSchema.pre("save", function (next) {
+    this.items.forEach(item => {
+      item.total = item.quantity * item.price;
+    });
+    this.totalAmount = this.items.reduce((sum, item) => sum + item.total, 0);
+    next();
+  });
+  
+
 const Billing = mongoose.model("billing", BillingSchema)
 module.exports = Billing;

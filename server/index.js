@@ -53,7 +53,6 @@ app.use("/patientname", patientRoutes); // fetch, add, update and delete route f
 app.use("/api/pharma", medicationRoute) // fetch, add, update and delete medication and stock
 app.use("/patient-visit", visitRoute) // for recording the vital signs of the patient every visit
 app.use("/mro", mroRoutes) // Routes for MRO
-app.use("/infermedica-api", infermedicaRoutes) // routes for infermedica
 app.use("/type-of-visit-report", typeOfVisitReportRoute) // routes for getting the analytics for every type of patient visit
 app.use("/doctor", doctorRoutes)
 app.use("/icd", icdRoutes) //For icd 10 code routes

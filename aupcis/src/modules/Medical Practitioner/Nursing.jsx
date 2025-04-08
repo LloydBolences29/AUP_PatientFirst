@@ -281,20 +281,7 @@ const Nursing = () => {
   };
 
   const handleEditClick = (patient) => {
-    setPatientID(patient.patient_id);
-    setPatientfName(patient.firstname);
-    setPatientMiddleName(patient.middleInitial || ""); // Handle optional fields
-    setPatientlastName(patient.lastname || "");
-    setPatientContact(patient.contact_number || "");
-    setPatientAddress(patient.home_address || "");
-    setPatientDOB(patient.dob || "");
-    setPatientCivilStatus(patient.civil_status || "");
-    setPatientReligion(patient.religion || "");
-    setPatientNationality(patient.nationality || "");
-    setPatientAge(patient.age || "");
-    setPatientGender(patient.gender || "");
-    setIsEditing(true);
-    setIsOpen(true);
+    // Removed update functionality
   };
 
   const handleRowClick = (patient) => {
@@ -378,37 +365,11 @@ const Nursing = () => {
   };
 
   const handleDeleteClick = (patient) => {
-    setPatientToDelete(patient);
-    setIsDeleteModalOpen(true);
+    // Removed delete functionality
   };
 
   const confirmDeletePatient = async () => {
-    if (!patientToDelete) return;
-  
-    try {
-      const response = await fetch(
-        `https://localhost:3000/patientname/${patientToDelete._id}`,
-        {
-          method: "DELETE",
-        }
-      );
-      if (response.ok) {
-        const updatedPatients = patients.filter(
-          (patient) => patient._id !== patientToDelete._id
-        );
-        setPatients(updatedPatients);
-        setFilteredPatients(updatedPatients);
-        setNotification("Deleted successfully");
-        setTimeout(() => setNotification(""), 3000);
-      } else {
-        console.error("Error deleting patient:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error deleting patient:", error);
-    } finally {
-      setIsDeleteModalOpen(false);
-      setPatientToDelete(null);
-    }
+    // Removed delete confirmation functionality
   };
 
   return (
@@ -970,24 +931,6 @@ const Nursing = () => {
                             <td className="text-center">{i.gender}</td>
                             <td className="text-center">{i.age}</td>
                             <td className="text-center">
-                              <button
-                                className="btn btn-warning btn-sm mx-1"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleEditClick(i);
-                                }}
-                              >
-                                Update
-                              </button>
-                              <button
-                                className="btn btn-danger btn-sm mx-1"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDeleteClick(i);
-                                }}
-                              >
-                                Delete
-                              </button>
                               <button
                                 className="btn btn-success btn-sm mx-1"
                                 onClick={(e) => {

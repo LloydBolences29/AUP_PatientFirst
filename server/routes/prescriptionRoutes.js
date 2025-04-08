@@ -1,6 +1,9 @@
 const express = require("express");
 const Prescription = require("../model/Prescription");
 const CheckupModel = require("../model/checkup");
+const Patient = require("../model/Patient")
+const Billing = require("../model/BillingModel"); 
+const Medicine = require("../model/medication");// Assuming you have a Billing model defined in models/BillingModel.js
 const router = express.Router();
 
 router.get("/fetchPrescriptions", async (req, res) => {
@@ -75,6 +78,63 @@ router.put("/update/:id", async (req, res) => {
   } catch (error) {
     console.error("Error updating prescription status:", error);
     return res.status(500).json({ message: "Server error" });
+  }
+});
+
+ // make sure to import the model
+
+router.post("/sendBilling/:patientId", async (req, res) => {
+  try {
+    const { patientId } = req.params;
+    const { items } = req.body;
+
+    // Validate patient ID
+    if (!patientId) {
+      return res.status(400).json({ message: "Patient ID is required" });
+    }
+
+    const patient = await Patient.findById(patientId);
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ message: "Items must be a non-empty array" });
+    }
+
+    // Fetch prices from the Medicine collection
+    const processedItems = await Promise.all(items.map(async (item) => {
+      const medicine = await Medicine.findOne({ name: item.name });
+
+      if (!medicine) {
+        throw new Error(`Medicine "${item.name}" not found`);
+      }
+
+      return {
+        type: "medicine",
+        name: item.name,
+        quantity: item.quantity,
+        price: medicine.price,
+        total: item.quantity * medicine.price,
+      };
+    }));
+
+    const totalAmount = processedItems.reduce((sum, item) => sum + item.total, 0);
+
+    const newBilling = new Billing({
+      patientId,
+      department: "Pharmacy",
+      items: processedItems,
+      totalAmount,
+      status: "pending",
+    });
+
+    await newBilling.save();
+    res.status(201).json({ message: "Pharmacy billing created successfully!", billing: newBilling });
+
+  } catch (error) {
+    console.error("Error sending billing:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 });
 

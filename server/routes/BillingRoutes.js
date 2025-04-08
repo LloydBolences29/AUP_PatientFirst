@@ -1,6 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const Billing = require("../models/Billing");
+const Billing = require("../model/BillingModel"); // Assuming you have a Billing model defined in models/BillingModel.js
 const router = express.Router();
 
 // **1. Create a new billing record (Auto-assign department)**

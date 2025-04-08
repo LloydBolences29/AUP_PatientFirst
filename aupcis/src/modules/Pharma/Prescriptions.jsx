@@ -24,6 +24,25 @@ const Prescriptions = () => {
   const [selectedStatus, setSelectedStatus] = useState("pending"); // Default to Pending
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [prescriptionToDispense, setPrescriptionToDispense] = useState(null);
+  const [showBillModal, setShowBillModal] = useState(false);
+  const [billDetails, setBillDetails] = useState([]);
+  const [updatedQuantities, setUpdatedQuantities] = useState({});
+  const [medicineList, setMedicineList] = useState([]);
+
+  useEffect(() => {
+    const fetchMedicines = async () => {
+      try {
+        const res = await axios.get(
+          "https://localhost:3000/api/pharma/medicines"
+        );
+        setMedicineList(res.data.medicines); // Adjust key based on your API response
+      } catch (err) {
+        console.error("Error fetching medicines", err);
+      }
+    };
+
+    fetchMedicines();
+  }, []);
 
   const fetchPrescriptions = async () => {
     try {
@@ -129,6 +148,74 @@ const Prescriptions = () => {
   const cancelDispense = () => {
     setShowConfirmModal(false);
     setPrescriptionToDispense(null);
+  };
+
+  const handleGenerateBill = (prescription) => {
+    const items = prescription.prescriptions.map((med) => {
+      const medicineData = medicineList.find(
+        (m) => m.name.toLowerCase() === med.medication.toLowerCase()
+      );
+
+      return {
+        name: med.medication,
+        quantity: med.quantity || 0,
+        price: medicineData?.price || 0,
+      };
+    });
+
+    setBillDetails(items);
+    setUpdatedQuantities(
+      items.reduce((acc, item, index) => {
+        acc[index] = item.quantity;
+        return acc;
+      }, {})
+    );
+    setShowBillModal(true);
+  };
+
+  const confirmGenerateBill = async (prescription) => {
+    try {
+      const patientId = prescription.patientId?._id;
+      const checkupId = prescription.checkupId?._id;
+
+      const items = billDetails.map((item, index) => ({
+        name: item.name,
+        quantity: updatedQuantities[index],
+        price: item.price,
+      }));
+
+      const totalAmount = items.reduce(
+        (total, item) => total + item.quantity * item.price,
+        0
+      );
+
+      const res = await axios.post(
+        `https://localhost:3000/prescriptions/sendBilling/${patientId}`,
+        {
+          checkupId,
+          department: "Pharmacy",
+          items,
+          totalAmount,
+        }
+      );
+
+      if (res.status === 201) {
+        alert("Billing created successfully!");
+      }
+    } catch (error) {
+      console.error("Error creating billing:", error);
+      alert("Error creating billing. Please check the console for details.");
+    } finally {
+      setShowBillModal(false);
+    }
+  };
+
+  const handleQuantityChange = (index, value) => {
+    const parsed = parseInt(value);
+    setUpdatedQuantities((prev) => ({
+      ...prev,
+      [index]: isNaN(parsed) ? "" : parsed, // allow blank value
+    }));
   };
 
   return (
@@ -273,9 +360,7 @@ const Prescriptions = () => {
                     <Button
                       variant="warning"
                       className="me-2"
-                      onClick={() =>
-                        alert("Billing functionality not implemented yet.")
-                      }
+                      onClick={() => handleGenerateBill(selectedPrescription)}
                     >
                       Generate Bill
                     </Button>
@@ -297,6 +382,65 @@ const Prescriptions = () => {
                   Cancel
                 </Button>
                 <Button variant="success" onClick={confirmDispense}>
+                  Confirm
+                </Button>
+              </Modal.Footer>
+            </Modal>
+
+            {/* Bill Confirmation Modal */}
+            <Modal show={showBillModal} onHide={() => setShowBillModal(false)}>
+              <Modal.Header closeButton>
+                <Modal.Title>Confirm Bill Details</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th>Medication</th>
+                      <th>Price</th>
+                      <th>Quantity</th>
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {billDetails.map((item, index) => (
+                      <tr key={index}>
+                        <td>{item.name}</td>
+                        <td>{item.price}</td>
+                        <td>
+                          <input
+                            type="number"
+                            value={updatedQuantities[index] ?? ""}
+                            onChange={(e) =>
+                              handleQuantityChange(index, e.target.value)
+                            }
+                          />
+                        </td>
+                        <td>{item.price * updatedQuantities[index]}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <p>
+                  <strong>Total Amount:</strong>{" "}
+                  {billDetails.reduce(
+                    (total, item, index) =>
+                      total + item.price * updatedQuantities[index],
+                    0
+                  )}
+                </p>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button
+                  variant="secondary"
+                  onClick={() => setShowBillModal(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="success"
+                  onClick={() => confirmGenerateBill(selectedPrescription)}
+                >
                   Confirm
                 </Button>
               </Modal.Footer>

@@ -90,73 +90,54 @@ const Home = () => {
         </div>
       </div>
 
-      <footer className="footer">
-        <div className="footer-content container">
-          <div className="footer-logo">
-            <p className="footer-text">
-              <span className="patientLogo">Patient</span>
-              <span className="firstLogo">First</span>
-            </p>
-          </div>
-
-          <div className="footer-hours">
-            <h3 className="hoursHeader">Hours</h3>
-            <div className="hoursSchedule">
-              <div className="hoursDays">
-                <p>Monday: </p>
-                <p>Tuesday: </p>
-                <p>Wednesday: </p>
-                <p>Thursday: </p>
-                <p>Friday: </p>
-                <p>Sunday: </p>
-              </div>
-
-              <div className="hoursTime">
-                <p>9:00am - 5:00pm</p>
-                <p>9:00am - 5:00pm</p>
-                <p>9:00am - 5:00pm</p>
-                <p>9:00am - 5:00pm</p>
-                <p>8:00am - 4:00pm</p>
-                <p>9:00am - 5:00pm</p>
-              </div>
+      <footer className="footer py-4">
+        <div className="container">
+          <div className="row text-center text-md-start">
+            <div className="col-md-3 col-12 mb-3">
+              <p className="h5">
+                <span className="text-primary">Patient</span>
+                <span className="text-secondary">First</span>
+              </p>
             </div>
-          </div>
 
-          <div className="footer-contacts">
-            <h3 className="contactsFooter">Contacts</h3>
-            <p className="contactInfo" id="contact-info">
-              AUP Clinic, Putingkahoy, Silang Cavite 4118, Philippines
-            </p>
-            <p id="contact-info">
-              <span className="phoneNumberFooter" id="title">
-                Phone:{" "}
-              </span>{" "}
-              +63916 123 4567
-            </p>
-            <p id="contact-info">
-              <span className="emailFooter" id="title">
-                Email:{" "}
-              </span>
-              <a href="mailto: aupclinic@aup.edu.ph" id="contact-info">
-                aupclinic@aup.edu.ph
-              </a>
-            </p>
-          </div>
+            <div className="col-md-3 col-12 mb-3">
+              <h5>Hours</h5>
+              <ul className="list-unstyled">
+                <li>Monday: 9:00am - 5:00pm</li>
+                <li>Tuesday: 9:00am - 5:00pm</li>
+                <li>Wednesday: 9:00am - 5:00pm</li>
+                <li>Thursday: 9:00am - 5:00pm</li>
+                <li>Friday: 8:00am - 4:00pm</li>
+                <li>Sunday: 9:00am - 5:00pm</li>
+              </ul>
+            </div>
 
-          <div className="footer-thoughts">
-            <h3 className="thoughtsFooter">Thoughts To Live By</h3>
-            <p id="contact-info">
-              “A merry heart doeth good like a medicine: but a broken spirit
-              drieth the bones.”
-            </p>
-            <p id="title">Proverbs 17:22</p>
+            <div className="col-md-3 col-12 mb-3">
+              <h5>Contacts</h5>
+              <p className="mb-1">AUP Clinic, Putingkahoy, Silang Cavite 4118, Philippines</p>
+              <p className="mb-1">
+                <strong>Phone:</strong> +63916 123 4567
+              </p>
+              <p>
+                <strong>Email:</strong>{" "}
+                <a href="mailto:aupclinic@aup.edu.ph" className="text-decoration-none">
+                  aupclinic@aup.edu.ph
+                </a>
+              </p>
+            </div>
+
+            <div className="col-md-3 col-12 mb-3">
+              <h5>Thoughts To Live By</h5>
+              <p className="fst-italic">
+                “A merry heart doeth good like a medicine: but a broken spirit drieth the bones.”
+              </p>
+              <p className="fw-bold">Proverbs 17:22</p>
+            </div>
           </div>
         </div>
 
-        <div className="footer-bottom">
-          <p className="footer-bottom-text">
-            © 2021 PatientFirst. All rights reserved.
-          </p>
+        <div className="text-white text-center py-2" style={{ backgroundColor: "inherit" }}>
+          <p className="mb-0">© 2021 PatientFirst. All rights reserved.</p>
         </div>
       </footer>
     </>

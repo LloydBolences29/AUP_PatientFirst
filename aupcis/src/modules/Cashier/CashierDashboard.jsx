@@ -3,36 +3,24 @@ import Sidebar from '../../components/Sidebar';
 import SearchBar from '../../components/SearchBar';
 
 const CashierDashboard = () => {
-    const pharmasidebarLinks = [
+    const cashierSidebarLinks = [
         {
           label: "Cashier Dashboard",
           path: "/cashier-dashboard",
         },
         {
           label: "Transaction",
-          path: "/doctorpage",
-        },
-        {
-          label: "My Profile ",
-          path: "/profile",
-        },
-        {
-          label: "Appointments",
-          path: "/AppointmentHistory",
-        },
-        {
-          label: "Medical Records",
           path: "/",
         },
         {
           label: "Billing",
-          path: "/",
+          path: "/cashier-billing",
         },
       ];
   return (
     <div>
         <Sidebar
-                props={pharmasidebarLinks}
+                links={cashierSidebarLinks}
                 activeLink="Dashboard"
                 pageContent={
                     <>

@@ -22,6 +22,7 @@ import SymptomChecker from "./modules/Infermedica/SymptomChecker.jsx";
 import DoctorDashboard from "./modules/Medical Practitioner/Doctors.jsx"
 import DoctorPatientManagement from "./modules/Medical Practitioner/DoctorPatient.jsx"
 import Prescription from "./modules/Pharma/Prescriptions.jsx";
+import CashierBilling from "./modules/Cashier/CashierBilling.jsx";
 
 export default function App() {
   return (
@@ -64,6 +65,9 @@ export default function App() {
       </Route>
       <Route element={<ProtectedRoute allowedRoles={["Cashier"]} />}>
         <Route path="/cashier-dashboard" element={<CashierDashboard />} />
+      </Route>
+      <Route element={<ProtectedRoute allowedRoles={["Cashier"]} />}>
+        <Route path="/cashier-billing" element={<CashierBilling />} />
       </Route>
       <Route element={<ProtectedRoute allowedRoles={["Pharmacist"]} />}>
         <Route path="/pharma-dashboard" element={<PharmaDashboard />} />

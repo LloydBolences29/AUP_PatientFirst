@@ -28,6 +28,7 @@ const Prescriptions = () => {
   const [billDetails, setBillDetails] = useState([]);
   const [updatedQuantities, setUpdatedQuantities] = useState({});
   const [medicineList, setMedicineList] = useState([]);
+  // const [checkupId, setCheckupId] = useState(null);
 
   useEffect(() => {
     const fetchMedicines = async () => {
@@ -43,6 +44,28 @@ const Prescriptions = () => {
 
     fetchMedicines();
   }, []);
+
+  useEffect(() => {
+    const fetchCheckUps = async () => {
+      try {
+        const res = await axios.get("https://localhost:3000/checkup/getCheckup");
+        const checkups = res.data.map((checkup) => {
+          return {
+            ...checkup,
+            patientId: checkup.patientId,
+            checkupId: checkup._id,
+
+          }
+        });
+        setCheckupId(checkups);
+      } catch (err) {
+        console.error("Error fetching checkups", err);
+      }
+      
+    }
+    fetchCheckUps();
+  },[])
+
 
   const fetchPrescriptions = async () => {
     try {
@@ -269,6 +292,7 @@ const Prescriptions = () => {
                 <tr>
                   <th>Patient ID</th>
                   <th>Patient Name</th>
+                  <th>Patient Type</th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
@@ -285,6 +309,7 @@ const Prescriptions = () => {
                           ? `${prescription.patientId?.firstname} ${prescription.patientId?.lastname}`
                           : "Unknown"}
                       </td>
+                      <td>{prescription.checkupId?.patientType}</td>
                       <td>
                         <span
                           className={`badge ${
@@ -326,6 +351,9 @@ const Prescriptions = () => {
                 >
                   Close
                 </Button>
+
+               
+                
                 {/* Loop through medications in the prescription */}
                 {selectedPrescription.prescriptions?.map((med, index) => (
                   <div key={index} className="mb-3">

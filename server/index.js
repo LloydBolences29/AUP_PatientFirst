@@ -25,6 +25,7 @@ const icdRoutes = require("./routes/icdCode.js")
 const checkUpRoutes = require ("./routes/checkupRoutes.js")
 const prescriptionRoutes = require("./routes/prescriptionRoutes.js")
 const infermedicaRoutes = require("./routes/infermedica.js")
+const billingRoutes = require("./routes/BillingRoutes.js")
 const app = express();
 
 // ✅ Connect to MongoDB BEFORE initializing routes
@@ -59,6 +60,7 @@ app.use("/icd", icdRoutes) //For icd 10 code routes
 app.use("/checkup", checkUpRoutes) // for checkup routes
 app.use("/prescriptions", prescriptionRoutes) //Routes for the prescription HTTP Methods
 app.use("/infermedica-api", infermedicaRoutes) //For AI infermedica ROutes
+app.use("/billing", billingRoutes) //For billing routes
 
 
 // app.use(express.json({ limit: "1mb" })); // Increase limit to 1MB

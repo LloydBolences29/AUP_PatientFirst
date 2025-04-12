@@ -46,7 +46,7 @@ router.get("/icd10/search", async (req, res) => {
 // 🔹 Create a new checkup with multiple ICD-10 codes
 router.post("/create-new", async (req, res) => {
   try {
-    const { patientId, doctorFee, icd, additionalNotes, patientType } = req.body;
+    const { visitId, patientId, doctorFee, icd, additionalNotes, patientType } = req.body;
 
     // ✅ Validate Inputs
     if (!patientId || !Array.isArray(icd) || icd.length === 0) {
@@ -67,6 +67,7 @@ router.post("/create-new", async (req, res) => {
 
     // ✅ Create Checkup Record (No prescriptions here)
     const newCheckup = new Checkup({
+      visitId,
       patientId,
       icd, // Stores ICD-10 codes as an array of ObjectIds
       additionalNotes,
@@ -110,8 +111,14 @@ router.post("/create-new", async (req, res) => {
 router.get("/getCheckup", async (req, res) => {
   try {
     const checkups = await Checkup.find()
-      .populate("patientId", "firstname age gender") // Populate patient details
-      .populate("icd", "code shortdescription"); // Populate ICD-10 details
+    .populate({
+      path: "visitId",
+      populate: {
+        path: "patient_id",
+        model: "patientname", // Name of the model you're referencing
+         // You can customize what fields to return
+      }, // What to return from Visit
+    })      .populate("icd", "code shortdescription"); // Populate ICD-10 details
 
     res.status(200).json(checkups);
   } catch (error) {

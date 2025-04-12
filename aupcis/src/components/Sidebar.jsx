@@ -54,7 +54,7 @@ export const Sidebar = forwardRef(({ links, pageContent }, ref) => {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("http://localhost:3000/staff/logout", {
+      const response = await fetch("https://localhost:3000/staff/logout", {
         method: "POST",
         credentials: "include", // Required to include cookies in the request
       });
@@ -90,9 +90,6 @@ export const Sidebar = forwardRef(({ links, pageContent }, ref) => {
               <ul className="user-menu-list-wrapper">
                 <NavLink to={"/"} className="user-menu-list">
                   Settings
-                </NavLink>
-                <NavLink to={"/"} className="user-menu-list">
-                  Feedback
                 </NavLink>
 
                 <NavLink

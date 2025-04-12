@@ -54,6 +54,7 @@ const DoctorPatient = () => {
       const response = await fetch("https://localhost:3000/doctor/get-patients");
       if (!response.ok) throw new Error("Failed to fetch visits");
       const data = await response.json();
+      console.log("Fetched visits:", data);
       setVisits(data);
     } catch (error) {
       console.error("Error fetching visits:", error);
@@ -62,6 +63,7 @@ const DoctorPatient = () => {
 
   const handleRowClick = (visit) => {
     setSelectedVisit(visit);
+    console.log("Selected visit:", selectedVisit);
     setChiefComplaint(visit.chiefComplaints || ""); // Initialize chief complaint
     setIsModalOpen(true);
   };
@@ -134,6 +136,7 @@ const DoctorPatient = () => {
   const toggleChiefComplaintEdit = () => {
     setIsEditingChiefComplaint(!isEditingChiefComplaint);
   };
+  console.log("Checkup response:", selectedVisit);
 
   const handleSubmitVisitDetails = async () => {
     setLoading(true);
@@ -142,7 +145,8 @@ const DoctorPatient = () => {
       const checkupResponse = await axios.post(
         "https://localhost:3000/checkup/create-new",
         {
-          patientId: selectedVisit.patient_id?._id,
+         visitId: selectedVisit._id,
+         patientId: selectedVisit.patient_id?._id,
           icd: selectedICD.map((icd) => icd._id),
           additionalNotes: doctorNote,
           doctorFee: parseFloat(doctorFee),
@@ -150,6 +154,7 @@ const DoctorPatient = () => {
 
         }
       );
+
       const checkupId = checkupResponse.data.checkupId;
 
       await axios.post(

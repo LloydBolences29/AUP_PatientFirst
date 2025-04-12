@@ -17,6 +17,7 @@ const CashierBilling = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [billingDetails, setBillingDetails] = useState([]); // Initialize as an empty array});
   const [showModal, setShowModal] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("Cash"); // Default payment method
 
   const handleSearch = async () => {
     try {
@@ -200,8 +201,21 @@ const CashierBilling = () => {
         <Modal.Body>
           <p>
             Are you sure you want to proceed with the payment of ₱
-            {totalDue.toFixed(2)}
+            {totalDue.toFixed(2)}?
           </p>
+          <Form.Group controlId="paymentMethod" className="mt-3">
+            <Form.Label>Select Payment Method</Form.Label>
+            <Form.Control
+              as="select"
+              value={paymentMethod}
+              onChange={(e) => setPaymentMethod(e.target.value)}
+            >
+              <option value="Cash">Cash</option>
+              <option value="GCash">GCash</option>
+              <option value="Bank Transfer">Bank Transfer</option>
+              <option value="Charge to Account">Charge to Account</option>
+            </Form.Control>
+          </Form.Group>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleModalClose}>
@@ -211,7 +225,7 @@ const CashierBilling = () => {
             variant="primary"
             onClick={() => {
               handleModalClose();
-              alert("Payment Successful!");
+              alert(`Payment Successful! Method: ${paymentMethod}`);
             }}
           >
             Confirm Payment

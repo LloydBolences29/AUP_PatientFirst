@@ -39,20 +39,49 @@ const fetchPatientData = async (req, res) => {
 
 const checkups = async (req, res) => {
   try {
-    const { patientId } = req.params;
-    console.log("Searching for patientId:", patientId);
+    const { searchValue } = req.params; // This can be patient_id, firstname, or lastname
+    console.log("Searching for:", searchValue);
 
-    const visits = await Checkup.find().populate({
-      path: "visitId",
-      match: { "patient_id.patient_id": patientId }, // Match the patientId in the visitId
+    const checkups = await Checkup.find()
+    .populate({
+      path: 'visitId',
+      populate: {
+        path: 'patient_id',
+        // select: 'firstname lastname patient_id'
+      }
+    })
+    .populate("icd", "code shortdescription"); // Populate ICD-10 details
+
+    const filteredCheckups = checkups.filter((checkup) => {
+      const patient = checkup?.visitId?.patient_id;
+      if (!patient) return false;
+    
+      const search = searchValue.toLowerCase().trim();
+      return (
+        String(patient.patient_id).toLowerCase().trim() === search ||
+        patient.firstname.toLowerCase().includes(search) ||
+        patient.lastname.toLowerCase().includes(search)
+      );
     });
-    const filteredVisits = visits.filter((v) => v.visitId !== null);
-    console.log(filteredVisits);
+    
+    checkups.forEach((checkup, i) => {
+      const patient = checkup?.visitId?.patient_id;
+      console.log(`Checkup ${i}:`, {
+        patient_id: patient?.patient_id,
+        firstname: patient?.firstname,
+        lastname: patient?.lastname
+      });
+    });
+    
 
-    res.json(visits);
+
+    res.json(filteredCheckups);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch visits" });
+    console.error("Error fetching checkups:", error);
+    res.status(500).json({ error: "Failed to fetch checkups" });
   }
-}; // Get the search query from the request
+};
+
+
 
 module.exports = { getPatientData, fetchPatientData, checkups };

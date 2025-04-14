@@ -42,12 +42,12 @@ const MROMngt = () => {
         .includes(search.toLowerCase()) // Filter by name
   );
 
-  const fetchPatientVisits = async (patientId) => {
+  const fetchPatientVisits = async (searchValue) => {
     try {
       const response = await axios.get(
-        `https://localhost:3000/mro/checkups/${patientId}`
+        `https://localhost:3000/mro/checkups/${searchValue}`
       );
-      console.log(response.data);
+      console.log("response", response.data);
       setPatientVisits(response.data);
     } catch (error) {
       console.error("Error fetching visits", error);
@@ -58,6 +58,11 @@ const MROMngt = () => {
     { label: "Dashboard", path: "/medicalRecord-dashboard" },
     { label: "Patient Management", path: "/medicalRecord-management" },
   ];
+  console.log(
+    "Null visits:",
+    patientVisits.filter((v) => !v.visitId)
+  );
+
   return (
     <div>
       <Sidebar
@@ -182,30 +187,41 @@ const MROMngt = () => {
                                   );
                                 })
                                 .map((visit, index) => (
-                                  <li key={index}>
-                                    <strong>Date:</strong>{" "}
-                                    {visit.visitId?.visit_date
-                                      ? new Date(
-                                          visit.visitId.visit_date
-                                        ).toLocaleDateString()
-                                      : "No date"}
-                                    <br />
-                                    <strong>Purpose:</strong>{" "}
-                                    {visit.visitId?.purpose || "N/A"}
-                                    <br />
-                                    <strong>Diagnosis:</strong>{" "}
-                                    {visit.icd?.length > 0
-                                      ? visit.icd
-                                          .map(
-                                            (icd) =>
-                                              `${icd.code} - ${icd.shortdescription}`
-                                          )
-                                          .join(", ")
-                                      : "N/A"}
-                                    <br />
-                                    <strong>Notes:</strong>{" "}
-                                    {visit.additionalNotes || "N/A"}
-                                  </li>
+                                  <Card
+                                    key={index}
+                                    className="mb-3"
+                                    style={{
+                                      border: "1px solid #007bff",
+                                      borderRadius: "8px",
+                                      padding: "10px",
+                                      backgroundColor: "#f8f9fa",
+                                    }}
+                                  >
+                                    <li>
+                                      <strong>Date:</strong>{" "}
+                                      {visit.visitId?.visit_date
+                                        ? new Date(
+                                            visit.visitId.visit_date
+                                          ).toLocaleDateString()
+                                        : "No date"}
+                                      <br />
+                                      <strong>Purpose:</strong>{" "}
+                                      {visit.visitId?.purpose || "N/A"}
+                                      <br />
+                                      <strong>Diagnosis:</strong>{" "}
+                                      {visit.icd?.length > 0
+                                        ? visit.icd
+                                            .map(
+                                              (icd) =>
+                                                `${icd.code} - ${icd.shortdescription}`
+                                            )
+                                            .join(", ")
+                                        : "N/A"}
+                                      <br />
+                                      <strong>Notes:</strong>{" "}
+                                      {visit.additionalNotes || "N/A"}
+                                    </li>
+                                  </Card>
                                 ))}
                             </ul>
                           </>

@@ -3,7 +3,6 @@ import Sidebar from "../../components/Sidebar";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-
 const SymptomChecker = () => {
   const [step, setStep] = useState(1);
   const [age, setAge] = useState("");
@@ -20,6 +19,7 @@ const SymptomChecker = () => {
   const [selectedFollowUp, setSelectedFollowUp] = useState([]);
   const [error, setError] = useState("");
   const [errors, setErrors] = useState({}); // State to track validation errors
+  const [disclaimerAgreed, setDisclaimerAgreed] = useState(false); // Track disclaimer agreement
 
   const validateStep1 = () => {
     const newErrors = {};
@@ -252,7 +252,36 @@ const SymptomChecker = () => {
         links={menuLinks}
         pageContent={
           <div className="container mt-4">
-            {step === 1 && (
+            {step === 1 && !disclaimerAgreed && (
+              <div className="card p-4">
+                <h2 className="mb-3">Disclaimer</h2>
+                <p>
+                  This symptom checker is powered by AI and is not a substitute for professional medical advice, diagnosis, or treatment. 
+                  It is intended to provide general information only. Always consult a healthcare professional for medical concerns.
+                </p>
+                <div className="form-check">
+                  <input
+                    type="checkbox"
+                    className="form-check-input"
+                    id="disclaimerCheck"
+                    checked={disclaimerAgreed}
+                    onChange={(e) => setDisclaimerAgreed(e.target.checked)}
+                  />
+                  <label className="form-check-label" htmlFor="disclaimerCheck">
+                    I understand and agree to the terms above.
+                  </label>
+                </div>
+                {/* <button
+                  className="btn btn-primary mt-3"
+                  disabled={!disclaimerAgreed} // Button is disabled until checkbox is checked
+                  onClick={() => setStep(1)}
+                >
+                  Proceed
+                </button> */}
+              </div>
+            )}
+
+            {step === 1 && disclaimerAgreed && (
               <div className="card p-4">
                 <h2 className="mb-3">Step 1: Enter Your Information</h2>
                 <div className="mb-3">

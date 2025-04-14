@@ -4,6 +4,7 @@ import Sidebar from "../../components/Sidebar";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import CustomBarChart from "../../components/CustomBarChart";
+import { Card } from "react-bootstrap";
 
 const MedicalRecordDashboard = () => {
   const sidebarRef = useRef(null);
@@ -133,25 +134,21 @@ const MedicalRecordDashboard = () => {
             </div>
             <div className="mro-charts-wrapper">
               {/* Chart */}
-              <div id="mro-patient-visit-per-purpose">
-                <CustomBarChart
-                  title={`Patient Count (${selectedType})`}
-                  data={patientCounts.map((item) => ({
-                    label: item._id || "Unknown",
-                    value: item.count || 0,
-                  }))}
-                />
-              </div>
+              <Card className="mb-4">
+                <Card.Body>
+                  <Card.Title>Patient Visit Per Purpose</Card.Title>
+                  <div id="mro-patient-visit-per-purpose">
+                    <CustomBarChart
+                      title={`Patient Count (${selectedType})`}
+                      data={patientCounts.map((item) => ({
+                        label: item._id || "Unknown",
+                        value: item.count || 0,
+                      }))}
+                    />
+                  </div>
+                </Card.Body>
+              </Card>
 
-              <div id="mro-total-patient-visit">
-                <CustomBarChart
-                  title={`Patient Count (${selectedType})`}
-                  data={patientCounts.map((item) => ({
-                    label: item._id || "Unknown",
-                    value: item.count || 0,
-                  }))}
-                />
-              </div>
             </div>
           </>
         }

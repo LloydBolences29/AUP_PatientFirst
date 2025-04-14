@@ -6,6 +6,6 @@ const mroController = require("../controllers/mroControllers")
 router.get("/patient-data", mroController.getPatientData )
 //get all patients
 router.get("/patients", mroController.fetchPatientData)
-router.get("/checkups/:patientId", mroController.checkups)
+router.get("/checkups/:searchValue", mroController.checkups)
 
 module.exports = router

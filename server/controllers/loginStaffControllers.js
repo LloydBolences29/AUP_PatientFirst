@@ -13,7 +13,8 @@ const accessControl = {
     Nurse: ["/nurse-dashboard", "/patient-management", "/nurse-analytics"],
     Doctor: ["/doctor-dashboard", "/doctor-patient-management"],
     Cashier: ["/cashier-dashboard", "/payment"],
-    Pharmacist: ["/pharma-dashboard", "/pharma-transaction", "/medicine-list", "/prescription-page"]
+    Pharmacist: ["/pharma-dashboard", "/pharma-transaction", "/medicine-list", "/prescription-page"],
+    Radiologist: ["/xray-dashboard", "/xray-billing"]
 };
 
 

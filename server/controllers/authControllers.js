@@ -12,7 +12,10 @@ const accessControl = {
     Nurse: ["/nurse-dashboard", "/patient-management", "/nurse-analytics"],
     Doctor: ["/doctor-dashboard", "/doctor-analytics"],
     Cashier: ["/cashier-dashboard", "/payment"],
-    Pharmacist: ["/pharma-dashboard", "/pharma-transaction", "/medicine-list"]
+    Pharmacist: ["/pharma-dashboard", "/pharma-transaction", "/medicine-list"],
+    Radiologist: ["/xray-dashboard", "/xray-billing"],
+    Laboratory: ["/lab-dashboard", "/lab-billing"],
+    
 };
 
 // JWT Secret Key

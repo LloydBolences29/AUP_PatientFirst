@@ -186,6 +186,7 @@ const AdminRoleManagement = () => {
                             <option value="Pharmacist">Pharmacist</option>
                             <option value="Cashier">Cashier</option>
                             <option value="Admin">Admin</option>
+                            <option value="Radiologist">Radiologist</option>
                           </select>
                         </div>
                         <div className="form-group col-md-2">

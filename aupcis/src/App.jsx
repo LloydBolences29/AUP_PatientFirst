@@ -23,6 +23,8 @@ import DoctorDashboard from "./modules/Medical Practitioner/Doctors.jsx"
 import DoctorPatientManagement from "./modules/Medical Practitioner/DoctorPatient.jsx"
 import Prescription from "./modules/Pharma/Prescriptions.jsx";
 import CashierBilling from "./modules/Cashier/CashierBilling.jsx";
+import XrayDashboard from "./modules/Xray/Xray.jsx"
+import XrayBilling from "./modules/Xray/XrayBilling.jsx";
 
 export default function App() {
   return (
@@ -86,6 +88,12 @@ export default function App() {
       </Route>
       <Route element={<ProtectedRoute allowedRoles={["MedicalRecordsOfficer"]} />}>
         <Route path="/medicalRecord-management" element={<MedicalRecordManagement />} />
+      </Route>
+      <Route element={<ProtectedRoute allowedRoles={["Radiologist"]} />}>
+        <Route path="/xray-dashboard" element={<XrayDashboard />} />
+      </Route>
+      <Route element={<ProtectedRoute allowedRoles={["Radiologist"]} />}>
+        <Route path="/xray-billing" element={<XrayBilling />} />
       </Route>
 
     </Routes>

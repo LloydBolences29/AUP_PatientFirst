@@ -81,7 +81,7 @@ router.put("/update/:id", async (req, res) => {
   }
 });
 
- // make sure to import the model
+
 
 router.post("/sendBilling/:patientId", async (req, res) => {
   try {

@@ -17,7 +17,7 @@ const CashierBilling = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [billingDetails, setBillingDetails] = useState([]); // Initialize as an empty array});
   const [showModal, setShowModal] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState("Cash"); // Default payment method
+  const [paymentMethod, setPaymentMethod] = useState(""); // Default payment method
 
   const handleSearch = async () => {
     try {
@@ -38,6 +38,29 @@ const CashierBilling = () => {
 
   const handleModalClose = () => setShowModal(false);
   const handleModalShow = () => setShowModal(true);
+
+
+  const handlePayment = async () => {
+    try {
+      for (const bill of billingDetails) {
+        await axios.put(
+          `https://localhost:3000/billing/update/${bill._id}`,
+          {
+            modeOfPayment: paymentMethod,
+          }
+        );
+      }
+  
+      alert("Payment successful!");
+      setShowModal(false);
+      setBillingDetails([]); // Clear the billing view
+      setSearchQuery(""); // Optional: reset search
+    } catch (error) {
+      console.error("Payment error:", error);
+      alert("An error occurred while processing the payment.");
+    }
+  };
+  
 
   const cashierSidebarLinks = [
     {
@@ -210,10 +233,10 @@ const CashierBilling = () => {
               value={paymentMethod}
               onChange={(e) => setPaymentMethod(e.target.value)}
             >
-              <option value="Cash">Cash</option>
-              <option value="GCash">GCash</option>
-              <option value="Bank Transfer">Bank Transfer</option>
-              <option value="Charge to Account">Charge to Account</option>
+              <option value="cash">Cash</option>
+              <option value="gcash">GCash</option>
+              <option value="bank-transfer">Bank Transfer</option>
+              <option value="charge-to-account">Charge to Account</option>
             </Form.Control>
           </Form.Group>
         </Modal.Body>
@@ -225,7 +248,7 @@ const CashierBilling = () => {
             variant="primary"
             onClick={() => {
               handleModalClose();
-              alert(`Payment Successful! Method: ${paymentMethod}`);
+            handlePayment();
             }}
           >
             Confirm Payment

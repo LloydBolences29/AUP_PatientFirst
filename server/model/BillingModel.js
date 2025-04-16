@@ -13,6 +13,7 @@ const BillingSchema = new mongoose.Schema({
       },
     ],
     totalAmount: { type: Number, required: true },
+    modeOfPayment: { type: String, enum: ["cash","gcash", "bank-transfer", "charge-to-account"] },
     status: { type: String, enum: ["pending", "paid"], default: "pending" },
   }, { timestamps: true });
 

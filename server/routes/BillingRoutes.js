@@ -88,14 +88,24 @@ router.get("/pending", async (req, res) => {
 router.put("/update/:billingId", async (req, res) => {
   try {
     const { billingId } = req.params;
+    const { modeOfPayment } = req.body; // Assuming you want to update the mode of payment as well
 
     if (!mongoose.Types.ObjectId.isValid(billingId)) {
       return res.status(400).json({ message: "Invalid billing ID" });
     }
 
+    // Validate modeOfPayment (optional but good practice)
+    const validModes = ["cash", "gcash", "bank-transfer", "charge-to-account"];
+    if (!validModes.includes(modeOfPayment)) {
+      return res.status(400).json({ message: "Invalid mode of payment" });
+    }
+
     const updatedBilling = await Billing.findByIdAndUpdate(
       billingId,
-      { status: "paid" },
+      {
+        status: "paid",
+        modeOfPayment: modeOfPayment, // Update status and mode of payment
+      },
       { new: true } // Return the updated document
     );
 
@@ -129,38 +139,32 @@ router.get("/patient/:patientId", async (req, res) => {
 
     res.json({ patientBills });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        message: "Error fetching billing history",
-        error: error.message,
-      });
+    res.status(500).json({
+      message: "Error fetching billing history",
+      error: error.message,
+    });
   }
 });
 
 // GET /billing/search?query=John
 router.get("/billing/search", async (req, res) => {
-  const query = req.query.query;
+  const query = req.query.query?.toLowerCase() || "";
 
   try {
-    // Populate patientId to access its nested fields
-    const results = await Billing.find()
-      .populate("patientId") // Make sure this matches your ref in the schema
-      .then((billings) => {
-        // Filter manually after population
-        return billings.filter((billing) => {
-          const patient = billing.patientId;
+    // Find only pending billing records and populate patientId
+    const billings = await Billing.find({ status: "pending" }).populate("patientId");
 
-          if (!patient) return false;
+    // Filter manually after population for patient info
+    const results = billings.filter((billing) => {
+      const patient = billing.patientId;
+      if (!patient) return false;
 
-          const q = query.toLowerCase();
-          return (
-            patient.patient_id?.toLowerCase().includes(q) ||
-            patient.firstname?.toLowerCase().includes(q) ||
-            patient.lastname?.toLowerCase().includes(q)
-          );
-        });
-      });
+      return (
+        patient.patient_id?.toLowerCase().includes(query)||
+        patient.firstname?.toLowerCase().includes(query) ||
+        patient.lastname?.toLowerCase().includes(query)
+      );
+    });
 
     res.json(results);
   } catch (err) {

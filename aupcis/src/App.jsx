@@ -25,6 +25,9 @@ import Prescription from "./modules/Pharma/Prescriptions.jsx";
 import CashierBilling from "./modules/Cashier/CashierBilling.jsx";
 import XrayDashboard from "./modules/Xray/Xray.jsx"
 import XrayBilling from "./modules/Xray/XrayBilling.jsx";
+import XrayUpload from "./modules/Xray/XrayUpload.jsx";
+import LabDashboard from "./modules/Lab/LabDashboard.jsx";
+import LabBilling from "./modules/Lab/LabBilling.jsx";
 
 export default function App() {
   return (
@@ -94,6 +97,15 @@ export default function App() {
       </Route>
       <Route element={<ProtectedRoute allowedRoles={["Radiologist"]} />}>
         <Route path="/xray-billing" element={<XrayBilling />} />
+      </Route>
+      <Route element={<ProtectedRoute allowedRoles={["Radiologist"]} />}>
+        <Route path="/xray-upload" element={<XrayUpload />} />
+      </Route>
+      <Route element={<ProtectedRoute allowedRoles={["lab"]} />}>
+        <Route path="/lab-dashboard" element={<LabDashboard />} />
+      </Route>
+      <Route element={<ProtectedRoute allowedRoles={["lab"]} />}>
+        <Route path="/lab-billing" element={<LabBilling />} />
       </Route>
 
     </Routes>

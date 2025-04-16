@@ -27,6 +27,9 @@ const prescriptionRoutes = require("./routes/prescriptionRoutes.js")
 const infermedicaRoutes = require("./routes/infermedica.js")
 const billingRoutes = require("./routes/BillingRoutes.js")
 const xrayRoutes = require("./routes/xrayRoutes.js")
+const labTestRoute = require("./routes/labTestRoute.js") // Import the lab test route
+
+
 const app = express();
 
 // ✅ Connect to MongoDB BEFORE initializing routes
@@ -63,6 +66,8 @@ app.use("/prescriptions", prescriptionRoutes) //Routes for the prescription HTTP
 app.use("/infermedica-api", infermedicaRoutes) //For AI infermedica ROutes
 app.use("/billing", billingRoutes) //For billing routes
 app.use("/xray", xrayRoutes) //For xray routes
+app.use("/labTest", labTestRoute) //For lab test routes
+
 
 
 

@@ -15,6 +15,8 @@ const accessControl = {
     Pharmacist: ["/pharma-dashboard", "/pharma-transaction", "/medicine-list"],
     Radiologist: ["/xray-dashboard", "/xray-billing"],
     Laboratory: ["/lab-dashboard", "/lab-billing"],
+    lab: ["/lab-dashboard", "/lab-billing", "/lab-upload"],
+
     
 };
 

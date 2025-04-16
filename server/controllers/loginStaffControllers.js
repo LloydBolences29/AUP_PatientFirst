@@ -14,7 +14,8 @@ const accessControl = {
     Doctor: ["/doctor-dashboard", "/doctor-patient-management"],
     Cashier: ["/cashier-dashboard", "/payment"],
     Pharmacist: ["/pharma-dashboard", "/pharma-transaction", "/medicine-list", "/prescription-page"],
-    Radiologist: ["/xray-dashboard", "/xray-billing"]
+    Radiologist: ["/xray-dashboard", "/xray-billing", "/xray-upload"],
+    lab: ["/lab-dashboard", "/lab-billing", "/lab-upload"],
 };
 
 

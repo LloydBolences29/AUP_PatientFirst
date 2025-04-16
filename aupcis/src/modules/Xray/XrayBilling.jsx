@@ -98,7 +98,9 @@ setShowModal(false); // Close the modal after generating the bill
   const xraySidebarLinks = [
     { label: "Dashboard", path: "/xray-dashboard" },
     { label: "Billing", path: "/xray-billing" },
+    { label: "Upload", path: "/xray-upload" },
   ];
+ 
 console.log("Patient Data:", patientData); // Log the patient data to check its structure
   return (
     <div>

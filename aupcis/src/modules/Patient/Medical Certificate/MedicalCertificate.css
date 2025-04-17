@@ -1,0 +1,16 @@
+/* .TableContainer{
+    justify-self: center;
+} */
+.TableHead{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.TableForm{
+    padding-left: 3rem;
+}
+#TableInfo{
+    border: 1px solid black;
+    width: 5rem;
+    padding-right: 20rem;
+}

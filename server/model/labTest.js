@@ -12,12 +12,6 @@ const LaboratoryTestSchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
-    enum: [
-      'Hematology',
-      'Blood Chemistry & Immunology',
-      'Test Package',
-      'Other'
-    ]
   },
   isPackage: {
     type: Boolean,

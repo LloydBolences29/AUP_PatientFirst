@@ -1,0 +1,30 @@
+.FeedbackIntro{
+    font-size: 1rem;
+    font-weight: bolder;
+}
+.FeedbackProper{
+    padding-left: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.FeedbackBTN{
+    font-weight: bold;
+    width: 7rem;
+}
+.FeedbackOthers{
+    display: flex;
+    flex-direction: row;
+}
+.FeedbackBTN2{
+    padding-top: 1rem;
+}
+.FeedbackInput{
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    resize: both;
+    min-height: 40px;
+    line-height: 20px;
+    border: 2px solid black;
+}

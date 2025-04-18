@@ -1,0 +1,114 @@
+.OverallBillHeader {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 3rem;
+}
+.BillingHeader1 {
+    background-color: #fafafa;
+    box-shadow: 3px 3px 3px 3px grey;
+}
+.BillingHeader2 {
+    display: flex;
+    flex-direction: row;
+}
+.BillingProfilePic {
+    font-size: 10rem;
+    padding-left: 1rem;
+}
+.BiilingHeaderInfo1 {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+}
+.FirstInfoBill {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+}
+.SecondInfoBill {
+    list-style: none;
+    padding-top: 1rem;
+}
+.BiilingHeaderInfo2 {
+    display: flex;
+    flex-direction: column;
+}
+#ThirdInfoBill1 {
+    padding-left: 35rem;
+    padding-top: 1rem;
+}
+#ThirdInfoBill2 {
+    padding-left: 38rem;
+    list-style: none;
+}
+.ThirdInfoBillBTN {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    padding-left: 35rem;
+    padding-top: 3rem;
+}
+#ThirdInfoBillBTNs {
+    width: 10rem;
+    font-size: 20px;
+    border-radius: 0.4rem;
+    background-color: #2c3e50;
+    color: white;
+}
+#ThirdInfoBillBTNs1 {
+    width: 5rem;
+    font-size: 20px;
+    border-radius: 0.4rem;
+    background-color: #2c3e50;
+    color: white;
+}
+#BillingSentence {
+    display: flex;
+    flex-direction: column;
+    justify-self: center;
+    padding-top: 2rem;
+}
+#BillingSentence2 {
+    justify-self: center;
+}
+#BillHistory {
+    list-style: none;
+}
+.BillHistoryFirstBar {
+    background-color: #fafafa;
+    padding-right: 3rem;
+}
+.BillHistoryFirstBar1 {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+}
+.BillHistoryFirstBar2 {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+}
+.DatePicks {
+    padding-top: 0.4rem;
+}
+.BillHistoryFirstBar3 {
+    background-color: rgba(44, 62, 80, 0.2);
+    height: 3.5rem;
+}
+.BillHistoryFirstBar4 {
+    background-color: #fafafa;
+    box-shadow: 3px 3px 3px 3px grey;
+}
+.BillHistoryFirstBar5 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+.BillHistoryTable {
+    display: flex;
+    flex-direction: row;
+    padding-top: 1rem;
+    padding-left: 2rem;
+    gap: 11.5rem;
+}

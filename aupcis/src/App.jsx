@@ -28,6 +28,7 @@ import XrayBilling from "./modules/Xray/XrayBilling.jsx";
 import XrayUpload from "./modules/Xray/XrayUpload.jsx";
 import LabDashboard from "./modules/Lab/LabDashboard.jsx";
 import LabBilling from "./modules/Lab/LabBilling.jsx";
+import Queue from "./modules/Medical Practitioner/Queue.jsx";
 
 export default function App() {
   return (
@@ -35,6 +36,7 @@ export default function App() {
       {/* Public Routes */}
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<LogInPage />} />
+      <Route path="/queue" element={<Queue />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
 
 

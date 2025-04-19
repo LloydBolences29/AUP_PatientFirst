@@ -135,7 +135,7 @@ const Nursing = () => {
       password: patientReligion, // Set temporary password as Date of Birth (YYYYMMDD)
       firstname: patientfName,
       dob: formattedDate,
-      middleInitial: patientMiddleName,
+      middleinitial: patientMiddleName,
       lastname: patientlastName,
       contact_number: patientContact,
       home_address: patientAddress,

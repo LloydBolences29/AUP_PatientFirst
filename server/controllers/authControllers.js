@@ -30,7 +30,7 @@ const addPatient = async (req, res) => {
       patientID,
       religion,
       firstname,
-      middleInitial,
+      middleinitial,
       lastname,
       gender,
       age,
@@ -61,7 +61,7 @@ const addPatient = async (req, res) => {
     const newPatient = new Patient({
       patient_id: patientID,
       firstname,
-      middleInitial,
+      middleinitial,
       lastname,
       gender,
       age,

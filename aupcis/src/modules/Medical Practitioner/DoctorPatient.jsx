@@ -4,6 +4,7 @@ import Modal from "../../components/Modal";
 import axios from "axios";
 import AccordionComponents from "../../components/AccordionComponents";
 import { Form, Button, Container, Row, Col, Card } from "react-bootstrap";
+import { red } from "@mui/material/colors";
 
 const DoctorPatient = () => {
   const doctorSidebarLinks = [

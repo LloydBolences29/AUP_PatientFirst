@@ -5,6 +5,7 @@ const PharmacyInventory = require("../model/pharma-inventory");
 const PharmacyTransaction = require("../model/pharma-transac");
 const addStock = require("../controllers/medicineBatchTracker")
 const Prescription = require("../model/Prescription")
+const Billing = require("../model/BillingModel")
 
 
 // ✅ GET - Fetch all medicines with total stock left
@@ -194,6 +195,100 @@ router.get("/pharmacyPrescriptions", async (req, res) => {
       res.status(500).json({ message: "Server error." });
     }
   });
+
+  const getDateRange = (date, type) => {
+    let startDate, endDate;
+  
+    const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  
+    if (type === "daily") {
+      startDate = new Date(utcDate);
+      endDate = new Date(utcDate);
+      endDate.setUTCHours(23, 59, 59, 999);
+    } else if (type === "monthly") {
+      startDate = new Date(Date.UTC(utcDate.getUTCFullYear(), utcDate.getUTCMonth(), 1));
+      endDate = new Date(Date.UTC(utcDate.getUTCFullYear(), utcDate.getUTCMonth() + 1, 0, 23, 59, 59, 999));
+    } else if (type === "yearly") {
+      startDate = new Date(Date.UTC(utcDate.getUTCFullYear(), 0, 1));
+      endDate = new Date(Date.UTC(utcDate.getUTCFullYear(), 11, 31, 23, 59, 59, 999));
+    } else {
+      throw new Error("Invalid type specified");
+    }
+  
+    return { startDate, endDate };
+  };
+  
+  router.get("/getAnalytics", async (req, res) => {
+    const { date, type } = req.query; // include 'type' in query string
+  
+    if (!date || !type) {
+      return res.status(400).json({ error: "Date and type are required" });
+    }
+  
+    try {
+      const selectedDate = new Date(date);
+      const { startDate, endDate } = getDateRange(selectedDate, type);
+  
+      const analytics = await Billing.aggregate([
+        {
+          $match: {
+            department: "Pharmacy", // hardcoded as you mentioned
+            status: "paid",
+            createdAt: {
+              $gte: startDate,
+              $lte: endDate
+            }
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            totalSales: { $sum: "$totalAmount" }
+          }
+        }
+      ]);
+  
+      const totalSales = analytics.length > 0 ? analytics[0].totalSales : 0;
+  
+      res.json({ date, type, totalSales });
+    } catch (error) {
+      console.error("Error fetching sales data:", error);
+      res.status(500).json({ error: "Something went wrong" });
+    }
+  });
+
+
+  router.get('/getPeakTimes', async (req, res) => {
+    try {
+      const result = await Billing.aggregate([
+        {
+          $project: {
+            hour: { $hour: "$createdAt" },  // Extract the hour from createdAt
+            totalSales: 1
+          }
+        },
+        {
+          $group: {
+            _id: "$hour", // Group by hour (0 to 23)
+            count: { $sum: 1 }, // Number of transactions in this hour
+            totalSales: { $sum: "$totalSales" } // Total sales in this hour
+          }
+        },
+        {
+          $sort: { _id: 1 } // Sort by hour ascending
+        }
+      ]);
+  
+      res.status(200).json(result);
+    } catch (error) {
+      console.error("Error getting peak times:", error);
+      res.status(500).json({ message: 'Failed to get peak times' });
+    }
+  });
+  
+  
+  
+
 
 
 module.exports = router;

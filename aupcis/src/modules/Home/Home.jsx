@@ -42,8 +42,12 @@ const Home = () => {
           <div className="login-button">
             <div className="span-text-align">
               <div className="span-h-button">
-                <NavLink to="/login" className="btn btn-outline-primary">
+                <NavLink to="/login" className="btn btn-outline-primary mx-3">
                   <span >Log In</span>
+                </NavLink>
+
+                <NavLink to="/queue" className="btn btn-outline-primary">
+                  <span >Get Queue</span>
                 </NavLink>
 
                 {/* <button

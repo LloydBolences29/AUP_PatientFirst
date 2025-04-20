@@ -1,54 +1,26 @@
-function QueueNumber1() {
-    const QueueNo = [Math.floor(100 + Math.random() * 99999)];
-    const userArray = [QueueNo]
-    localStorage.setItem('user', JSON.stringify(userArray));
-    const userData = JSON.parse(localStorage.getItem('user'));
-    console.log(userData);
+import React from "react"
+import { useState } from "react";
+
+function Modal({closeModal}) {
+    const QueueNo = [Math.floor(1000 + Math.random() * 9999)];
     return (
-        alert("Your Unique Queue Number is " + QueueNo + "CS.")
-    )
-}
-function QueueNumber2() {
-    const QueueNo = [Math.floor(100 + Math.random() * 99999)];
-    const userArray = [QueueNo]
-    localStorage.setItem('user', JSON.stringify(userArray));
-    const userData = JSON.parse(localStorage.getItem('user'));
-    console.log(userData);
-    return (
-        alert("Your Unique Queue Number is " + QueueNo + "LA.")
-    )
-}
-function QueueNumber3() {
-    const QueueNo = [Math.floor(100 + Math.random() * 99999)];
-    const userArray = [QueueNo]
-    localStorage.setItem('user', JSON.stringify(userArray));
-    const userData = JSON.parse(localStorage.getItem('user'));
-    console.log(userData);
-    return (
-        alert("Your Unique Queue Number is " + QueueNo + "DT.")
-    )
-}
-function QueueNumber4() {
-    const QueueNo = [Math.floor(100 + Math.random() * 99999)];
-    const userArray = [QueueNo]
-    localStorage.setItem('user', JSON.stringify(userArray));
-    const userData = JSON.parse(localStorage.getItem('user'));
-    console.log(userData);
-    return (
-        alert("Your Unique Queue Number is " + QueueNo + "PH.")
-    )
-}
-function QueueNumber5() {
-    const QueueNo = [Math.floor(100 + Math.random() * 99999)];
-    const userArray = [QueueNo]
-    localStorage.setItem('user', JSON.stringify(userArray));
-    const userData = JSON.parse(localStorage.getItem('user'));
-    console.log(userData);
-    return (
-        alert("Your Unique Queue Number is " + QueueNo + "XR.")
+        <div className="modalBackground">
+            <div className="modalContainer">
+                <div className="modaltitle">
+                    <h2>This is your unique queue number</h2>
+                </div>
+                <div className="modalbody">
+                   <h1>{QueueNo}</h1>
+                </div>
+                <div className="modalfooter">
+                    <button id='modalfooterBTN' onClick={() => closeModal(false)}>Close</button>
+                </div>
+            </div>
+        </div>
     )
 }
 export default function Queue() {
+    const [openModal, setOpenModal] = useState(false);
     return(
         <>
         <div className="tableEnd">
@@ -56,13 +28,13 @@ export default function Queue() {
                 <div id="tableCard">
                     <h1>Cashier</h1>
                     <div id="tableEndBTN">
-                        <button className="tableEndBTN1" id="BTNCashier" onClick={QueueNumber1}>Generate Queue Number</button>
+                        <button className="tableEndBTN1" id="BTNCashier" onClick={() => {setOpenModal(true)}}>Generate Queue Number</button>
                     </div>
                 </div>
                 <div id="tableCard">
                     <h1>Laboratory</h1>
                     <div id="tableEndBTN">
-                        <button className="tableEndBTN1" onClick={QueueNumber2}>Generate Queue Number</button>
+                        <button className="tableEndBTN1" onClick={() => {setOpenModal(true)}}>Generate Queue Number</button>
                     </div>
                 </div>
             </div>
@@ -70,23 +42,24 @@ export default function Queue() {
                 <div id="tableCard">
                     <h1>Doctor</h1>
                     <div id="tableEndBTN">
-                        <button className="tableEndBTN1" onClick={QueueNumber3}>Generate Queue Number</button>
+                        <button className="tableEndBTN1" onClick={() => {setOpenModal(true)}}>Generate Queue Number</button>
                     </div>
                 </div>
                 <div id="tableCard">
                     <h1>Pharmacy</h1>
                     <div id="tableEndBTN">
-                        <button className="tableEndBTN1" onClick={QueueNumber4}>Generate Queue Number</button>
+                        <button className="tableEndBTN1" onClick={() => {setOpenModal(true)}}>Generate Queue Number</button>
                     </div>
                 </div>
             </div>
             <div id="tableCard">
                 <h1>X-Ray</h1>
                 <div id="tableEndBTN">
-                    <button className="tableEndBTN1" onClick={QueueNumber5}>Generate Queue Number</button>
+                    <button className="tableEndBTN1" onClick={() => {setOpenModal(true)}}>Generate Queue Number</button>
                 </div>
             </div>
         </div>
+            {openModal && <Modal closeModal={setOpenModal}/>}
         </>
     )
 }

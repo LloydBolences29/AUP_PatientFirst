@@ -2,35 +2,37 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "../../components/Sidebar";
 import { Container, Card, Col, Row } from "react-bootstrap";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import CustomBarChart from "../../components/CustomBarChart";
+import PieChart from "../../components/PieChart";
+import CustomLineChart from "../../components/LineChart";
 
 const Pharma = () => {
-  const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedType, setSelectedType] = useState("daily");
   const [loading, setLoading] = useState(false);
   const [pharmaAnalytics, setPharmaAnalytics] = useState(null);
   const [peakTimes, setPeakTimes] = useState([]);
+  const [medicineData, setMedicineData] = useState([]);
+  const [lineChartData, setLineChartData] = useState([]);
 
-  const fetchPharmacyData = async (date, type) => {
+  const fetchPharmacyData = async (type) => {
     setLoading(true);
     try {
-      const formattedDate = date.toISOString().split("T")[0];
       const response = await axios.get(
-        `https://localhost:3000/api/pharma/getAnalytics?date=${formattedDate}&type=${type}`
+        `https://localhost:3000/api/pharma/sales-over-time?type=${type}`
       );
-      setPharmaAnalytics(response.data);
+      setLineChartData(response.data || []);
     } catch (error) {
-      console.error("❌ Error fetching pharmacy data:", error);
-      setPharmaAnalytics(null);
+      console.error("Error fetching sales data:", error);
+      setLineChartData([]);
     }
     setLoading(false);
   };
 
   const fetchPeakTimes = async () => {
     try {
-      const response = await axios.get("https://localhost:3000/api/pharma/getPeakTimes");
+      const response = await axios.get(
+        "https://localhost:3000/api/pharma/getPeakTimes"
+      );
       setPeakTimes(response.data);
     } catch (error) {
       console.error("❌ Error fetching peak times:", error);
@@ -38,15 +40,26 @@ const Pharma = () => {
     }
   };
 
-  useEffect(() => {
-    if (selectedDate && selectedType) {
-      fetchPharmacyData(selectedDate, selectedType);
+  const fetchTopMedicines = async () => {
+    try {
+      const response = await axios.get(
+        "https://localhost:3000/api/pharma/most-bought-medicines"
+      );
+      setMedicineData(response.data);
+    } catch (error) {
+      console.error("❌ Error fetching top medicines:", error);
+      setMedicineData([]);
     }
-  }, [selectedDate, selectedType]);
+  };
 
   useEffect(() => {
+    fetchTopMedicines();
     fetchPeakTimes();
   }, []);
+
+  useEffect(() => {
+    fetchPharmacyData(selectedType);
+  }, [selectedType]);
 
   const pharmasidebarLinks = [
     { label: "Pharmacy Dashboard", path: "/pharma-dashboard" },
@@ -72,24 +85,11 @@ const Pharma = () => {
                 </Card.Body>
               </Card>
 
-              <div className="d-flex justify-content-center align-items-center my-4">
-                <DatePicker
-                  selected={selectedDate}
-                  onChange={(date) =>
-                    setSelectedDate(
-                      new Date(
-                        Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
-                      )
-                    )
-                  }
-                  className="form-control"
-                  dateFormat="yyyy-MM-dd"
-                />
-
+              <div className="d-flex justify-content-end align-items-center my-4">
                 <select
                   value={selectedType}
                   onChange={(e) => setSelectedType(e.target.value)}
-                  className="form-select ms-2"
+                  className="form-select w-auto"
                 >
                   <option value="daily">Daily</option>
                   <option value="monthly">Monthly</option>
@@ -102,70 +102,35 @@ const Pharma = () => {
                   {loading ? (
                     <p className="text-center">Loading...</p>
                   ) : (
-                    <table className="table table-bordered">
-                      <thead className="table-dark">
-                        <tr>
-                          <th className="text-center">Category</th>
-                          <th className="text-center">Total Sales</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {pharmaAnalytics ? (
-                          <tr>
-                            <td className="text-center">
-                              {pharmaAnalytics.date || "Selected Date"}
-                            </td>
-                            <td className="text-center">
-                              {pharmaAnalytics.totalSales || 0}
-                            </td>
-                          </tr>
-                        ) : (
-                          <tr>
-                            <td colSpan="2" className="text-center">
-                              No records found
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
+                    <CustomLineChart
+                      title={`Sales Trend (${selectedType})`}
+                      data={lineChartData}
+                      xKey="date"
+                      yKey="sales"
+                    />
                   )}
-
-                  <CustomBarChart
-                    title={`Total Sales (${selectedType.charAt(0).toUpperCase() + selectedType.slice(1)})`}
-                    data={
-                      pharmaAnalytics
-                        ? [
-                            {
-                              label: pharmaAnalytics.date || "Selected Date",
-                              value: pharmaAnalytics.totalSales || 0,
-                            },
-                          ]
-                        : []
-                    }
-                  />
                 </Col>
 
                 <Col md={6}>
-                  {pharmaAnalytics && (
-                    <div className="text-center mb-3">
-                      <strong>
-                        Sales for {pharmaAnalytics.date || "Selected Date"}: ₱
-                        {pharmaAnalytics.totalSales || 0}
-                      </strong>
-                      <br />
-                      Here's how that breaks down by the hour:
-                    </div>
-                  )}
-
+                  <div className="text-center mb-3">
+                    <strong>Peak Times (Hourly Breakdown)</strong>
+                  </div>
                   <CustomBarChart
                     title="Peak Times by Hour"
                     data={peakTimes.map((item) => ({
                       label: `${item._id.toString().padStart(2, "0")}:00`,
                       value: item.totalSales || item.count || 0,
                     }))}
+                    xKey="label"
+                    yKey="value"
                   />
                 </Col>
               </Row>
+
+              <div>
+                <h5>Top Medicines Sold</h5>
+                <PieChart data={medicineData} />
+              </div>
             </Container>
           </>
         }

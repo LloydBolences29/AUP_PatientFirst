@@ -17,7 +17,7 @@ const CashierBilling = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [billingDetails, setBillingDetails] = useState([]); // Initialize as an empty array});
   const [showModal, setShowModal] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState(""); // Default payment method
+  const [paymentMethod, setPaymentMethod] = useState("cash"); // Default payment method
 
   const handleSearch = async () => {
     try {
@@ -42,6 +42,9 @@ const CashierBilling = () => {
 
   const handlePayment = async () => {
     try {
+
+      console.log("Billing IDs to update:", billingDetails.map(b => b._id));
+
       for (const bill of billingDetails) {
         await axios.put(
           `https://localhost:3000/billing/update/${bill._id}`,

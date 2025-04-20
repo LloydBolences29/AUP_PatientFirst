@@ -196,28 +196,29 @@ router.get("/pharmacyPrescriptions", async (req, res) => {
     }
   });
 
-  const getDateRange = (date, type) => {
-    let startDate, endDate;
-  
-    const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  function getDateRange(selectedDate, type) {
+    const startDate = new Date(selectedDate);
+    let endDate = new Date(selectedDate);
   
     if (type === "daily") {
-      startDate = new Date(utcDate);
-      endDate = new Date(utcDate);
-      endDate.setUTCHours(23, 59, 59, 999);
+      endDate.setDate(startDate.getDate() + 1);
     } else if (type === "monthly") {
-      startDate = new Date(Date.UTC(utcDate.getUTCFullYear(), utcDate.getUTCMonth(), 1));
-      endDate = new Date(Date.UTC(utcDate.getUTCFullYear(), utcDate.getUTCMonth() + 1, 0, 23, 59, 59, 999));
+      startDate.setDate(1);
+      endDate.setMonth(endDate.getMonth() + 1);
+      endDate.setDate(0); // Set the last day of the month
     } else if (type === "yearly") {
-      startDate = new Date(Date.UTC(utcDate.getUTCFullYear(), 0, 1));
-      endDate = new Date(Date.UTC(utcDate.getUTCFullYear(), 11, 31, 23, 59, 59, 999));
-    } else {
-      throw new Error("Invalid type specified");
+      startDate.setMonth(0);
+      startDate.setDate(1);
+      endDate.setFullYear(endDate.getFullYear() + 1);
+      endDate.setMonth(0);
+      endDate.setDate(0);
     }
   
     return { startDate, endDate };
-  };
+  }
   
+  
+  //for barcharts o total sales
   router.get("/getAnalytics", async (req, res) => {
     const { date, type } = req.query; // include 'type' in query string
   
@@ -229,6 +230,7 @@ router.get("/pharmacyPrescriptions", async (req, res) => {
       const selectedDate = new Date(date);
       const { startDate, endDate } = getDateRange(selectedDate, type);
   
+      // Fetch total sales for the specified period
       const analytics = await Billing.aggregate([
         {
           $match: {
@@ -250,14 +252,55 @@ router.get("/pharmacyPrescriptions", async (req, res) => {
   
       const totalSales = analytics.length > 0 ? analytics[0].totalSales : 0;
   
-      res.json({ date, type, totalSales });
+      // Fetch sales data over time for the trend (for line chart)
+      let dateFormat;
+      if (type === "daily") dateFormat = "%Y-%m-%d";
+      else if (type === "monthly") dateFormat = "%Y-%m";
+      else if (type === "yearly") dateFormat = "%Y";
+  
+      const trend = await Billing.aggregate([
+        {
+          $match: {
+            department: "Pharmacy",
+            status: "paid",
+            createdAt: { $gte: startDate, $lte: endDate }
+          }
+        },
+        {
+          $group: {
+            _id: {
+              $dateToString: { format: dateFormat, date: "$createdAt" }
+            },
+            totalSales: { $sum: "$totalAmount" }
+          }
+        },
+        { $sort: { _id: 1 } }
+      ]);
+  
+      // Format the result to match your frontend expectations
+      const formattedTrend = trend.map((item) => ({
+        date: item._id,
+        sales: item.totalSales,
+      }));
+  
+      // Send both analytics and trend data
+      res.json({
+        analytics: {
+          date,
+          type,
+          totalSales
+        },
+        trend: formattedTrend
+      });
     } catch (error) {
       console.error("Error fetching sales data:", error);
       res.status(500).json({ error: "Something went wrong" });
     }
   });
+  
 
 
+  //for getting the peak times
   router.get('/getPeakTimes', async (req, res) => {
     try {
       const result = await Billing.aggregate([
@@ -285,6 +328,83 @@ router.get("/pharmacyPrescriptions", async (req, res) => {
       res.status(500).json({ message: 'Failed to get peak times' });
     }
   });
+
+  //get the most bought medicines
+  router.get("/most-bought-medicines", async (req, res) => {
+    try {
+      const result = await Billing.aggregate([
+        { $match: { department: "Pharmacy" } },
+        { $unwind: "$items" },
+        { $match: { "items.type": "medicine" } },
+        {
+          $group: {
+            _id: "$items.name",
+            totalQuantity: { $sum: "$items.quantity" },
+          },
+        },
+        { $sort: { totalQuantity: -1 } },
+        { $limit: 10 },
+      ]);
+  
+      const formatted = result.map((item) => ({
+        name: item._id,
+        value: item.totalQuantity,
+      }));
+  
+      res.json(formatted);
+    } catch (error) {
+      console.error("Aggregation error:", error);
+      res.status(500).json({ message: "Server Error" });
+    }
+  });
+  
+
+  //total sales for the line chart
+  // total sales for the line chart
+  router.get("/sales-over-time", async (req, res) => {
+    const { type } = req.query;
+  
+    if (!type) {
+      return res.status(400).json({ error: "Type is required" });
+    }
+  
+    let dateFormat;
+    if (type === "daily") dateFormat = "%Y-%m-%d";
+    else if (type === "monthly") dateFormat = "%Y-%m";
+    else if (type === "yearly") dateFormat = "%Y";
+  
+    try {
+      const result = await Billing.aggregate([
+        {
+          $match: {
+            department: "Pharmacy",
+            status: "paid",
+          },
+        },
+        {
+          $group: {
+            _id: {
+              $dateToString: { format: dateFormat, date: "$createdAt" },
+            },
+            totalSales: { $sum: "$totalAmount" },
+          },
+        },
+        { $sort: { _id: 1 } },
+      ]);
+  
+      const formatted = result.map((item) => ({
+        date: item._id,
+        sales: item.totalSales,
+      }));
+  
+      res.json(formatted);
+    } catch (error) {
+      console.error("Error generating chart data:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+  
+
   
   
   

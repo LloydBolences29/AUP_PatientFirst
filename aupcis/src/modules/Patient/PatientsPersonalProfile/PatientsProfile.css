@@ -1,0 +1,138 @@
+.PatientsStep1 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+.PatientsStep2 {
+    background-color: rgba(217, 217, 217, 1);
+    border-radius: 2rem;
+    padding-left: 3rem;
+    display: flex;
+    flex-direction: row;
+}
+#PatientsPic {
+    font-size: 6.7rem;
+}
+.PatientsStep3 {
+    display: flex;
+    flex-direction: column;
+    padding-top: 1.7rem;
+}
+.PatientsStep4 {
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+}
+#PatientsStep3Name {
+    padding-left: 1.3rem;
+}
+.PatientsStep4VS {
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    gap: 3.8rem;
+    font-size: 1.3rem;
+    padding-left: 1.3rem;
+}
+.PatientsStep4VSs {
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    gap: 4rem;
+}
+.PatientsStep5 {
+    padding-left: 50rem;
+    padding-top: 1.7rem;
+}
+#PatientsStep5BTN {
+    width: 5rem;
+    height: 2rem;
+    border: none;
+    background-color: rgba(44, 62, 80, 1);
+    border-radius: 1rem;
+    color: whitesmoke;
+}
+.PatientsStep5BTN {
+    padding-left: 15rem;
+}
+.PatientsStep5HB {
+    padding-top: 1.4rem;
+}
+.PatientsStep6 {
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    gap: 5.3rem;
+    color: rgba(9, 16, 91, 1);
+}
+#PatientsStep5HB {
+    padding-left: 12rem;
+}
+.PatientsStep7 {
+    padding-top: 2rem;
+    padding-left: 7rem;
+    display: flex;
+    flex-direction: row;
+    gap: 4rem;
+}
+#PatientsStep7BTN {
+    width: 13rem;
+    height: 3rem;
+    border: none;
+    background-color: rgba(217, 217, 217, 1);
+    border-radius: 1rem;
+    color: black;
+}
+#PatientsStep7BTN:focus:hover:active {
+    background-color: rgba(44, 62, 80, 1);
+    color: rgba(217, 217, 217, 1);
+}
+.PatientsStep8 {
+    background-color: rgba(217, 217, 217, 1);
+    border-radius: 2rem;
+}
+.PatientsStep9 {
+    padding-top: 2rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+#PatientsStep8V {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    padding-left: 3rem;
+    border-bottom-style: solid;
+    border-bottom-color: rgba(0, 0, 0, 1);
+}
+.PatientsStep8VS {
+    list-style: none;
+    padding-left: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+.PatientsSteo8VSV {
+    display: flex;
+    flex-direction: row;
+    gap: 8rem;
+    padding-top: 1rem;
+}
+.PatientsStep10 {
+    display: flex;
+    flex-direction: row;
+    gap: 20rem;
+}
+#PatientsStep10S {
+    font-weight: bolder;
+    padding-left: 1rem;
+}
+#PatientsStep10V {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.PatientsStep11 {
+    display: flex;
+    flex-direction: row;
+    gap: 5rem;
+}

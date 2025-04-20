@@ -1,0 +1,73 @@
+.tableEnd {
+    display: flex;
+    flex-direction: row;
+    padding-top: 5rem;
+    text-align: center;
+    justify-self: center;
+    gap: 3rem;
+}
+.tabularEnd {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+#tableCard {
+    padding-top: 1rem;
+    background-color: rgba(44, 62, 80, 1);
+    color: antiquewhite;
+    border-radius: 0.5rem;
+    height: 15rem;
+    width: 30rem;
+    box-shadow: 0px 0px 3px;
+}
+#tableEndBTN {
+    display: flex;
+    flex-direction: row;
+    gap: 5rem;
+    justify-self: center;
+    padding-top: 5rem;
+}
+.tableEndBTN1 {
+    background-color: rgba(44, 62, 80, 10);
+    color: antiquewhite;
+    border-color: antiquewhite;
+    width: 8rem;
+    height: 4rem;
+    border-radius: 0.5rem;
+}
+.modalBackground {
+    background-color: antiquewhite;
+    color: rgba(44, 62, 80, 1);
+    padding: 30px;
+    width: 100%;
+    max-width: 400px;
+    height: 300px;
+    border-radius: 0.7rem;
+    box-shadow: 3px 3px 5px #27304321;
+    transform: translate(-50%, -50%);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+}
+.modaltitle {
+    justify-self: center;
+}
+.modalbody {
+    padding-top: 5rem;
+    justify-self: center;
+}
+.modalbody h1 {
+    font-size: 4.2rem;
+}
+.modalfooter {
+    justify-self: center;
+    padding-top: 4rem;
+}
+#modalfooterBTN {
+    background-color: rgba(44, 62, 80, 1);
+    color: antiquewhite;
+    border-color: antiquewhite;
+    border-radius: 0.5rem;
+    width: 6rem;
+    height: 3rem;
+}

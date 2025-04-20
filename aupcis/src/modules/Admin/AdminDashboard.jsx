@@ -11,13 +11,14 @@ const AdminDashboard = () => {
       label: "Admin Dashboard",
       path: "/admin-dashboard",
     },
-    // {
-    //   label: "Doctor",
-    //   path: "/doctorpage",
-    // },
+
     {
       label: "Admin Management ",
       path: "/admin-management",
+    },
+    {
+      label: "Pharmacy Analytics ",
+      path: "/pharmacyAnalytics",
     },
   ];
 

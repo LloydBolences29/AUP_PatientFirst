@@ -8,7 +8,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 const accessControl = {
   Patient: ["/dashboard", "/analytics", "/profile"],
-    Admin: ["/admin-dashboard", "/admin-management", "/admin-analytics"],
+    Admin: ["/admin-dashboard", "/admin-management", "/admin-analytics", "/pharmacyAnalytics"],
     MedicalRecordsOfficer: ["/medicalRecord-dashboard", "/medicalRecord-management"],
     Nurse: ["/nurse-dashboard", "/patient-management", "/nurse-analytics"],
     Doctor: ["/doctor-dashboard", "/doctor-patient-management"],

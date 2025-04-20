@@ -78,27 +78,41 @@ const Pharma = () => {
           <>
             <Container className="mt-4">
               <Card className="text-center">
-                <Card.Header>Pharmacy Dashboard</Card.Header>
                 <Card.Body>
-                  <h5 className="card-title">Welcome to the Pharmacy Dashboard!</h5>
-                  <p className="card-text">Manage your pharmacy operations efficiently.</p>
+                  <h5 className="card-title">
+                    Welcome to the Pharmacy Dashboard!
+                  </h5>
+                  <p className="card-text">
+                    Manage your pharmacy operations efficiently.
+                  </p>
                 </Card.Body>
               </Card>
 
-              <div className="d-flex justify-content-end align-items-center my-4">
-                <select
-                  value={selectedType}
-                  onChange={(e) => setSelectedType(e.target.value)}
-                  className="form-select w-auto"
-                >
-                  <option value="daily">Daily</option>
-                  <option value="monthly">Monthly</option>
-                  <option value="yearly">Yearly</option>
-                </select>
-              </div>
-
               <Row className="mb-4">
-                <Col md={6}>
+                <Col md={12}>
+                  <Card className="text-center mb-4">
+                    <Card.Body className="d-flex justify-content-between align-items-center">
+                      <div>
+                        <h5 className="card-title">Sales Trend</h5>
+                        <p className="card-text">
+                          Visualize the sales trend over time.
+                        </p>
+                      </div>
+
+                      <div className="d-flex justify-content-end align-items-center my-4">
+                        <select
+                          value={selectedType}
+                          onChange={(e) => setSelectedType(e.target.value)}
+                          className="form-select w-auto"
+                        >
+                          <option value="daily">Daily</option>
+                          <option value="monthly">Monthly</option>
+                          <option value="yearly">Yearly</option>
+                        </select>
+                      </div>
+                    </Card.Body>
+                  </Card>
+
                   {loading ? (
                     <p className="text-center">Loading...</p>
                   ) : (
@@ -125,12 +139,14 @@ const Pharma = () => {
                     yKey="value"
                   />
                 </Col>
-              </Row>
 
-              <div>
-                <h5>Top Medicines Sold</h5>
-                <PieChart data={medicineData} />
-              </div>
+                <Col md={6}>
+                  <div>
+                    <h5>Top Medicines Sold</h5>
+                    <PieChart data={medicineData} />
+                  </div>
+                </Col>
+              </Row>
             </Container>
           </>
         }

@@ -29,6 +29,7 @@ import XrayUpload from "./modules/Xray/XrayUpload.jsx";
 import LabDashboard from "./modules/Lab/LabDashboard.jsx";
 import LabBilling from "./modules/Lab/LabBilling.jsx";
 import Queue from "./modules/Medical Practitioner/Queue.jsx";
+import PharmacyAnalytics from "./modules/Admin/PharmacyAnalytics.jsx";
 
 export default function App() {
   return (
@@ -36,7 +37,6 @@ export default function App() {
       {/* Public Routes */}
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<LogInPage />} />
-      <Route path="/queue" element={<Queue />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
 
 
@@ -52,7 +52,7 @@ export default function App() {
       </Route>
 
       <Route element={<ProtectedRoute allowedRoles={["Nurse"]} />}>
-        <Route path="/nurse-dashboard" element={<NursingDashboard />} />
+        <Route path="/nurse-dashboard" element={<Queue />} />
       </Route>
       <Route element={<ProtectedRoute allowedRoles={["Nurse"]} />}>
         <Route path="/patient-management" element={<Nursing />} />
@@ -69,6 +69,9 @@ export default function App() {
       </Route>
       <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
         <Route path="/admin-management" element={<AdminRoleManagement />} />
+      </Route>
+      <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
+        <Route path="/pharmacyAnalytics" element={<PharmacyAnalytics />} />
       </Route>
       <Route element={<ProtectedRoute allowedRoles={["Cashier"]} />}>
         <Route path="/cashier-dashboard" element={<CashierDashboard />} />

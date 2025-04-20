@@ -45,17 +45,6 @@ const Home = () => {
                 <NavLink to="/login" className="btn btn-outline-primary mx-3">
                   <span >Log In</span>
                 </NavLink>
-
-                <NavLink to="/queue" className="btn btn-outline-primary">
-                  <span >Get Queue</span>
-                </NavLink>
-
-                {/* <button
-                  className="text-link btn"
-                  to="/login"
-                >
-                  <span className="text-wrapper">Log In</span>
-                </button> */}
               </div>
             </div>
           </div>

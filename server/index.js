@@ -28,6 +28,7 @@ const infermedicaRoutes = require("./routes/infermedica.js")
 const billingRoutes = require("./routes/BillingRoutes.js")
 const xrayRoutes = require("./routes/xrayRoutes.js")
 const labTestRoute = require("./routes/labTestRoute.js") // Import the lab test route
+const queueRoute = require("./routes/queueRoute.js") // Import the queue route
 
 
 const app = express();
@@ -67,6 +68,7 @@ app.use("/infermedica-api", infermedicaRoutes) //For AI infermedica ROutes
 app.use("/billing", billingRoutes) //For billing routes
 app.use("/xray", xrayRoutes) //For xray routes
 app.use("/labTest", labTestRoute) //For lab test routes
+app.use("/queue", queueRoute) //For queue routes
 
 
 

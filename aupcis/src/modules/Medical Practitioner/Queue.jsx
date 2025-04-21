@@ -3,24 +3,24 @@ import { useState } from "react";
 import { Button, Modal, Card, Container, Row, Col } from "react-bootstrap";
 import Sidebar from "../../components/Sidebar";
 import "bootstrap/dist/css/bootstrap.min.css";
+import axios from "axios";
 
 const Queue = () => {
   const [openModal, setOpenModal] = useState(false);
   const [queueNo, setQueueNo] = useState(null);
 
-  const departmentIdentifiers = {
-    Cashier: "CSH",
-    Laboratory: "LAB",
-    Consultation: "DOC",
-    Pharmacy: "PH",
-    "X-Ray": "XR",
-  };
-
-  const handleGenerateQueue = (department) => {
-    const identifier = departmentIdentifiers[department];
-    const randomNumber = Math.floor(1000 + Math.random() * 9000);
-    setQueueNo(`${identifier}-${randomNumber}`);
-    setOpenModal(true);
+  const handleGenerateQueue = async (department) => {
+    try {
+      const response = await axios.post(
+        "https://localhost:3000/queue/generateQueue",
+        { department: department.toLowerCase() }
+      );
+      setQueueNo(response.data.queueNumber);
+      console.log("Generated:", response.data.queueNumber);
+      setOpenModal(true);
+    } catch (error) {
+      console.error("Error generating queue number:", error);
+    }
   };
 
   const handlePrintQueue = () => {
@@ -100,51 +100,53 @@ const Queue = () => {
             >
               <Container className="mt-4">
                 <Row className="g-4">
-                  {["Cashier", "Laboratory", "Consultation", "Pharmacy", "X-Ray"].map(
-                    (department) => (
-                      <Col key={department} md={4}>
-                        <Card
-                          className="bg-light"
-                          style={{
-                            transition: "transform 0.2s, box-shadow 0.2s",
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.transform = "scale(1.05)";
-                            e.currentTarget.style.boxShadow =
-                              "0 4px 8px rgba(0, 0, 0, 0.2)";
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.transform = "scale(1)";
-                            e.currentTarget.style.boxShadow = "none";
-                          }}
-                        >
-                          <Card.Body>
-                            <Card.Title>{department}</Card.Title>
-                            <Button
-                              variant="primary"
-                              style={{
-                                transition:
-                                  "background-color 0.2s, transform 0.2s",
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor =
-                                  "#0056b3";
-                                e.currentTarget.style.transform = "scale(1.1)";
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor =
-                                  "#007bff";
-                                e.currentTarget.style.transform = "scale(1)";
-                              }}
-                              onClick={() => handleGenerateQueue(department)}
-                            >
-                              Generate Queue Number
-                            </Button>
-                          </Card.Body>
-                        </Card>
-                      </Col>
-                    )
-                  )}
+                  {[
+                    "Cashier",
+                    "Laboratory",
+                    "Consultation",
+                    "Pharmacy",
+                    "X-Ray",
+                  ].map((department) => (
+                    <Col key={department} md={4}>
+                      <Card
+                        className="bg-light"
+                        style={{
+                          transition: "transform 0.2s, box-shadow 0.2s",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = "scale(1.05)";
+                          e.currentTarget.style.boxShadow =
+                            "0 4px 8px rgba(0, 0, 0, 0.2)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = "scale(1)";
+                          e.currentTarget.style.boxShadow = "none";
+                        }}
+                      >
+                        <Card.Body>
+                          <Card.Title>{department}</Card.Title>
+                          <Button
+                            variant="primary"
+                            style={{
+                              transition:
+                                "background-color 0.2s, transform 0.2s",
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = "#0056b3";
+                              e.currentTarget.style.transform = "scale(1.1)";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = "#007bff";
+                              e.currentTarget.style.transform = "scale(1)";
+                            }}
+                            onClick={() => handleGenerateQueue(department)}
+                          >
+                            Generate Queue Number
+                          </Button>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                  ))}
                 </Row>
               </Container>
 
@@ -166,10 +168,7 @@ const Queue = () => {
                   >
                     Close
                   </Button>
-                  <Button
-                    variant="primary"
-                    onClick={handlePrintQueue}
-                  >
+                  <Button variant="primary" onClick={handlePrintQueue}>
                     Print
                   </Button>
                 </Modal.Footer>

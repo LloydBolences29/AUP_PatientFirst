@@ -1,13 +1,28 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button, Modal, Card, Container, Row, Col } from "react-bootstrap";
 import Sidebar from "../../components/Sidebar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
+import io from "socket.io-client";
+
+const socket = io("wss://localhost:3000", {
+  secure: true,
+  transports: ["websocket"],
+  withCredentials: true,      // Ensure cookies and authentication headers are sent
+
+});
 
 const Queue = () => {
   const [openModal, setOpenModal] = useState(false);
   const [queueNo, setQueueNo] = useState(null);
+
+  useEffect(() => {
+     // Connect to the socket server
+     socket.on("connect", () => {
+      console.log("Connected to Socket.IO server");
+    });
+  }, []);
 
   const handleGenerateQueue = async (department) => {
     try {
@@ -15,6 +30,12 @@ const Queue = () => {
         "https://localhost:3000/queue/generateQueue",
         { department: department.toLowerCase() }
       );
+
+      socket.emit("sendQueue", {
+        department: response.data.department,
+        queueNumber: response.data.queueNumber,  // Send the queue number as well
+
+      });
       setQueueNo(response.data.queueNumber);
       console.log("Generated:", response.data.queueNumber);
       setOpenModal(true);

@@ -8,15 +8,47 @@ const router = express.Router();
 
 router.get("/fetchPrescriptions", async (req, res) => {
   try {
-    const { status } = req.query;
-    
-    const prescriptions = await Prescription.find({
-      status: { $regex: new RegExp(`^${status}$`, "i") }, 
-      // patientType: "Outpatient", // Only Outpatients can pick up prescriptions
-      prescriptions: { $elemMatch: { type: "medicinal" } }, // Match inside prescriptions array
-    })
-    .populate("patientId")
-    .populate("checkupId");
+    const prescriptions = await Prescription.aggregate([
+      {
+        $match: {
+          status: { $regex: /^pending$/i }, // case-insensitive match for "Pending"
+          prescriptions: { $elemMatch: { type: "medicinal" } },
+        },
+      },
+      {
+        $lookup: {
+          from: "checkups",
+          localField: "checkupId",
+          foreignField: "_id",
+          as: "checkup",
+        },
+      },
+      {
+        $unwind: {
+          path: "$checkup",
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+      {
+        $match: {
+          "checkup.patientType": "Inpatient",
+        },
+      },
+      {
+        $lookup: {
+          from: "patientnames",
+          localField: "patientId",
+          foreignField: "_id",
+          as: "patient",
+        },
+      },
+      {
+        $unwind: {
+          path: "$patient",
+          preserveNullAndEmptyArrays: true, // optional
+        },
+      },
+    ]);
 
     return res.json({ prescriptions });
   } catch (error) {
@@ -24,6 +56,7 @@ router.get("/fetchPrescriptions", async (req, res) => {
     return res.status(500).json({ message: "Error fetching prescriptions" });
   }
 });
+
 
 
 

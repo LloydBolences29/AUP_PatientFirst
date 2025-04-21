@@ -10,6 +10,9 @@ const connectDB = require("./db.js");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
+const { initializeSocket } = require("./sockets/sockets.js");
+
+
 const patientRoutes = require("./routes/patient-data");
 const protectedRoutes = require("./routes/protectedRoutes");
 const userRoles = require("./routes/roles-data");
@@ -31,13 +34,19 @@ const labTestRoute = require("./routes/labTestRoute.js") // Import the lab test 
 const queueRoute = require("./routes/queueRoute.js") // Import the queue route
 
 
+
 const app = express();
+
+
 
 // ✅ Connect to MongoDB BEFORE initializing routes
 connectDB();
 const privateKey = fs.readFileSync("server.key", "utf8");
 const certificate = fs.readFileSync("server.cert", "utf8");
 const credentials = { key: privateKey, cert: certificate };
+
+
+const server = https.createServer(credentials, app);
 
 // ✅ Middleware Setup
 app.use(cors({
@@ -46,6 +55,8 @@ app.use(cors({
   allowedHeaders: ["Content-Type", "Authorization"], // Allow necessary headers
   credentials: true // Allow cookies & authentication headers
 }));
+
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -72,7 +83,7 @@ app.use("/queue", queueRoute) //For queue routes
 
 
 
-
+initializeSocket(server);
 
 // app.use(express.json({ limit: "1mb" })); // Increase limit to 1MB
 // app.use(express.urlencoded({ extended: true, limit: "1mb" })); 
@@ -82,8 +93,10 @@ app.get("/", (req, res) => {
 });
 
 
+
+
 // ✅ Start the Server
 const PORT = process.env.PORT || 3000;
-https.createServer(credentials, app).listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const Queue = require("../model/queueModel");
 const QueueCounter = require("../model/queueCounter");
+const { getIo } = require('../sockets/sockets'); // adjust path as needed
+
 
 const getQueuePrefix = (department) => {
     const prefixes = {
@@ -52,6 +54,13 @@ router.post("/generateQueue", async (req, res) => {
 
     // Save the queue transaction to the database
     await queueTransaction.save();
+
+    const io = getIo();
+    io.emit('queueGenerated', { 
+      department: department,
+      queueNumber: queueNumber.toString(),
+      status: 'waiting',
+    });
 
     // Respond with the generated queue number and transaction details
     res.status(201).json({ message: 'Queue created', queueNumber, department });

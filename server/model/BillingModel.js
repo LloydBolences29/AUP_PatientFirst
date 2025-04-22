@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const BillingSchema = new mongoose.Schema({
     patientId: { type: mongoose.Schema.Types.ObjectId, ref: "patientname" },
+    queueId: { type: String },
     department: { type: String, enum: ["Pharmacy", "Dental", "X-ray", "Laboratory", "Consultation"], required: true },
     items: [
       {

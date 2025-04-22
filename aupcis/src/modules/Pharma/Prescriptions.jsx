@@ -3,13 +3,8 @@ import Sidebar from "../../components/Sidebar";
 import { useState, useEffect } from "react";
 import { Form, Button, Container, Row, Col, Modal } from "react-bootstrap";
 import axios from "axios";
-import io from "socket.io-client";
 
-const socket = io("wss://localhost:3000", {
-  secure: true,
-  transports: ["websocket"],
-  withCredentials: true, // Ensure cookies and authentication headers are sent
-});
+
 
 const Prescriptions = () => {
   const pharmasidebarLinks = [
@@ -36,36 +31,8 @@ const Prescriptions = () => {
   const [updatedQuantities, setUpdatedQuantities] = useState({});
   const [medicineList, setMedicineList] = useState([]);
   // const [checkupId, setCheckupId] = useState(null);
-  const [queueNo, setQueueNo] = useState(null);
 
-  useEffect(() => {
-    socket.on("connect", () => {
-      console.log("Connected to Socket.IO server");
-    });
-    // Emit to join the department-specific room
-    const department = "pharmacy"; // You can dynamically set this based on the department the user is associated with
-    socket.emit("joinDepartmentRoom", department);
-
-    // Listen for 'queueGenerated' event to update the frontend
-    socket.on("queueGenerated", (data) => {
-      if (data.department === department) {
-        console.log(
-          "New Queue Generated for " + department + ": ",
-          data.queueNumber
-        );
-        // You can update the UI here
-        setQueueNo(data.queueNumber);
-
-        console.log("Queue Number:", data.queueNumber); // Log the queue number
-
-        // Update the queue number in the state
-      }
-    });
-    // Clean up socket listeners when the component unmounts
-    return () => {
-      socket.off("queueGenerated");
-    };
-  }, [queueNo]);
+  
 
   useEffect(() => {
     const fetchMedicines = async () => {

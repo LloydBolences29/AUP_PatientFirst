@@ -22,7 +22,8 @@ const PharmacyTransactions = () => {
   const [medicineSearch, setMedicineSearch] = useState("");
   const [medicineResults, setMedicineResults] = useState([]);
   const [patientData, setPatientData] = useState(null);
-const [patientId, setPatientId] = useState("");
+  const [patientId, setPatientId] = useState("");
+  const [queueNo_id, setQueueNo_id] = useState(null);
 
   // for websocket connection
   useEffect(() => {
@@ -58,7 +59,7 @@ const [patientId, setPatientId] = useState("");
     fetchTransactions();
     fetchMedicines();
   }, []);
-
+  console.log("Queue Number:", queueNo); // Log the queue number
   const fetchPatientData = async () => {
     try {
       const response = await axios.get(
@@ -84,6 +85,31 @@ const [patientId, setPatientId] = useState("");
       console.error("Error fetching transactions", error);
     }
   };
+
+  //ferch all the queues along with the object id
+  const fetchQueue = async (queueNumber) => {
+    try {
+      const response = await axios.get(
+        `https://localhost:3000/queue/queue/${queueNumber}`
+      );
+      console.log("Queue Number:", queueNo); // Log the queue number
+      setQueueNo(response.data.queueNumber);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching queue", error);
+    }
+  };
+
+  useEffect(() => {
+    if (queueNo) {
+      fetchQueue(queueNo).then((queue) => {
+        if (queue) {
+          setQueueNo_id(queue._id);
+          console.log("Queue ID:", queue._id); // Directly log from response
+        }
+      });
+    }
+  }, [queueNo]);
 
   const fetchMedicines = async () => {
     try {
@@ -114,27 +140,31 @@ const [patientId, setPatientId] = useState("");
         medication: med._id,
         name: med.name,
         quantity: parseInt(med.quantity, 10),
-        price: transactionType === "Emergency Dispense" ? parseFloat(med.price) : 0,
-        total: transactionType === "Emergency Dispense" ? parseFloat(med.price) * parseInt(med.quantity, 10) : 0,
+        price:
+          transactionType === "Emergency Dispense" ? parseFloat(med.price) : 0,
+        total:
+          transactionType === "Emergency Dispense"
+            ? parseFloat(med.price) * parseInt(med.quantity, 10)
+            : 0,
       })),
     };
 
     console.log("Transaction Data:", transactionData);
-
-
-
 
     try {
       await axios.post(
         `https://localhost:3000/api/pharma/emergencyDispenceBilling/${patientData.patient._id}`,
         transactionData
       );
-      
+
       alert("Transaction added successfully!");
       fetchTransactions();
       setShowModal(false);
     } catch (error) {
-      console.log("Error in handleEmergencyDispenseBill:", error.response?.data || error.message);
+      console.log(
+        "Error in handleEmergencyDispenseBill:",
+        error.response?.data || error.message
+      );
       alert("Failed to add transaction.");
     }
   };
@@ -146,21 +176,32 @@ const [patientId, setPatientId] = useState("");
     }
   
     try {
-      for (const med of selectedMedicine) {
-        const transactionData = {
-          queueNumber: queueNo,
-          medication: med._id,
-          type: transactionType,
-          quantity: parseInt(med.quantity, 10),
-          price: transactionType === "Sold" ? parseFloat(med.price) : undefined,
-        };
+      // Prepare the items array based on selectedMedicine
+      const items = selectedMedicine.map((med) => ({
+        type: "medicine",  // Assuming all items are medicines
+        name: med.name,    // Correct item name
+        quantity: parseInt(med.quantity, 10), // Quantity as integer
+        price: transactionType === "Sold" ? parseFloat(med.price) : 0,  // Price only if 'Sold'
+        total: transactionType === "Sold" ? parseFloat(med.price) * parseInt(med.quantity, 10) : 0,  // Total amount for each item
+      }));
   
-        await axios.post(
-          "https://localhost:3000/api/pharma/add-transactions",
-          transactionData
-        );
-      }
+      // Ensure the items array is correctly structured
+      console.log("Items Array:", items);
   
+      // Prepare the data object for the request
+      const transactionData = {
+        queueId: queueNo_id,  // Queue ID (from your state)
+        department: "Pharmacy",  // You can hard-code this or dynamically fetch if needed
+        items: items,  // Items array containing the selected medicines and their details
+      };
+  
+      // Log the final data to be sent
+      console.log("Transaction Data:", transactionData);
+  
+      // Send the request to the backend API
+      await axios.post("https://localhost:3000/api/pharma/add-transactions", transactionData);
+  
+      // Notify the user of success
       alert("All transactions added successfully!");
       fetchTransactions();
       setShowModal(false);
@@ -169,6 +210,7 @@ const [patientId, setPatientId] = useState("");
       alert("Failed to add transaction.");
     }
   };
+  
 
   const handleMedicineSearch = async (e) => {
     const query = e.target.value.toLowerCase();
@@ -421,7 +463,9 @@ const [patientId, setPatientId] = useState("");
                               {patientData && (
                                 <div className="mt-3 alert alert-success">
                                   <strong>Patient Found:</strong>{" "}
-                                  {patientData.patient?.firstname} {patientData.patient?.lastname} ({patientData.patient?.patient_id})
+                                  {patientData.patient?.firstname}{" "}
+                                  {patientData.patient?.lastname} (
+                                  {patientData.patient?.patient_id})
                                 </div>
                               )}
                               {patientData === null && patientId && (

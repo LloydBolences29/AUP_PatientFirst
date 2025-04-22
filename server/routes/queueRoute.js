@@ -70,4 +70,84 @@ router.post("/generateQueue", async (req, res) => {
   }
 });
 
+//get the queue according to the queueNumber in the system
+router.get('/queue/:queueNumber', async (req, res) => {
+  const { queueNumber } = req.params;
+
+  try {
+    const queue = await Queue.findOne({ queueNumber });
+
+    if (!queue) {
+      return res.status(404).json({ message: 'Queue not found' });
+    }
+
+    res.json(queue);
+  } catch (error) {
+    console.error("Error fetching queue:", error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+// fetch waiting queue transactions in the correct order
+router.get('/current/:department', async (req, res) => {
+  const { department } = req.params;
+
+  try {
+    const queues = await Queue.find({
+      department,
+      status: 'waiting'
+    }).sort({ createdAt: 1 }); // FIFO based on creation time
+
+    res.json(queues);
+  } catch (error) {
+    console.error("Error fetching queue:", error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+//Serve next 
+router.post('/serve-next/:department', async (req, res) => {
+  const { department } = req.params;
+
+  try {
+    const next = await Queue.findOneAndUpdate(
+      { department, status: 'waiting' },
+      { status: 'serving' },
+      { sort: { createdAt: 1 }, new: true }
+    );
+
+    if (!next) {
+      return res.status(404).json({ message: 'No waiting queue found' });
+    }
+
+    res.json(next);
+  } catch (error) {
+    console.error("Error serving queue:", error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+//finish a queue
+router.patch('/complete/:queueNumber', async (req, res) => {
+  const { queueNumber } = req.params;
+
+  try {
+    const updated = await Queue.findOneAndUpdate(
+      { queueNumber },
+      { status: 'done' },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ message: 'Queue not found' });
+    }
+
+    res.json(updated);
+  } catch (error) {
+    console.error("Error completing queue:", error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+
+
 module.exports = router;

@@ -7,6 +7,7 @@ const addStock = require("../controllers/medicineBatchTracker");
 const Prescription = require("../model/Prescription");
 const Billing = require("../model/BillingModel");
 const Patient = require("../model/Patient");
+const Queue = require("../model/queueModel");
 
 // ✅ GET - Fetch all medicines with total stock left
 router.get("/medicines", async (req, res) => {
@@ -232,81 +233,96 @@ router.get("/transactions/:id", async (req, res) => {
 // Create a new transaction
 router.post("/add-transactions", async (req, res) => {
   try {
-    const { queueNumber, type, medication, quantity, price } =
-      req.body;
-      console.log("Incoming data:", req.body);
+    const { queueId, department, items } = req.body;
 
-    // Validate request
-    if (!type || !medication || !quantity) {
+    console.log("Incoming Payload:", { queueId, department, items });
+
+    // Validate request fields
+    if (!queueId || !department || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // Find the medication in stock
-    const medicineStocks = await PharmacyInventory.find({ medication }).sort({
-      expiryDate: 1,
-    });
-
-    if (!medicineStocks.length) {
-      return res.status(404).json({ message: "Medicine not found in stock" });
+    // Check if queue exists
+    const queue = await Queue.findById(queueId);
+    if (!queue) {
+      return res.status(404).json({ message: "Queue not found" });
     }
 
-    let remainingQuantity = quantity;
-    let updatedBatches = [];
+    const transactions = [];
 
-    for (let stock of medicineStocks) {
-      if (remainingQuantity <= 0) break;
-
-      if (stock.quantity >= remainingQuantity) {
-        stock.quantity -= remainingQuantity;
-        remainingQuantity = 0;
-      } else {
-        remainingQuantity -= stock.quantity;
-        stock.quantity = 0;
+    for (const med of items) {
+      // Find medication document by name
+      const medicationDoc = await Medication.findOne({ name: med.name });
+      if (!medicationDoc) {
+        return res.status(404).json({ message: `Medicine ${med.name} not found in database` });
       }
 
-      updatedBatches.push(stock);
-      await stock.save();
+      // Check inventory
+      const medicineStocks = await PharmacyInventory.find({ medication: medicationDoc._id }).sort({ expiryDate: 1 });
+
+      if (!medicineStocks.length) {
+        return res.status(404).json({ message: `Medicine ${med.name} not found in stock` });
+      }
+
+      let remainingQuantity = med.quantity;
+
+      for (let stock of medicineStocks) {
+        if (remainingQuantity <= 0) break;
+
+        if (stock.quantity >= remainingQuantity) {
+          stock.quantity -= remainingQuantity;
+          remainingQuantity = 0;
+        } else {
+          remainingQuantity -= stock.quantity;
+          stock.quantity = 0;
+        }
+
+        await stock.save();
+      }
+
+      if (remainingQuantity > 0) {
+        return res.status(400).json({ message: `Not enough stock available for ${med.name}` });
+      }
+
+      // Save transaction
+      const transaction = new PharmacyTransaction({
+        queueId: queue._id,
+        medication: medicationDoc._id,
+        type: "Sold",
+        quantity: med.quantity,
+        price: med.price,
+      });
+
+      await transaction.save();
+      transactions.push(transaction);
     }
 
-    if (remainingQuantity > 0) {
-      return res.status(400).json({ message: "Not enough stock available" });
-    }
-
-    // Log the transaction
-    const transaction = new PharmacyTransaction({
-      type,
-      medication,
-      quantity,
-      price: type === "Sold" ? price : null,
-    });
-
-    await transaction.save();
-
+    // Save billing info
     const billing = new Billing({
-      patientId: req.body.patientId, // Assuming you have the patient ID in the request body
-      queueNumber: req.body.queueNumber, // Assuming you have the queue ID in the request body
-      department: "Pharmacy",
-      items: [
-        {
-          type: "medicine",
-          name: medication,
-          quantity,
-          price,
-          total: price * quantity,
-        },
-      ],
-      totalAmount: price * quantity,
+      queueId: queue._id,
+      department,
+      items: items.map(med => ({
+        type: "medicine",
+        name: med.name,
+        quantity: med.quantity,
+        price: med.price,
+        total: med.total,
+      })),
+      totalAmount: items.reduce((sum, med) => sum + med.total, 0),
     });
+
     await billing.save();
 
-    res
-      .status(201)
-      .json({ message: "Transaction recorded successfully", transaction });
+    console.log("Transaction and billing saved successfully.");
+    res.status(201).json({ message: "Transaction recorded successfully", transactions });
+
   } catch (error) {
-    console.error("Error recording transaction:", error);
+    console.error("Error recording transaction:", error.message, error.stack);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
+
 
 router.get("/pharmacyPrescriptions", async (req, res) => {
   try {

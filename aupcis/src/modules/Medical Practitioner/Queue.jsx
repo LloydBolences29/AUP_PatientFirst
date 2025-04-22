@@ -123,10 +123,10 @@ const Queue = () => {
                 <Row className="g-4">
                   {[
                     "Cashier",
-                    "Laboratory",
+                    "Lab",
                     "Consultation",
                     "Pharmacy",
-                    "X-Ray",
+                    "XRay",
                   ].map((department) => (
                     <Col key={department} md={4}>
                       <Card

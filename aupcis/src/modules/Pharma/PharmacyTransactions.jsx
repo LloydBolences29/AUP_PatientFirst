@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from "react";
+import "./PharmacyTransactions.css";
 import axios from "axios";
 import Sidebar from "../../components/Sidebar";
 import Modal from "../../components/Modal";
 import io from "socket.io-client";
-import { Form } from "react-bootstrap";
+import {
+  Container,
+  Card,
+  CardHeader,
+  CardBody,
+  CardFooter,
+  Form,
+  Button,
+} from "react-bootstrap";
 
 const socket = io("wss://localhost:3000", {
   secure: true,
@@ -18,13 +27,26 @@ const PharmacyTransactions = () => {
   const [quantity, setQuantity] = useState("");
   const [price, setPrice] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [queueNo, setQueueNo] = useState(null);
+  const [queueNo, setQueueNo] = useState("");
+  const [currentQueueStatus, setCurrentQueueStatus] = useState("");
   const [medicineSearch, setMedicineSearch] = useState("");
   const [medicineResults, setMedicineResults] = useState([]);
   const [patientData, setPatientData] = useState(null);
   const [patientId, setPatientId] = useState("");
   const [queueNo_id, setQueueNo_id] = useState(null);
-
+  const [selectedStatus, setSelectedStatus] = useState("pending");
+  const [selectedPrescription, setSelectedPrescription] = useState(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [modalTimer, setModalTimer] = useState(5); // Timer in seconds
+  const [queueStatus, setQueueStatus] = useState("waiting"); // Default status
+  const [queueData, setQueueData] = useState([]); // State to hold the queue data
+  const [waitingQueueData, setWaitingQueueData] = useState([]); // State to hold the waiting queue data
+  const [toCashierData, setToCashierData] = useState([]); // State to hold the sent to cashier data
+  const [forDispense, setForDispense] = useState([]); // State to hold the dispensed queue data
+  
+  
+  
   // for websocket connection
   useEffect(() => {
     socket.on("connect", () => {
@@ -41,8 +63,6 @@ const PharmacyTransactions = () => {
           "New Queue Generated for " + department + ": ",
           data.queueNumber
         );
-        // You can update the UI he
-        setQueueNo(data.queueNumber);
 
         console.log("Queue Number:", queueNo); // Log the queue number
 
@@ -56,10 +76,41 @@ const PharmacyTransactions = () => {
   }, [queueNo]);
 
   useEffect(() => {
+    socket.on("queueStatusUpdate", (data) => {
+      console.log("Queue status updated via socket:", data);
+
+      // Optionally, update local state or refetch the queue
+      fetchQueue(); // or handle data accordingly
+    });
+
+    // Cleanup the listener to prevent duplicates
+    return () => {
+      socket.off("queueStatusUpdate");
+    };
+  }, []);
+
+  useEffect(() => {
     fetchTransactions();
     fetchMedicines();
   }, []);
-  console.log("Queue Number:", queueNo); // Log the queue number
+
+  useEffect(() => {
+    if (showSuccessModal) {
+      const timer = setInterval(() => {
+        setModalTimer((prev) => {
+          if (prev <= 1) {
+            setShowSuccessModal(false);
+            clearInterval(timer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [showSuccessModal]);
+
   const fetchPatientData = async () => {
     try {
       const response = await axios.get(
@@ -87,29 +138,47 @@ const PharmacyTransactions = () => {
   };
 
   //ferch all the queues along with the object id
-  const fetchQueue = async (queueNumber) => {
+  const fetchQueue = async () => {
     try {
-      const response = await axios.get(
-        `https://localhost:3000/queue/queue/${queueNumber}`
-      );
-      console.log("Queue Number:", queueNo); // Log the queue number
-      setQueueNo(response.data.queueNumber);
-      return response.data;
+      const response = await axios.get(`https://localhost:3000/queue/waiting`, {
+        params: { department: "pharmacy" }});
+  
+      const waitList = response.data;
+      console.log("Waiting Queue Response:", waitList);
+  
+      setWaitingQueueData(waitList);
+      setQueueNo(waitList[0]?.queueNumber); // Set the queue number from the first item
+      setQueueNo_id(waitList[0]?._id); // Set the queue ID from the first item
+
+      const sendToCashierData = await axios.get(
+        `https://localhost:3000/queue/sentToCashier`, {
+          params: { department: "pharmacy" }});
+
+          const billList = sendToCashierData.data;
+          console.log("To Cashier Queue Response:", billList);
+
+          setToCashierData(billList);
+
+          const dispenseData = await axios.get(
+            `https://localhost:3000/queue/dispensed`, {
+              params: { department: "pharmacy" }});
+
+              const dispenseList = dispenseData.data;
+              console.log("Dispense Queue Response:", dispenseList);
+              setForDispense(dispenseList);
+        
+
+  
     } catch (error) {
-      console.error("Error fetching queue", error);
+      console.error("Error fetching queue:", error);
     }
   };
+  
 
+  
   useEffect(() => {
-    if (queueNo) {
-      fetchQueue(queueNo).then((queue) => {
-        if (queue) {
-          setQueueNo_id(queue._id);
-          console.log("Queue ID:", queue._id); // Directly log from response
-        }
-      });
-    }
-  }, [queueNo]);
+    fetchQueue(); // Fetch queue data on component mount
+  }, []);
 
   const fetchMedicines = async () => {
     try {
@@ -174,43 +243,59 @@ const PharmacyTransactions = () => {
       alert("Please complete all fields.");
       return;
     }
-  
+
     try {
       // Prepare the items array based on selectedMedicine
       const items = selectedMedicine.map((med) => ({
-        type: "medicine",  // Assuming all items are medicines
-        name: med.name,    // Correct item name
-        quantity: parseInt(med.quantity, 10), // Quantity as integer
-        price: transactionType === "Sold" ? parseFloat(med.price) : 0,  // Price only if 'Sold'
-        total: transactionType === "Sold" ? parseFloat(med.price) * parseInt(med.quantity, 10) : 0,  // Total amount for each item
+        type: "medicine",
+        name: med.name,
+        quantity: parseInt(med.quantity, 10),
+        price: transactionType === "Sold" ? parseFloat(med.price) : 0,
+        total:
+          transactionType === "Sold"
+            ? parseFloat(med.price) * parseInt(med.quantity, 10)
+            : 0,
       }));
-  
-      // Ensure the items array is correctly structured
+
       console.log("Items Array:", items);
-  
-      // Prepare the data object for the request
+
+      // Prepare transaction data
       const transactionData = {
-        queueId: queueNo_id,  // Queue ID (from your state)
-        department: "Pharmacy",  // You can hard-code this or dynamically fetch if needed
-        items: items,  // Items array containing the selected medicines and their details
+        queueId: queueNo_id,
+        department: "Pharmacy",
+        items: items,
       };
-  
-      // Log the final data to be sent
+
       console.log("Transaction Data:", transactionData);
-  
-      // Send the request to the backend API
-      await axios.post("https://localhost:3000/api/pharma/add-transactions", transactionData);
-  
-      // Notify the user of success
-      alert("All transactions added successfully!");
+
+      // Send transaction to backend
+      await axios.post(
+        "https://localhost:3000/api/pharma/add-transactions",
+        transactionData
+      );
+
+      // Update queue status
+      const statusToUpdate = "sent-to-cashier";
+      const queueRes = await axios.patch(
+        `https://localhost:3000/queue/complete/${queueNo}`,
+        { status: statusToUpdate }
+      );
+
+      console.log("Queue status updated:", queueRes.data);
+
+      // Success notification and cleanup
+      setModalMessage(
+        `Transaction completed. Queue marked as "${statusToUpdate}"`
+      );
+      setModalTimer(5); // Reset timer
+      setShowSuccessModal(true);
       fetchTransactions();
       setShowModal(false);
     } catch (error) {
-      console.error("Error adding transaction", error.response?.data || error);
-      alert("Failed to add transaction.");
+      console.error("Error during transaction:", error.response?.data || error);
+      alert("Something went wrong while processing the transaction.");
     }
   };
-  
 
   const handleMedicineSearch = async (e) => {
     const query = e.target.value.toLowerCase();
@@ -238,6 +323,11 @@ const PharmacyTransactions = () => {
     setMedicineResults([]); // Clear the search results
   };
 
+  const handleFilterChange = (status) => {
+    setSelectedStatus(status); // No need to fetch here
+    // setSelectedPrescription(null); // Close prescription details
+  };
+
   const pharmasidebarLinks = [
     { label: "Pharmacy Dashboard", path: "/pharma-dashboard" },
     { label: "Medicine List", path: "/medicine-list" },
@@ -252,6 +342,44 @@ const PharmacyTransactions = () => {
         links={pharmasidebarLinks}
         pageContent={
           <div className="container mt-4">
+            <Container className="d-flex justify-content-evenly mb-4">
+              <Card>
+                <CardHeader>
+                
+                  <div
+                    className={waitingQueueData[0]?.status === "waiting" ? "flash" : ""}
+                  >
+                    Queue No: {waitingQueueData[0]?.queueNumber}
+                  </div>
+                </CardHeader>
+                <CardFooter>Status: Next in line</CardFooter>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <div
+                    className={
+                      toCashierData[0]?.status === "sent-to-cashier" ? "flash" : ""
+                    }
+                  >
+                    Queue No: {toCashierData[0]?.queueNumber}
+                  </div>
+                </CardHeader>
+                <CardFooter>Status: Sent to Cashier</CardFooter>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <div
+                    className={
+                      forDispense[0]?.status === "dispensing" ? "flash" : ""
+                    }
+                  >
+                    Queue No: {forDispense[0]?.queueNumber}
+                  </div>
+                </CardHeader>
+                <CardFooter>Status: For Dispensing</CardFooter>
+              </Card>
+            </Container>
+
             <h2 className="text-center">Pharmacy Transactions</h2>
             <button
               className="btn btn-primary mb-3"
@@ -259,6 +387,7 @@ const PharmacyTransactions = () => {
             >
               Add Transaction
             </button>
+
             <div className="table-responsive">
               <table className="table table-bordered table-striped">
                 <thead className="thead-dark">
@@ -303,7 +432,7 @@ const PharmacyTransactions = () => {
                   <>
                     <div className="p-3">
                       <div className="modal-header">
-                        <h3>Pharmacy Transaction for Patient {queueNo}</h3>
+                        <h3>Pharmacy Transaction for Patient {waitingQueueData[0].queueNumber}</h3>
                       </div>
 
                       <div className="modal-body">
@@ -503,19 +632,32 @@ const PharmacyTransactions = () => {
                                 Generate Emergency Dispense Bill
                               </button>
                             )}
-                            <button
-                              className="btn btn-outline-secondary"
-                              onClick={() => setShowModal(false)}
-                            >
-                              Close
-                            </button>
                           </div>
                         </div>
                       )}
 
                       {/* ...existing modal content... */}
+
+                      <button
+                        className="btn btn-outline-secondary"
+                        onClick={() => setShowModal(false)}
+                      >
+                        Close
+                      </button>
                     </div>
                   </>
+                }
+              />
+            )}
+            {showSuccessModal && (
+              <Modal
+                show={showSuccessModal}
+                onClose={() => setShowSuccessModal(false)}
+                body={
+                  <div className="text-center">
+                    <h4>{modalMessage}</h4>
+                    <p>Closing in {modalTimer} seconds...</p>
+                  </div>
                 }
               />
             )}

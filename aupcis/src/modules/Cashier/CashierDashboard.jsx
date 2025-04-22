@@ -8,10 +8,7 @@ const CashierDashboard = () => {
           label: "Cashier Dashboard",
           path: "/cashier-dashboard",
         },
-        {
-          label: "Transaction",
-          path: "/",
-        },
+
         {
           label: "Billing",
           path: "/cashier-billing",

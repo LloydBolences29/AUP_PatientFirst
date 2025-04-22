@@ -15,11 +15,11 @@ const queueTransactionSchema = new mongoose.Schema({
     type: String,
     enum: [
       'waiting',
-      'waiting-billing',
       'sent-to-cashier',
       'paid',
-      'for-dispensing',
+      'dispensing',
       'done',
+      'canceled'
     ],
     default: 'waiting',
   },

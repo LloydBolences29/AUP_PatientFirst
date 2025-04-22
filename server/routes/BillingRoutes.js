@@ -151,18 +151,21 @@ router.get("/billing/search", async (req, res) => {
   const query = req.query.query?.toLowerCase() || "";
 
   try {
-    // Find only pending billing records and populate patientId
-    const billings = await Billing.find({ status: "pending" }).populate("patientId");
+    // Find only pending billing records and populate patientId and queueId
+    const billings = await Billing.find({ status: "pending" })
+      .populate("patientId")
+      .populate("queueId");
 
-    // Filter manually after population for patient info
+    // Filter manually after population for patient and queue info
     const results = billings.filter((billing) => {
       const patient = billing.patientId;
-      if (!patient) return false;
+      const queue = billing.queueId;
 
       return (
-        patient.patient_id?.toLowerCase().includes(query)||
-        patient.firstname?.toLowerCase().includes(query) ||
-        patient.lastname?.toLowerCase().includes(query)
+        (patient?.patient_id?.toLowerCase().includes(query) ||
+         patient?.firstname?.toLowerCase().includes(query) ||
+         patient?.lastname?.toLowerCase().includes(query)) ||
+        queue?.queueNumber?.toLowerCase().includes(query)
       );
     });
 
@@ -172,6 +175,7 @@ router.get("/billing/search", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch billing records" });
   }
 });
+
 
 
 module.exports = router;

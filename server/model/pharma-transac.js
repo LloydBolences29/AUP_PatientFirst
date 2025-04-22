@@ -5,6 +5,7 @@ const pharmacyTransactionSchema = new mongoose.Schema({
     medication: { type: mongoose.Schema.Types.ObjectId, ref: 'Medication' },
     quantity: { type: Number, required: true },
     transactionDate: { type: Date, default: Date.now },
+    status: { type: String, enum: ['pending', 'dispensed'], default: 'pending' },
     price: { type: Number } // Only needed for Sold transactions
 }, { timestamps: true });
 

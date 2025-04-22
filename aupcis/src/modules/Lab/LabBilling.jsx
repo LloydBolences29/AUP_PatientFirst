@@ -1,8 +1,18 @@
 import React from "react";
 import { useState , useEffect} from "react";
 import Sidebar from "../../components/Sidebar";
-import { Container, Row, Col, Button, Form,CardHeader,Table, Modal } from "react-bootstrap";
+import { Container, Row, Col, Button, Form,CardHeader,Table, Modal, Card, CardFooter } from "react-bootstrap";
 import axios from "axios";
+import io from "socket.io-client";
+import "../Pharma/PharmacyTransactions.css";
+
+const socket = io("wss://localhost:3000", {
+  secure: true,
+  transports: ["websocket"],
+  withCredentials: true, // Ensure cookies and authentication headers are sent
+});
+
+
 
 const LabBilling = () => {
   const [tests, setTests] = useState(null);
@@ -12,7 +22,93 @@ const LabBilling = () => {
   const [patientData, setPatientData] = useState(null);
   const [selectedTest, setSelectedTest] = useState([]);
     const [showModal, setShowModal] = useState(false); // State to control modal visibility
+  const [waitingQueueData, setWaitingQueueData] = useState([]); // State to hold the waiting queue data
+    const [toCashierData, setToCashierData] = useState([]); // State to hold the sent to cashier data
+    const [forDispense, setForDispense] = useState([]); // State to hold the dispensed queue data
+    const [queueNo, setQueueNo] = useState("")
+
+
+useEffect(() => {
+    socket.on("connect", () => {
+      console.log("Connected to Socket.IO server");
+    });
+    // Emit to join the department-specific room
+    const department = "lab"; // You can dynamically set this based on the department the user is associated with
+    socket.emit("joinDepartmentRoom", department);
+
+    // Listen for 'queueGenerated' event to update the frontend
+    socket.on("queueGenerated", (data) => {
+      if (data.department === department) {
+        console.log(
+          "New Queue Generated for " + department + ": ",
+          data.queueNumber
+        );
+
+        console.log("Queue Number:", queueNo); // Log the queue number
+
+        // Update the queue number in the state
+      }
+    });
+    // Clean up socket listeners when the component unmounts
+    return () => {
+      socket.off("queueGenerated");
+    };
+  }, [queueNo]);
+
+  useEffect(() => {
+    socket.on("queueStatusUpdate", (data) => {
+      console.log("Queue status updated via socket:", data);
+
+      // Optionally, update local state or refetch the queue
+      fetchQueue(); // or handle data accordingly
+    });
+
+    // Cleanup the listener to prevent duplicates
+    return () => {
+      socket.off("queueStatusUpdate");
+    };
+  }, []);
+
+
+  const fetchQueue = async () => {
+    try {
+      const response = await axios.get(`https://localhost:3000/queue/waiting`, {
+        params: { department: "lab" }});
   
+      const waitList = response.data;
+      console.log("Waiting Queue Response:", waitList);
+  
+      setWaitingQueueData(waitList);
+      setQueueNo(waitList[0]?.queueNumber); // Set the queue number from the first item
+
+      const sendToCashierData = await axios.get(
+        `https://localhost:3000/queue/sentToCashier`, {
+          params: { department: "lab" }});
+
+          const billList = sendToCashierData.data;
+          console.log("To Cashier Queue Response:", billList);
+
+          setToCashierData(billList);
+
+          const dispenseData = await axios.get(
+            `https://localhost:3000/queue/dispensed`, {
+              params: { department: "lab" }});
+
+              const dispenseList = dispenseData.data;
+              console.log("Dispense Queue Response:", dispenseList);
+              setForDispense(dispenseList);
+        
+
+  
+    } catch (error) {
+      console.error("Error fetching queue:", error);
+    }
+  };
+
+    useEffect(() => {
+      fetchQueue(); // Fetch queue data on component mount
+    }, []);
+
   const handleSearch = async () => {
     // Implement search logic here
     if (searchTerm.trim() !== "") {
@@ -81,7 +177,16 @@ const LabBilling = () => {
             items: selectedTest,
           }
         );
+
+        // Update queue status
+      const statusToUpdate = "sent-to-cashier";
+      const queueRes = await axios.patch(
+        `https://localhost:3000/queue/complete/${queueNo}`,
+        { status: statusToUpdate }
+      );
     
+      console.log("Queue status updated:", queueRes.data);
+
         console.log("Billing sent successfully:", response.data);
         alert("Lab billing created successfully!");
       } catch (error) {
@@ -107,8 +212,53 @@ const LabBilling = () => {
               <Row>
                 <Col className="mt-4 d-flex justify-content-center align-items-center">
                   <h1>Lab Billing</h1>
+
+                  
+
+
+
+
                 </Col>
               </Row>
+            </Container>
+
+
+            <Container className="d-flex justify-content-evenly mb-4">
+              <Card>
+                <CardHeader>
+                
+                  <div
+                    className={waitingQueueData[0]?.status === "waiting" ? "flash" : ""}
+                  >
+                    Queue No: {waitingQueueData[0]?.queueNumber}
+                  </div>
+                </CardHeader>
+                <CardFooter>Status: Next in line</CardFooter>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <div
+                    className={
+                      toCashierData[0]?.status === "sent-to-cashier" ? "flash" : ""
+                    }
+                  >
+                    Queue No: {toCashierData[0]?.queueNumber}
+                  </div>
+                </CardHeader>
+                <CardFooter>Status: Sent to Cashier</CardFooter>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <div
+                    className={
+                      forDispense[0]?.status === "dispensing" ? "flash" : ""
+                    }
+                  >
+                    Queue No: {forDispense[0]?.queueNumber}
+                  </div>
+                </CardHeader>
+                <CardFooter>Status: For Dispensing</CardFooter>
+              </Card>
             </Container>
 
             <Container fluid className="p-0 bg-light">

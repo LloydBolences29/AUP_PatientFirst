@@ -26,6 +26,7 @@ const LabBilling = () => {
     const [toCashierData, setToCashierData] = useState([]); // State to hold the sent to cashier data
     const [forDispense, setForDispense] = useState([]); // State to hold the dispensed queue data
     const [queueNo, setQueueNo] = useState("")
+  const [queueDispenseNo, setQueueDispenseNo] = useState([])
 
 
 useEffect(() => {
@@ -97,6 +98,8 @@ useEffect(() => {
               const dispenseList = dispenseData.data;
               console.log("Dispense Queue Response:", dispenseList);
               setForDispense(dispenseList);
+              setQueueDispenseNo(dispenseList[0]?.queueNumber)
+
         
 
   
@@ -196,12 +199,38 @@ useEffect(() => {
   setShowModal(false); // Close the modal after generating the bill
   
     };
+
+    const handleSkipButton = async () => {
+          console.log("Skip button clicked.");
+          const statusToUpdate = "skipped";
+            const queueRes = await axios.patch(
+              `https://localhost:3000/queue/complete/${queueNo}`,
+              { status: statusToUpdate }
+            );
+      
+            console.log("Queue status updated:", queueRes.data);
+          }
+      
+          const handleDoneButton = async () => {
+            console.log("Done button clicked.");
+            const statusToUpdate = "done";
+              const queueRes = await axios.patch(
+                `https://localhost:3000/queue/complete/${queueDispenseNo}`,
+                { status: statusToUpdate }
+              );
+        
+              console.log("Queue status updated:", queueRes.data);
+            }
     
   const labSidebarLinks = [
     { label: "Dashboard", path: "/lab-dashboard" },
     { label: "Billing", path: "/lab-billing" },
     { label: "Upload", path: "/lab-upload" },
   ];
+  
+  
+  
+  
   return (
     <div>
       <Sidebar
@@ -234,6 +263,10 @@ useEffect(() => {
                   </div>
                 </CardHeader>
                 <CardFooter>Status: Next in line</CardFooter>
+               <Button variant="outline-primary"
+                               onClick={handleSkipButton}>
+                                 Skip
+                               </Button>
               </Card>
               <Card>
                 <CardHeader>
@@ -258,6 +291,10 @@ useEffect(() => {
                   </div>
                 </CardHeader>
                 <CardFooter>Status: For Dispensing</CardFooter>
+              <Button variant="outline-success"
+                              onClick={handleDoneButton}>
+                                Done
+                              </Button>
               </Card>
             </Container>
 

@@ -34,6 +34,7 @@ const XrayBilling = () => {
   const [toCashierData, setToCashierData] = useState([]); // State to hold the sent to cashier data
   const [forDispense, setForDispense] = useState([]); // State to hold the dispensed queue data
   const [queueNo, setQueueNo] = useState("");
+  const [queueDispenseNo, setQueueDispenseNo] = useState([]);
 
   useEffect(() => {
     socket.on("connect", () => {
@@ -110,6 +111,7 @@ const XrayBilling = () => {
       const dispenseList = dispenseData.data;
       console.log("Dispense Queue Response:", dispenseList);
       setForDispense(dispenseList);
+      setQueueDispenseNo(dispenseList[0]?.queueNumber)
     } catch (error) {
       console.error("Error fetching queue:", error);
     }
@@ -212,6 +214,28 @@ const XrayBilling = () => {
   ];
 
   console.log("Patient Data:", patientData); // Log the patient data to check its structure
+  const handleSkipButton = async () => {
+    console.log("Skip button clicked.");
+    const statusToUpdate = "skipped";
+    const queueRes = await axios.patch(
+      `https://localhost:3000/queue/complete/${queueNo}`,
+      { status: statusToUpdate }
+    );
+
+    console.log("Queue status updated:", queueRes.data);
+  };
+
+  const handleDoneButton = async () => {
+    console.log("Skip button clicked.");
+    const statusToUpdate = "done";
+    const queueRes = await axios.patch(
+      `https://localhost:3000/queue/complete/${queueDispenseNo}`,
+      { status: statusToUpdate }
+    );
+
+    console.log("Queue status updated:", queueRes.data);
+  };
+
   return (
     <div>
       <Sidebar
@@ -234,6 +258,12 @@ const XrayBilling = () => {
                       </div>
                     </CardHeader>
                     <CardFooter>Status: Next in line</CardFooter>
+                    <Button
+                      variant="outline-primary"
+                      onClick={handleSkipButton}
+                    >
+                      Skip
+                    </Button>
                   </Card>
                   <Card>
                     <CardHeader>
@@ -260,6 +290,12 @@ const XrayBilling = () => {
                       </div>
                     </CardHeader>
                     <CardFooter>Status: For Dispensing</CardFooter>
+                    <Button
+                      variant="outline-success"
+                      onClick={handleDoneButton}
+                    >
+                      Done
+                    </Button>
                   </Card>
                 </Container>
 

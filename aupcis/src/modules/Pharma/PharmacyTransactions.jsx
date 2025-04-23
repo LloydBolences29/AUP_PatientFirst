@@ -44,7 +44,7 @@ const PharmacyTransactions = () => {
   const [waitingQueueData, setWaitingQueueData] = useState([]); // State to hold the waiting queue data
   const [toCashierData, setToCashierData] = useState([]); // State to hold the sent to cashier data
   const [forDispense, setForDispense] = useState([]); // State to hold the dispensed queue data
-  
+  const [queueDispenseNo, setQueueDispenseNo] = useState([])
   
   
   // for websocket connection
@@ -166,6 +166,7 @@ const PharmacyTransactions = () => {
               const dispenseList = dispenseData.data;
               console.log("Dispense Queue Response:", dispenseList);
               setForDispense(dispenseList);
+              setQueueDispenseNo(dispenseList[0]?.queueNumber)
         
 
   
@@ -328,6 +329,30 @@ const PharmacyTransactions = () => {
     // setSelectedPrescription(null); // Close prescription details
   };
 
+  const handleSkipButton = async () => {
+    console.log("Skip button clicked.");
+    const statusToUpdate = "skipped";
+      const queueRes = await axios.patch(
+        `https://localhost:3000/queue/complete/${queueNo}`,
+        { status: statusToUpdate }
+      );
+
+      console.log("Queue status updated:", queueRes.data);
+    }
+
+    const handleDoneButton = async () => {
+      console.log("Skip button clicked.");
+      const statusToUpdate = "done";
+        const queueRes = await axios.patch(
+          `https://localhost:3000/queue/complete/${queueDispenseNo}`,
+          { status: statusToUpdate }
+        );
+  
+        console.log("Queue status updated:", queueRes.data);
+      }
+
+
+
   const pharmasidebarLinks = [
     { label: "Pharmacy Dashboard", path: "/pharma-dashboard" },
     { label: "Medicine List", path: "/medicine-list" },
@@ -353,6 +378,10 @@ const PharmacyTransactions = () => {
                   </div>
                 </CardHeader>
                 <CardFooter>Status: Next in line</CardFooter>
+                <Button variant="outline-primary"
+                onClick={handleSkipButton}>
+                  Skip
+                </Button>
               </Card>
               <Card>
                 <CardHeader>
@@ -377,6 +406,10 @@ const PharmacyTransactions = () => {
                   </div>
                 </CardHeader>
                 <CardFooter>Status: For Dispensing</CardFooter>
+                <Button variant="outline-success"
+                onClick={handleDoneButton}>
+                  Done
+                </Button>
               </Card>
             </Container>
 

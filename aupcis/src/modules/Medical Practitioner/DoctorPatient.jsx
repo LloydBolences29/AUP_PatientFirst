@@ -3,7 +3,16 @@ import Sidebar from "../../components/Sidebar";
 import Modal from "../../components/Modal";
 import axios from "axios";
 import AccordionComponents from "../../components/AccordionComponents";
-import { Form, Button, Container, Row, Col, Card } from "react-bootstrap";
+import {
+  Form,
+  Button,
+  Container,
+  Row,
+  Col,
+  Card,
+  CardHeader,
+  CardFooter,
+} from "react-bootstrap";
 import { red } from "@mui/material/colors";
 
 const DoctorPatient = () => {
@@ -26,10 +35,25 @@ const DoctorPatient = () => {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectedPurpose, setSelectedPurpose] = useState(null);
+  const [isChecked, setIsChecked] = useState(false);
+  const [checkedValue, setCheckedValue] = useState("");
+  const [textValue, setTextValue] = useState("");
+  const [doctorsFee, SetDoctorsFee] = useState(1000) //setting the value for the constant doctors fee for medical certificate submit handle function
 
-  const handleGenerateCertificate = async () => {
-    //create an alert ("Certificate generated successfully!");
-    alert("Certificate generated successfully!");
+  const handleCheckBoxChange = (e) => {
+    setIsChecked(e.target.checked);
+    setTextValue(e.target.value);
+    console.log("Checked Item is : ", e.target.value);
+    //get the value of the checked box
+    setCheckedValue(e.target.value);
+  };
+
+  const handleMedCertSubmit = () => {
+    
+    console.log("Submitted text:", textValue);
+    alert("Successfully Submitted")
+    setIsModalOpen(false)
+    // You can also send `inputValue` to your backend or process it however you like
   };
 
   const addPrescription = (type) => {
@@ -780,19 +804,525 @@ const DoctorPatient = () => {
                               </div>
                             </div>
 
-                            <div>
-                              <label>
-                                <strong>Doctor's Note:</strong>
-                              </label>
-                              <textarea
-                                value={doctorNote}
-                                onChange={handleNoteChange}
-                                placeholder="Add additional notes here..."
-                                className="form-control"
-                                rows="4"
-                              />
+                            {/* content here for medical cert */}
+                            <div className="">
+                              <div className="wrapper-content">
+                                <Row>
+                                  <Col>
+                                    <Card>
+                                      <CardHeader>CXR</CardHeader>
+                                      <Card.Body>
+                                        {/* //flex with a direction of column */}
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            flexDirection: "column",
+                                          }}
+                                        >
+                                          <label>
+                                            <input
+                                              type="checkbox"
+                                              value="Normal"
+                                              onChange={handleCheckBoxChange}
+                                            />{" "}
+                                            Normal{" "}
+                                          </label>
+                                          <br />
+                                          <label>
+                                            <input
+                                              type="checkbox"
+                                              value="With Findings"
+                                              onChange={handleCheckBoxChange}
+                                            />{" "}
+                                            With Findings{" "}
+                                          </label>
+                                        </div>
+                                      </Card.Body>
+                                    </Card>
+                                  </Col>
+
+                                  <Col>
+                                    <Card>
+                                      <CardHeader>CBC</CardHeader>
+                                      <Card.Body>
+                                        {/* //flex with a direction of column */}
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            flexDirection: "column",
+                                          }}
+                                        >
+                                          <label>
+                                            <input
+                                              type="checkbox"
+                                              value="Normal"
+                                              onChange={handleCheckBoxChange}
+                                            />{" "}
+                                            Normal{" "}
+                                          </label>
+                                          <br />
+                                          <label>
+                                            <input
+                                              type="checkbox"
+                                              value="With Findings"
+                                              onChange={handleCheckBoxChange}
+                                            />{" "}
+                                            With Findings{" "}
+                                          </label>
+                                        </div>
+                                      </Card.Body>
+                                    </Card>
+                                  </Col>
+
+                                  <Col>
+                                    <Card>
+                                      <CardHeader>Urinalysis</CardHeader>
+                                      <Card.Body>
+                                        {/* //flex with a direction of column */}
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            flexDirection: "column",
+                                          }}
+                                        >
+                                          <label>
+                                            <input
+                                              type="checkbox"
+                                              value="Normal"
+                                              onChange={handleCheckBoxChange}
+                                            />{" "}
+                                            Normal{" "}
+                                          </label>
+                                          <br />
+                                          <label>
+                                            <input
+                                              type="checkbox"
+                                              value="With Findings"
+                                              onChange={handleCheckBoxChange}
+                                            />{" "}
+                                            With Findings{" "}
+                                          </label>
+                                        </div>
+                                      </Card.Body>
+                                    </Card>
+                                  </Col>
+
+                                  <Col>
+                                    <Card>
+                                      <CardHeader>Drug Test</CardHeader>
+                                      <Card.Body>
+                                        {/* //flex with a direction of column */}
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            flexDirection: "column",
+                                          }}
+                                        >
+                                          <label>
+                                            <input
+                                              type="checkbox"
+                                              value="Negative"
+                                              onChange={handleCheckBoxChange}
+                                            />{" "}
+                                            Negative{" "}
+                                          </label>
+                                          <br />
+                                          <label>
+                                            <input
+                                              type="checkbox"
+                                              value="Positive"
+                                              onChange={handleCheckBoxChange}
+                                            />{" "}
+                                            Positive{" "}
+                                          </label>
+                                        </div>
+                                      </Card.Body>
+                                    </Card>
+                                  </Col>
+                                </Row>
+                              </div>
+                              <br />
+
+                              <h3>Physical Examination</h3>
+
+                              <Row>
+                                <Col> </Col>
+
+                                <Col>
+                                  <strong>E/N</strong>
+                                </Col>
+                                <Col>
+                                  <strong>Findings</strong>
+                                </Col>
+                                <Col>
+                                  <strong>Descriptions</strong>
+                                </Col>
+                              </Row>
+
+                              <Card className="p-3">
+                                <Row>
+                                  <Col>General Appearance, body built</Col>
+
+                                  <Col>
+                                    <strong>
+                                      <input type="checkbox" value="E/N" />
+                                    </strong>
+                                  </Col>
+                                  <Col>
+                                    <strong>{""}</strong>
+                                  </Col>
+                                  <Col>
+                                    <input
+                                      type="text"
+                                      value={textValue}
+                                      onChange={handleCheckBoxChange}
+                                    />
+                                  </Col>
+                                </Row>
+                              </Card>
+
+                              <Card className="p-3">
+                                <Row>
+                                  <Col>Skin</Col>
+
+                                  <Col>
+                                    <strong>
+                                      <input type="checkbox" value="E/N" />
+                                    </strong>
+                                  </Col>
+                                  <Col>
+                                    <div>
+                                      <label>
+                                        <input
+                                          type="checkbox"
+                                          value="Discoloration"
+                                        />{" "}
+                                        Discoloration
+                                      </label>
+                                      <br />
+                                      <label>
+                                        <input
+                                          type="checkbox"
+                                          value="Congenital Marks"
+                                        />{" "}
+                                        Congenital Marks
+                                      </label>{" "}
+                                      <br />
+                                      <label>
+                                        <input type="checkbox" value="Lesion" />{" "}
+                                        Lesion
+                                      </label>{" "}
+                                      <br />
+                                      <label>
+                                        <input
+                                          type="checkbox"
+                                          value="Deformity"
+                                        />{" "}
+                                        Deformity
+                                      </label>{" "}
+                                      <br />
+                                    </div>
+                                  </Col>
+                                  <Col>
+                                    <input
+                                      type="text"
+                                      value={textValue}
+                                      onChange={handleCheckBoxChange}
+                                    />
+                                  </Col>
+                                </Row>
+                              </Card>
+
+                              <Card className="p-3">
+                                <Row>
+                                  <Col>Head</Col>
+
+                                  <Col>
+                                    <strong>
+                                      <input type="checkbox" value="E/N" />
+                                    </strong>
+                                  </Col>
+                                  <Col>
+                                    <div>
+                                      <label>
+                                        <input
+                                          type="checkbox"
+                                          value="Lesion (Acne)"
+                                        />{" "}
+                                        Lesion (Acne)
+                                      </label>{" "}
+                                      <br />
+                                      <label>
+                                        <input
+                                          type="checkbox"
+                                          value="Deformity"
+                                        />{" "}
+                                        Deformity
+                                      </label>{" "}
+                                      <br />
+                                    </div>
+                                  </Col>
+                                  <Col>
+                                    <input
+                                      type="text"
+                                      value={textValue}
+                                      onChange={handleCheckBoxChange}
+                                    />
+                                  </Col>
+                                </Row>
+                              </Card>
+                              <Card className="p-3">
+                                <Row>
+                                  <Col>Eyes</Col>
+
+                                  <Col>
+                                    <strong>
+                                      <input type="checkbox" value="E/N" />
+                                    </strong>
+                                  </Col>
+                                  <Col>
+                                    <div>
+                                      <label>
+                                        <input
+                                          type="checkbox"
+                                          value="Inflammation"
+                                        />{" "}
+                                        Inflammation
+                                      </label>
+                                      <br />
+                                      <label>
+                                        <input
+                                          type="checkbox"
+                                          value="Discharge"
+                                        />{" "}
+                                        Discharge
+                                      </label>{" "}
+                                      <br />
+                                      <label>
+                                        <input
+                                          type="checkbox"
+                                          value="Redness"
+                                        />{" "}
+                                        Redness
+                                      </label>{" "}
+                                      <br />
+                                    </div>
+                                  </Col>
+                                  <Col>
+                                    <input
+                                      type="text"
+                                      value={textValue}
+                                      onChange={handleCheckBoxChange}
+                                    />
+                                  </Col>
+                                </Row>
+                              </Card>
+                              <Card className="p-3">
+                                <Row>
+                                  <Col>Ears</Col>
+
+                                  <Col>
+                                    <strong>
+                                      <input type="checkbox" value="E/N" />
+                                    </strong>
+                                  </Col>
+                                  <Col>
+                                    <div>
+                                      <label>
+                                        <input
+                                          type="checkbox"
+                                          value="Inflammation"
+                                        />{" "}
+                                        Inflammation
+                                      </label>
+                                      <br />
+                                      <label>
+                                        <input
+                                          type="checkbox"
+                                          value="Discharge"
+                                        />{" "}
+                                        Discharge
+                                      </label>
+                                      <br />
+                                      <label>
+                                        <input
+                                          type="checkbox"
+                                          value="Deformity"
+                                        />{" "}
+                                        Deformity
+                                      </label>{" "}
+                                      <br />
+                                    </div>
+                                  </Col>
+                                  <Col>
+                                    <input
+                                      type="text"
+                                      value={textValue}
+                                      onChange={handleCheckBoxChange}
+                                    />
+                                  </Col>
+                                </Row>
+                              </Card>
+                              <Card className="p-3">
+                                <Row>
+                                  <Col>Nose</Col>
+
+                                  <Col>
+                                    <strong>
+                                      <input type="checkbox" value="E/N" />
+                                    </strong>
+                                  </Col>
+                                  <Col>
+                                    <div>
+                                      <label>
+                                        <input
+                                          type="checkbox"
+                                          value="Ulcer/Lesion"
+                                        />{" "}
+                                        Ulcer/Lesion
+                                      </label>
+                                      <br />
+                                      <label>
+                                        <input
+                                          type="checkbox"
+                                          value="Discharge"
+                                        />{" "}
+                                        Discharge
+                                      </label>
+                                      <br />
+                                      <label>
+                                        <input
+                                          type="checkbox"
+                                          value="Bleeding"
+                                        />{" "}
+                                        Bleeding
+                                      </label>{" "}
+                                      <br />
+                                      <label>
+                                        <input
+                                          type="checkbox"
+                                          value="Deformity"
+                                        />{" "}
+                                        Deformity
+                                      </label>{" "}
+                                      <br />
+                                    </div>
+                                  </Col>
+                                  <Col>
+                                    <input
+                                      type="text"
+                                      value={textValue}
+                                      onChange={handleCheckBoxChange}
+                                    />
+                                  </Col>
+                                </Row>
+                              </Card>
                             </div>
+
+                            <br />
                             <div>
+                              {/* FITNESS CERTIFICATION SECTION */}
+                              <Card className="p-3">
+                                <h5>FITNESS CERTIFICATION</h5>
+
+                                <Row className="mb-3">
+                                  <Col>
+                                    <Form.Check
+                                      type="radio"
+                                      label="Fit for enrollment"
+                                      name="fitness"
+                                    />
+                                    <Form.Check
+                                      type="radio"
+                                      label="Not fit for enrollment"
+                                      name="fitness"
+                                    />
+                                    <Form.Check
+                                      type="radio"
+                                      label="Pending, reason:"
+                                      name="fitness"
+                                    />
+                                    <Form.Control
+                                      type="text"
+                                      placeholder="Specify reason"
+                                    />
+                                  </Col>
+                                </Row>
+
+                                <h6>For work enlistment</h6>
+                                <Row>
+                                  <Col>
+                                    <Form.Check
+                                      type="radio"
+                                      label="Class A – Fit for all types of work. No physical defect noted."
+                                      name="class"
+                                    />
+                                    <Form.Check
+                                      type="radio"
+                                      label="Class B – Fit for all types of work. Has minor ailment. Needs treatment."
+                                      name="class"
+                                    />
+                                    <Form.Check
+                                      type="radio"
+                                      label="Class C – Employment at the risk and discretion of management."
+                                      name="class"
+                                    />
+                                    <Form.Check
+                                      type="radio"
+                                      label="Unfit, due to:"
+                                      name="class"
+                                    />
+                                    <Form.Control
+                                      type="text"
+                                      placeholder="Specify condition"
+                                    />
+                                  </Col>
+                                </Row>
+
+                                <Row className="mt-3">
+                                  <Col>
+                                    <strong>Impression:</strong>
+                                    <br />
+                                    <Form.Check
+                                      type="checkbox"
+                                      label="Essentially normal medical examination findings at the time of examination."
+                                    />
+                                    <Form.Check
+                                      type="checkbox"
+                                      label="Others:"
+                                    />
+                                    <Form.Control
+                                      type="text"
+                                      placeholder="Other remarks"
+                                    />
+                                  </Col>
+
+                                  <Col>
+                                    <strong>Recommendation/s:</strong>
+                                    <Form.Control as="textarea" rows={3} />
+                                  </Col>
+                                </Row>
+
+                                <Row className="mt-4">
+                                  <Col>
+                                    <Form.Label>
+                                      Signature Above Printed Name of Attending
+                                      Physician
+                                    </Form.Label>
+                                    <Form.Control type="text" />
+                                  </Col>
+                                  <Col>
+                                    <Form.Label>License Number</Form.Label>
+                                    <Form.Control type="text" />
+                                  </Col>
+                                  <Col>
+                                    <Form.Label>Date of Examination</Form.Label>
+                                    <Form.Control type="date" />
+                                  </Col>
+                                </Row>
+                              </Card>
+                            </div>
+                            {/* <div>
                               <label>
                                 <strong>Doctor's Fee: </strong>
                               </label>
@@ -804,7 +1334,7 @@ const DoctorPatient = () => {
                                 className="w-full p-2 mb-2 border rounded"
                                 required
                               />
-                            </div>
+                            </div> */}
                           </>
                         )}
                       </div>
@@ -825,8 +1355,8 @@ const DoctorPatient = () => {
                                 "Are you sure you want to mark this visit as complete?"
                               )
                             ) {
-                              handleCompleteVisit(selectedVisit._id);
-                              handleSubmitVisitDetails();
+                              // handleCompleteVisit(selectedVisit._id);
+                              handleMedCertSubmit();
                               closeModal();
                             }
                           }}

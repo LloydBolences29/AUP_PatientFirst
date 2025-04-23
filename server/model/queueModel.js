@@ -19,7 +19,7 @@ const queueTransactionSchema = new mongoose.Schema({
       'paid',
       'dispensing',
       'done',
-      'canceled'
+      'skipped'
     ],
     default: 'waiting',
   },

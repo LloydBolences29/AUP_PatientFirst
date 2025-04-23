@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../../components/Sidebar";
-import "./AdminRoleManagement.css";
+import {
+  Card,
+  Form,
+  Button,
+  Alert,
+  Container,
+  Row,
+  Col,
+} from "react-bootstrap";
 
 const AdminRoleManagement = () => {
   const sidebarLinks = [
@@ -34,7 +42,7 @@ const AdminRoleManagement = () => {
   useEffect(() => {
     const fetchAdmin = async () => {
       const response = await fetch("https://localhost:3000/api/roles/user");
-    
+
       try {
         const data = await response.json(); // ✅ Read response only once
         console.log("Parsed JSON:", data);
@@ -84,133 +92,140 @@ const AdminRoleManagement = () => {
   };
 
   return (
-    <div>
+    <div style={{ display: "flex", minHeight: "100vh" }}>
       <Sidebar
         links={sidebarLinks}
         pageContent={
-          <>
-            {/* Wrapper for the admin page */}
-            <div className="admin-page-container">
-              <div className="admin-page-wrapper">
-                {/* admin navbar */}
-                <div className="admin-navbar-container">
-                  <div className="admin-navbar">
-                    <h1>Role Management</h1>
-                  </div>
-                </div>
-
-                {/* admin content */}
-                <div className="admin-content-container">
-                  <div className="admin-content">
-                    <h1>Admin Role Management</h1>
-                    <p>Manage the roles of the users in the system</p>
-
-                    {notification && (
-                      <div className="alert alert-info">{notification}</div>
-                    )}
-
-                    <form
-                      className="admin-form-container"
-                      onSubmit={handleSubmit}
+          <Container>
+            <Row>
+              <Col>
+                <Card
+                  md={9}
+                  className="content-column analytics-card shadow-sm p-3 mb-5 bg-white rounded text-center"
+                >
+                  <div className="page-content">
+                    <h1
+                      className="page-title fw-bold"
+                      style={{ color: "#2c3e50" }}
                     >
-                      <div className="form-row admin-form">
-                        <div className="form-group col-md-6">
-                          <label htmlFor="role_ID">ID</label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="role_ID"
-                            placeholder="ID"
-                            value={formData.role_ID}
-                            onChange={handleChange}
-                          />
-                        </div>
-                        <div className="form-group col-md-6">
-                          <label htmlFor="password">Password</label>
-                          <input
-                            type="password"
-                            className="form-control"
-                            id="password"
-                            placeholder="Password"
-                            value={formData.password}
-                            onChange={handleChange}
-                          />
-                        </div>
-                      </div>
-                      <div className="form-group col-md-6">
-                        <label htmlFor="fullname">Full Name</label>
-                        <input
+                      Admin Role Management
+                    </h1>
+                  </div>
+                  <Card.Body>
+                    <Card.Text>
+                      Manage the roles of the users in the system
+                    </Card.Text>
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+            <Row className="mt-4">
+              <Col>
+                {notification && <Alert variant="info">{notification}</Alert>}
+                <Form onSubmit={handleSubmit}>
+                  <Row>
+                    <Col md={6}>
+                      <Form.Group controlId="role_ID">
+                        <Form.Label>ID</Form.Label>
+                        <Form.Control
                           type="text"
-                          className="form-control"
-                          id="fullname"
+                          placeholder="ID"
+                          value={formData.role_ID}
+                          onChange={handleChange}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group controlId="password">
+                        <Form.Label>Password</Form.Label>
+                        <Form.Control
+                          type="password"
+                          placeholder="Password"
+                          value={formData.password}
+                          onChange={handleChange}
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                  <Row className="mt-3">
+                    <Col md={6}>
+                      <Form.Group controlId="fullname">
+                        <Form.Label>Full Name</Form.Label>
+                        <Form.Control
+                          type="text"
                           placeholder="Dela Cruz, Juan Miguel, A"
                           value={formData.fullname}
                           onChange={handleChange}
                         />
-                      </div>
-                      <div className="form-group col-md-6">
-                        <label htmlFor="address">Address</label>
-                        <input
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group controlId="address">
+                        <Form.Label>Address</Form.Label>
+                        <Form.Control
                           type="text"
-                          className="form-control"
-                          id="address"
                           placeholder="Apartment, studio, or floor"
                           value={formData.address}
                           onChange={handleChange}
                         />
-                      </div>
-                      <div className="form-row">
-                        <div className="form-group col-md-6">
-                          <label htmlFor="city">City</label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="city"
-                            value={formData.city}
-                            onChange={handleChange}
-                          />
-                        </div>
-                        <div className="form-group col-md-4">
-                          <label htmlFor="role">Role: </label>
-                          <select
-                            id="role"
-                            className="form-control"
-                            value={formData.role}
-                            onChange={handleChange}
-                          >
-                            <option value="">Choose...</option>
-                            <option value="Nurse">Nurse</option>
-                            <option value="Doctor">Doctor</option>
-                            <option value="MedicalRecordsOfficer">
-                              Medical Records Officer
-                            </option>
-                            <option value="Pharmacist">Pharmacist</option>
-                            <option value="Cashier">Cashier</option>
-                            <option value="Admin">Admin</option>
-                            <option value="Radiologist">Radiologist</option>
-                            <option value="lab">Medical Technologist</option>
-                          </select>
-                        </div>
-                        <div className="form-group col-md-2">
-                          <label htmlFor="zip">Zip</label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="zip"
-                            value={formData.zip}
-                            onChange={handleChange}
-                          />
-                        </div>
-                      </div>
-                      <button type="submit" className="btn btn-outline-primary">
-                        Add role
-                      </button>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </>
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                  <Row className="mt-3">
+                    <Col md={6}>
+                      <Form.Group controlId="city">
+                        <Form.Label>City</Form.Label>
+                        <Form.Control
+                          type="text"
+                          value={formData.city}
+                          onChange={handleChange}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={4}>
+                      <Form.Group controlId="role">
+                        <Form.Label>Role</Form.Label>
+                        <Form.Control
+                          as="select"
+                          value={formData.role}
+                          onChange={handleChange}
+                        >
+                          <option value="">Choose...</option>
+                          <option value="Nurse">Nurse</option>
+                          <option value="Doctor">Doctor</option>
+                          <option value="MedicalRecordsOfficer">
+                            Medical Records Officer
+                          </option>
+                          <option value="Pharmacist">Pharmacist</option>
+                          <option value="Cashier">Cashier</option>
+                          <option value="Admin">Admin</option>
+                          <option value="Radiologist">Radiologist</option>
+                          <option value="lab">Medical Technologist</option>
+                        </Form.Control>
+                      </Form.Group>
+                    </Col>
+                    <Col md={2}>
+                      <Form.Group controlId="zip">
+                        <Form.Label>Zip</Form.Label>
+                        <Form.Control
+                          type="text"
+                          value={formData.zip}
+                          onChange={handleChange}
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                  <Button
+                    type="submit"
+                    variant="outline-primary"
+                    className="mt-4"
+                  >
+                    Add Role
+                  </Button>
+                </Form>
+              </Col>
+            </Row>
+          </Container>
         }
       />
     </div>

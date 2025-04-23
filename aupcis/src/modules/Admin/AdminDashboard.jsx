@@ -57,7 +57,7 @@ const AdminDashboard = () => {
     fetchDiagnosis();
   }, [selectedType]);
 
-  console.log("Diagnosis:" ,diagnosisData)
+  console.log("Diagnosis:", diagnosisData);
   // Function to fetch patient count data
   const fetchPatientCounts = async (date, type) => {
     setLoading(true);
@@ -131,15 +131,17 @@ const AdminDashboard = () => {
         pageContent={
           <>
             <div className="container">
-            <Card md={9} className="content-column analytics-card shadow-sm p-3 mb-5 bg-white rounded text-center">
+              <Card
+                md={9}
+                className="content-column analytics-card shadow-sm p-3 mb-5 bg-white rounded text-center"
+              >
                 <div className="page-content">
                   <h1
                     className="page-title fw-bold"
                     style={{ color: "#2c3e50" }}
                   >
-                    Pharmacy Dashboard
+                    Admin Dashboard
                   </h1>
-                  
                 </div>
               </Card>
               {/* Date Picker & Type Selector */}
@@ -186,7 +188,10 @@ const AdminDashboard = () => {
                     <p className="text-center">Loading...</p>
                   ) : (
                     <table className="table table-bordered">
-                      <thead className="table-dark" style={{ backgroundColor: "#2c3e50" }}>
+                      <thead
+                        className="table-dark"
+                        style={{ backgroundColor: "#2c3e50" }}
+                      >
                         <tr>
                           <th>Purpose</th>
                           <th>Count</th>
@@ -229,7 +234,10 @@ const AdminDashboard = () => {
                 <Col md={6}>
                   {/* Total Number of Inpatient and Outpatient */}
                   <table className="table table-bordered">
-                    <thead className="table-dark" style={{ backgroundColor: "#2c3e50" }}>
+                    <thead
+                      className="table-dark"
+                      style={{ backgroundColor: "#2c3e50" }}
+                    >
                       <tr>
                         <th>Type</th>
                         <th>Total</th>
@@ -280,46 +288,46 @@ const AdminDashboard = () => {
                 </Col>
 
                 <Col md={12}>
-  <div className="w-full p-4" style={{ minHeight: '500px' }}>
-    <h2 
-      className="text-center mb-4" 
-      style={{
-        fontSize: '1.5rem',
-        fontWeight: 'bold',
-        color: '#2c3e50',
-        textTransform: 'uppercase',
-        borderBottom: '2px solid #2c3e50',
-        paddingBottom: '10px',
-        marginBottom: '20px'
-      }}
-    >
-      Top Diagnosed Illnesses
-    </h2>
-    {diagnosisData && diagnosisData.length > 0 ? (
-      <BarChart
-        width={800}
-        height={400}
-        data={diagnosisData}
-        layout="vertical"
-        margin={{ top: 20, right: 30, left: 150, bottom: 20 }}
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis type="number" />
-        <YAxis 
-          dataKey="diagnosis" 
-          type="category" 
-          width={150} 
-          tick={{ fontSize: 12 }} 
-        />
-        <Tooltip />
-        <Legend />
-        <Bar dataKey="count" fill="#2c3e50" />
-      </BarChart>
-    ) : (
-      <p>No diagnosis data available</p>
-    )}
-  </div>
-</Col>
+                  <div className="w-full p-4" style={{ minHeight: "500px" }}>
+                    <h2
+                      className="text-center mb-4"
+                      style={{
+                        fontSize: "1.5rem",
+                        fontWeight: "bold",
+                        color: "#2c3e50",
+                        textTransform: "uppercase",
+                        borderBottom: "2px solid #2c3e50",
+                        paddingBottom: "10px",
+                        marginBottom: "20px",
+                      }}
+                    >
+                      Top Diagnosed Illnesses
+                    </h2>
+                    {diagnosisData && diagnosisData.length > 0 ? (
+                      <BarChart
+                        width={800}
+                        height={400}
+                        data={diagnosisData}
+                        layout="vertical"
+                        margin={{ top: 20, right: 30, left: 150, bottom: 20 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis type="number" />
+                        <YAxis
+                          dataKey="diagnosis"
+                          type="category"
+                          width={150}
+                          tick={{ fontSize: 12 }}
+                        />
+                        <Tooltip />
+                        <Legend />
+                        <Bar dataKey="count" fill="#2c3e50" />
+                      </BarChart>
+                    ) : (
+                      <p>No diagnosis data available</p>
+                    )}
+                  </div>
+                </Col>
               </Row>
             </Container>
           </>

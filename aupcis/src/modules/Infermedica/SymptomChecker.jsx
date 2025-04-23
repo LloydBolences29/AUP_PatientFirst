@@ -2,6 +2,7 @@ import React from "react";
 import Sidebar from "../../components/Sidebar";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { Card, Button, Form, Badge, ListGroup, ProgressBar } from "react-bootstrap";
 
 const SymptomChecker = () => {
   const [step, setStep] = useState(1);
@@ -246,187 +247,193 @@ const SymptomChecker = () => {
     { label: "My Profile", path: `/profile/${patientId || ""}` },
   ];
 
+  const getProgress = () => {
+    switch (step) {
+      case 1:
+        return 20;
+      case 2:
+        return 50;
+      case 3:
+        return 80;
+      case 5:
+        return 100;
+      default:
+        return 0;
+    }
+  };
+
   return (
     <div>
       <Sidebar
         links={menuLinks}
         pageContent={
-          <div className="container mt-4">
-            {step === 1 && !disclaimerAgreed && (
-              <div className="card p-4">
-                <h2 className="mb-3">Disclaimer</h2>
-                <p>
-                  This symptom checker is powered by AI and is not a substitute for professional medical advice, diagnosis, or treatment. 
-                  It is intended to provide general information only. Always consult a healthcare professional for medical concerns.
-                </p>
-                <div className="form-check">
-                  <input
-                    type="checkbox"
-                    className="form-check-input"
-                    id="disclaimerCheck"
-                    checked={disclaimerAgreed}
-                    onChange={(e) => setDisclaimerAgreed(e.target.checked)}
-                  />
-                  <label className="form-check-label" htmlFor="disclaimerCheck">
-                    I understand and agree to the terms above.
-                  </label>
-                </div>
-                {/* <button
-                  className="btn btn-primary mt-3"
-                  disabled={!disclaimerAgreed} // Button is disabled until checkbox is checked
-                  onClick={() => setStep(1)}
-                >
-                  Proceed
-                </button> */}
+          <div className="container">
+            <Card className="shadow-sm p-3 mb-3 bg-white rounded text-center">
+              <div className="page-content">
+                <h1 className="page-title fw-bold text-primary">
+                  Symptom Checker
+                </h1>
               </div>
+            </Card>
+            <ProgressBar
+              now={getProgress()}
+              label={`${getProgress()}%`}
+              className="mb-4"
+            />
+            {step === 1 && !disclaimerAgreed && (
+              <Card className="p-4">
+                <h2 className="mb-3 text-danger">Disclaimer</h2>
+                <p>
+                  This symptom checker is powered by AI and is not a substitute
+                  for professional medical advice, diagnosis, or treatment. It
+                  is intended to provide general information only. Always
+                  consult a healthcare professional for medical concerns.
+                </p>
+                <Form.Check
+                  type="checkbox"
+                  id="disclaimerCheck"
+                  label="I understand and agree to the terms above."
+                  checked={disclaimerAgreed}
+                  onChange={(e) => setDisclaimerAgreed(e.target.checked)}
+                />
+              </Card>
             )}
 
             {step === 1 && disclaimerAgreed && (
-              <div className="card p-4">
-                <h2 className="mb-3">Step 1: Enter Your Information</h2>
-                <div className="mb-3">
-                  <input
+              <Card className="p-4">
+                <h2 className="mb-3 text-primary">Step 1: Enter Your Information</h2>
+                <Form.Group className="mb-3">
+                  <Form.Control
                     type="number"
-                    className={`form-control ${errors.age ? "is-invalid" : ""}`}
                     placeholder="Age"
                     value={age}
+                    isInvalid={!!errors.age}
                     onChange={(e) => setAge(e.target.value)}
                   />
-                  {errors.age && <div className="invalid-feedback">{errors.age}</div>}
-                </div>
-                <div className="mb-3">
-                  <select
-                    className={`form-select ${errors.sex ? "is-invalid" : ""}`}
+                  <Form.Control.Feedback type="invalid">
+                    {errors.age}
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Select
                     value={sex}
+                    isInvalid={!!errors.sex}
                     onChange={(e) => setSex(e.target.value)}
                   >
                     <option value="">Select Sex</option>
                     <option value="male">Male</option>
                     <option value="female">Female</option>
                     <option value="other">Other</option>
-                  </select>
-                  {errors.sex && <div className="invalid-feedback">{errors.sex}</div>}
-                </div>
-                <button className="btn btn-primary" onClick={handleNextStep}>
+                  </Form.Select>
+                  <Form.Control.Feedback type="invalid">
+                    {errors.sex}
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Button variant="primary" onClick={handleNextStep}>
                   Next
-                </button>
-              </div>
+                </Button>
+              </Card>
             )}
 
             {step === 2 && (
-              <div className="card p-4">
-                <h2 className="mb-3">Step 2: Select Symptoms</h2>
-                <input
+              <Card className="p-4">
+                <h2 className="mb-3 text-primary">Step 2: Select Symptoms</h2>
+                <Form.Control
                   type="text"
                   value={symptomQuery}
                   onChange={handleSymptomSearch}
                   placeholder="Search for symptoms"
-                  className="form-control"
+                  className="mb-3"
                 />
                 {symptomResult.length > 0 && (
-                  <ul
-                    className="list-group"
-                    style={{
-                      maxHeight: "150px",
-                      overflowY: "scroll",
-                      cursor: "pointer",
-                    }}
+                  <ListGroup
+                    className="mb-3"
+                    style={{ maxHeight: "150px", overflowY: "scroll" }}
                   >
                     {symptomResult.map((symptomRes) => (
-                      <li
+                      <ListGroup.Item
                         key={symptomRes.name}
-                        className="list-group-item"
+                        action
                         onClick={() => handleSymptomSelect(symptomRes)}
                       >
                         {symptomRes.name} - {symptomRes.common_name}
-                      </li>
+                      </ListGroup.Item>
                     ))}
-                  </ul>
+                  </ListGroup>
                 )}
-
                 {selectedSymptoms?.length > 0 && (
                   <div className="mt-2">
                     <strong>Selected Symptoms: </strong>
                     <div className="d-flex flex-wrap">
                       {selectedSymptoms.map((symptom) => (
-                        <span
+                        <Badge
                           key={symptom.name}
-                          className="badge bg-primary m-1"
+                          bg="primary"
+                          className="m-1"
                           style={{ cursor: "pointer" }}
                         >
                           {symptom.name} - {symptom.common_name}
-                        </span>
+                        </Badge>
                       ))}
                     </div>
                   </div>
                 )}
-
-                <button
-                  className="btn btn-primary mt-3"
-                  onClick={handleNextStep}
-                >
+                <Button variant="primary" className="mt-3" onClick={handleNextStep}>
                   Next
-                </button>
-              </div>
+                </Button>
+              </Card>
             )}
 
             {step === 3 && followUpQuestions && (
-              <div className="card p-4">
-                <h2 className="mb-3">Step 3: Answer Follow-up Questions</h2>
+              <Card className="p-4">
+                <h2 className="mb-3 text-primary">Step 3: Answer Follow-up Questions</h2>
                 <p>{followUpQuestions.text}</p>
-
                 {followUpQuestions?.items?.length > 0 ? (
                   followUpQuestions.items.map((item) => (
                     <div key={item.id} className="mb-2">
                       <strong>{item.name}</strong>
                       {item.choices.map((choice) => (
-                        <div key={choice.id} className="form-check">
-                          <input
-                            type="radio"
-                            className="form-check-input"
-                            name={`followUp-${item.id}`} // Unique name per question
-                            value={choice.id}
-                            onChange={() =>
-                              handleFollowUpSelect(item.id, choice.id)
-                            }
-                          />
-                          <label className="form-check-label">
-                            {choice.label}
-                          </label>
-                        </div>
+                        <Form.Check
+                          key={choice.id}
+                          type="radio"
+                          name={`followUp-${item.id}`}
+                          label={choice.label}
+                          value={choice.id}
+                          onChange={() => handleFollowUpSelect(item.id, choice.id)}
+                        />
                       ))}
                     </div>
                   ))
                 ) : (
                   <p>No follow-up questions available.</p>
                 )}
-
-                <button
-                  className="btn btn-primary"
-                  onClick={handleSubmitFollowUp}
-                >
+                <Button variant="primary" onClick={handleSubmitFollowUp}>
                   Submit Answer
-                </button>
-              </div>
+                </Button>
+              </Card>
             )}
 
-            {/* Showing diagnosis */}
             {step === 5 && diagnosis && (
-              <div className="card p-4">
+              <Card className="p-4">
                 <h2 className="mb-3 text-center text-primary">Diagnosis</h2>
                 {diagnosis?.length > 0 ? (
-                  <ul className="list-group">
+                  <ListGroup>
                     {diagnosis.map((item) => (
-                      <li key={item.id} className="list-group-item d-flex justify-content-between align-items-center">
+                      <ListGroup.Item
+                        key={item.id}
+                        className="d-flex justify-content-between align-items-center"
+                      >
                         <span className="fw-bold">{item.common_name}</span>
-                        <span className="badge bg-success">{Math.round(item.probability * 100)}%</span>
-                      </li>
+                        <Badge bg="success">
+                          {Math.round(item.probability * 100)}%
+                        </Badge>
+                      </ListGroup.Item>
                     ))}
-                  </ul>
+                  </ListGroup>
                 ) : (
                   <p className="text-muted text-center">No diagnosis available</p>
                 )}
-              </div>
+              </Card>
             )}
           </div>
         }

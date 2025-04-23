@@ -30,6 +30,7 @@ import LabDashboard from "./modules/Lab/LabDashboard.jsx";
 import LabBilling from "./modules/Lab/LabBilling.jsx";
 import Queue from "./modules/Medical Practitioner/Queue.jsx";
 import PharmacyAnalytics from "./modules/Admin/PharmacyAnalytics.jsx";
+import Rooms from "./modules/Medical Practitioner/Rooms.jsx"
 
 export default function App() {
   return (
@@ -56,6 +57,9 @@ export default function App() {
       </Route>
       <Route element={<ProtectedRoute allowedRoles={["Nurse"]} />}>
         <Route path="/patient-management" element={<Nursing />} />
+      </Route>
+      <Route element={<ProtectedRoute allowedRoles={["Nurse"]} />}>
+        <Route path="/room-management" element={<Rooms />} />
       </Route>
       <Route element={<ProtectedRoute allowedRoles={["Doctor"]} />}>
         <Route path="/doctor-dashboard" element={<DoctorDashboard />} />

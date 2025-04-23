@@ -1,7 +1,6 @@
 import React from 'react'
 import Sidebar from '../../components/Sidebar';
-import SearchBar from '../../components/SearchBar';
-
+import { Container, Card } from "react-bootstrap"
 const CashierDashboard = () => {
     const cashierSidebarLinks = [
         {
@@ -21,16 +20,19 @@ const CashierDashboard = () => {
                 activeLink="Dashboard"
                 pageContent={
                     <>
-                    <h1>Cashier</h1>
-        
-                    <div className="search-div">
-                      <h1>This is cashier dashboard</h1>
-        
-                        {/* <SearchBar 
-                        searchWords={medicines}
-                        setFilteredSearchWord={setFilteredmeds}
-                        ></SearchBar> */}
-                    </div>
+                    <Container>
+                              <Card md={9} className="content-column analytics-card shadow-sm p-3 mb-5 bg-white rounded text-center">
+                          <div className="page-content">
+                            <h1
+                              className="page-title fw-bold"
+                              style={{ color: "#2c3e50" }}
+                            >
+                             Cashier Dashboard
+                            </h1>
+                            
+                          </div>
+                        </Card>
+                        </Container>
                     </>
                 }
                 

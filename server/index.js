@@ -32,6 +32,8 @@ const billingRoutes = require("./routes/BillingRoutes.js")
 const xrayRoutes = require("./routes/xrayRoutes.js")
 const labTestRoute = require("./routes/labTestRoute.js") // Import the lab test route
 const queueRoute = require("./routes/queueRoute.js") // Import the queue route
+const patientTypeCount = require("./routes/patientTypeCount.js")
+const mostDiagnosed = require("./routes/mostDiagnosed.js")
 
 
 
@@ -80,7 +82,8 @@ app.use("/billing", billingRoutes) //For billing routes
 app.use("/xray", xrayRoutes) //For xray routes
 app.use("/labTest", labTestRoute) //For lab test routes
 app.use("/queue", queueRoute) //For queue routes
-
+app.use("/patientTypeCountReport", patientTypeCount) // for counting the number of in patient, out patient or emergency patient
+app.use("/getDiagnose", mostDiagnosed)// analytics for most diagnosed sickness
 
 
 initializeSocket(server);

@@ -51,6 +51,7 @@ const Pharma = () => {
       setMedicineData([]);
     }
   };
+  console.log("The medicines: ", medicineData)
 
   useEffect(() => {
     fetchTopMedicines();

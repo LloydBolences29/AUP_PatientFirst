@@ -187,7 +187,18 @@ const CashierBilling = () => {
         pageContent={
           <>
             {/* Card for searching the patient  */}
-            <Container className="mt-4">
+            <Container>
+                        <Card md={9} className="content-column analytics-card shadow-sm p-3 bg-white rounded text-center">
+                                        <div className="page-content">
+                                          <h1
+                                            className="page-title fw-bold"
+                                            style={{ color: "#2c3e50" }}
+                                          >
+                                          Cashier Billing
+                                          </h1>
+                                          
+                                        </div>
+                                      </Card>
               <Card className="mt-4 p-4">
                 <Container className="d-flex justify-content-evenly mb-4">
                   <Card>

@@ -14,6 +14,11 @@ const MROMngt = () => {
   const [selectedDate, setSelectedDate] = useState(null); // State for selected date
   const [patientVisits, setPatientVisits] = useState([]);
 
+  
+
+
+  
+
   useEffect(() => {
     fetchPatientData();
   }, [search]);
@@ -69,8 +74,20 @@ const MROMngt = () => {
         links={MROsidebarLinks}
         pageContent={
           <>
-            <div className="container mt-4">
-              <h2>Medical Records Office Patient Management</h2>
+            <div className="container">
+              <Card
+                md={9}
+                className="content-column analytics-card shadow-sm p-3 bg-white rounded text-center"
+              >
+                <div className="page-content">
+                  <h1
+                    className="page-title fw-bold"
+                    style={{ color: "#2c3e50" }}
+                  >
+                    Patient Records
+                  </h1>
+                </div>
+              </Card>
               <div className="mb-3 d-flex justify-content-between">
                 <input
                   type="text"

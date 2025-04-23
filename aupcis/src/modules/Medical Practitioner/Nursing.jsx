@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Sidebar from "../../components/Sidebar";
 import "./Nursing.css";
 import Modal from "../../components/Modal";
-import Cookies from "js-cookie";
+import { Card } from "react-bootstrap"
 
 const Nursing = () => {
   const nurseSidebarLinks = [
@@ -13,6 +13,10 @@ const Nursing = () => {
     {
       label: "Patient Management",
       path: "/patient-management",
+    },
+    {
+      label: "Room Management",
+      path: "/room-management",
     },
   ];
 
@@ -380,10 +384,19 @@ const Nursing = () => {
         pageContent={
           <>
             <div className="content-header-container container">
+          <Card md={9} className="content-column analytics-card shadow-sm p-3 mb-1 bg-white rounded text-center">
+                          <div className="page-content">
+                            <h1
+                              className="page-title fw-bold"
+                              style={{ color: "#2c3e50" }}
+                            >
+                             Nurse Board
+                            </h1>
+                            
+                          </div>
+                        </Card>
               <div className="content-header-wrapper">
-                <div className="content-header">
-                  <h1 className="content-header-title">Nurse Page</h1>
-                </div>
+ 
 
                 <div className="content-search-container">
                   <div className="content-search-wrapper">

@@ -18,7 +18,7 @@ const CustomLineChart = ({ data, xKey = "date", yKey = "sales", height = 300 }) 
         <XAxis dataKey={xKey} />
         <YAxis />
         <Tooltip />
-        <Line type="monotone" dataKey={yKey} stroke="#8884d8" strokeWidth={2} />
+        <Line type="monotone" dataKey={yKey} stroke="#2c3e50" strokeWidth={2} />
       </LineChart>
     </ResponsiveContainer>
   );

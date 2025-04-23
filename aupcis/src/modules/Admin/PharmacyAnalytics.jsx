@@ -71,10 +71,13 @@ const PharmacyAnalytics = () => {
 
               <Card md={9} className="content-column analytics-card shadow-sm p-3 mb-5 bg-white rounded text-center">
                 <div className="page-content">
-                  <h1 className="page-title text-primary fw-bold">Pharmacy Analytics</h1>
-                  <div className="analytics-content">
-                    <p className="text-muted">Analytics content goes here...</p>
-                  </div>
+                  <h1
+                    className="page-title fw-bold"
+                    style={{ color: "#2c3e50" }}
+                  >
+                    Pharmacy Analytics
+                  </h1>
+                  
                 </div>
               </Card>
 
@@ -87,7 +90,7 @@ const PharmacyAnalytics = () => {
                 ) : (
                   <table className="table table-bordered table-striped">
                     <thead>
-                      <tr>
+                      <tr style={{ backgroundColor: "#2c3e50", color: "white" }}>
                         <th>Type</th>
                         <th>Total Sales</th>
                       </tr>

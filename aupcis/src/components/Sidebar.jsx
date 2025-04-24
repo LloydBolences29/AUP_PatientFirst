@@ -54,7 +54,7 @@ export const Sidebar = forwardRef(({ links, pageContent }, ref) => {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("https://localhost:3000/staff/logout", {
+      const response = await fetch("https://aup-patient-first.vercel.app//staff/logout", {
         method: "POST",
         credentials: "include", // Required to include cookies in the request
       });

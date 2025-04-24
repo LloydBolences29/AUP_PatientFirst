@@ -27,7 +27,7 @@ const Queue = () => {
   const handleGenerateQueue = async (department) => {
     try {
       const response = await axios.post(
-        "https://localhost:3000/queue/generateQueue",
+        "https://aup-patient-first.vercel.app//queue/generateQueue",
         { department: department.toLowerCase() }
       );
 

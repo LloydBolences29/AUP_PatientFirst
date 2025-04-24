@@ -18,7 +18,7 @@ const Pharma = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `https://localhost:3000/api/pharma/sales-over-time?type=${type}`
+        `https://aup-patient-first.vercel.app//api/pharma/sales-over-time?type=${type}`
       );
       setLineChartData(response.data || []);
     } catch (error) {
@@ -31,7 +31,7 @@ const Pharma = () => {
   const fetchPeakTimes = async () => {
     try {
       const response = await axios.get(
-        "https://localhost:3000/api/pharma/getPeakTimes"
+        "https://aup-patient-first.vercel.app//api/pharma/getPeakTimes"
       );
       setPeakTimes(response.data);
     } catch (error) {
@@ -43,7 +43,7 @@ const Pharma = () => {
   const fetchTopMedicines = async () => {
     try {
       const response = await axios.get(
-        "https://localhost:3000/api/pharma/most-bought-medicines"
+        "https://aup-patient-first.vercel.app//api/pharma/most-bought-medicines"
       );
       setMedicineData(response.data);
     } catch (error) {

@@ -36,7 +36,7 @@ const MedicalRecordDashboard = () => {
     const fetchDiagnosis = async () => {
       try {
         const res = await axios.get(
-          `https://aup-patient-first.vercel.app/getDiagnose/mostDiagnosed?groupBy=${selectedType}`
+          `https://aup-patientfirst-server.onrender.com/getDiagnose/mostDiagnosed?groupBy=${selectedType}`
         );
         setDiagnosisData(res.data);
       } catch (err) {
@@ -51,7 +51,7 @@ const MedicalRecordDashboard = () => {
     const fetchData = async () => {
       try {
         const res = await axios.get(
-          `https://aup-patient-first.vercel.app/patientTypeCountReport/patientTypeData?groupBy=${selectedType}`
+          `https://aup-patientfirst-server.onrender.com/patientTypeCountReport/patientTypeData?groupBy=${selectedType}`
         );
         setPerDateData(res.data.perDate); // Make sure your backend sends this
         setTotals(res.data.totals); // And this too
@@ -85,7 +85,7 @@ const MedicalRecordDashboard = () => {
       console.log("📅 Sending API request with:", formattedDate, "Type:", type);
 
       const response = await axios.get(
-        `https://aup-patient-first.vercel.app/type-of-visit-report/checkUpPatientperMonth/count?date=${formattedDate}&type=${type}`
+        `https://aup-patientfirst-server.onrender.com/type-of-visit-report/checkUpPatientperMonth/count?date=${formattedDate}&type=${type}`
       );
 
       if (Array.isArray(response.data)) {

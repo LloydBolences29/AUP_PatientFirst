@@ -73,7 +73,7 @@ useEffect(() => {
 
   const fetchQueue = async () => {
     try {
-      const response = await axios.get(`https://aup-patient-first.vercel.app/queue/waiting`, {
+      const response = await axios.get(`https://aup-patientfirst-server.onrender.com/queue/waiting`, {
         params: { department: "lab" }});
   
       const waitList = response.data;
@@ -83,7 +83,7 @@ useEffect(() => {
       setQueueNo(waitList[0]?.queueNumber); // Set the queue number from the first item
 
       const sendToCashierData = await axios.get(
-        `https://aup-patient-first.vercel.app/queue/sentToCashier`, {
+        `https://aup-patientfirst-server.onrender.com/queue/sentToCashier`, {
           params: { department: "lab" }});
 
           const billList = sendToCashierData.data;
@@ -92,7 +92,7 @@ useEffect(() => {
           setToCashierData(billList);
 
           const dispenseData = await axios.get(
-            `https://aup-patient-first.vercel.app/queue/dispensed`, {
+            `https://aup-patientfirst-server.onrender.com/queue/dispensed`, {
               params: { department: "lab" }});
 
               const dispenseList = dispenseData.data;
@@ -117,7 +117,7 @@ useEffect(() => {
     if (searchTerm.trim() !== "") {
       try {
         const response = await axios.get(
-          `https://aup-patient-first.vercel.app/labTest/getLabTest/${searchTerm}`
+          `https://aup-patientfirst-server.onrender.com/labTest/getLabTest/${searchTerm}`
         );
         setTests(response.data);
         setError("");
@@ -133,7 +133,7 @@ useEffect(() => {
     const fetchPatientData = async () => {
       try {
         const response = await axios.get(
-          `https://aup-patient-first.vercel.app/patientname/${patientId}`
+          `https://aup-patientfirst-server.onrender.com/patientname/${patientId}`
         );
         if (response.data) {
           setPatientData(response.data);
@@ -175,7 +175,7 @@ useEffect(() => {
     const handleGenerateBill = async () => {
       try {
         const response = await axios.post(
-          `https://aup-patient-first.vercel.app/labTest/sendLabBilling/${patientId}`,
+          `https://aup-patientfirst-server.onrender.com/labTest/sendLabBilling/${patientId}`,
           {
             items: selectedTest,
           }
@@ -184,7 +184,7 @@ useEffect(() => {
         // Update queue status
       const statusToUpdate = "sent-to-cashier";
       const queueRes = await axios.patch(
-        `https://aup-patient-first.vercel.app/queue/complete/${queueNo}`,
+        `https://aup-patientfirst-server.onrender.com/queue/complete/${queueNo}`,
         { status: statusToUpdate }
       );
     
@@ -204,7 +204,7 @@ useEffect(() => {
           console.log("Skip button clicked.");
           const statusToUpdate = "skipped";
             const queueRes = await axios.patch(
-              `https://aup-patient-first.vercel.app/queue/complete/${queueNo}`,
+              `https://aup-patientfirst-server.onrender.com/queue/complete/${queueNo}`,
               { status: statusToUpdate }
             );
       
@@ -215,7 +215,7 @@ useEffect(() => {
             console.log("Done button clicked.");
             const statusToUpdate = "done";
               const queueRes = await axios.patch(
-                `https://aup-patient-first.vercel.app/queue/complete/${queueDispenseNo}`,
+                `https://aup-patientfirst-server.onrender.com/queue/complete/${queueDispenseNo}`,
                 { status: statusToUpdate }
               );
         

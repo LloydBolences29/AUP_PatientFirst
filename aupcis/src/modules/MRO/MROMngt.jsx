@@ -28,7 +28,7 @@ const MROMngt = () => {
       // Avoid fetching if search is too short
       try {
         const response = await axios.get(
-          `https://aup-patient-first.vercel.app/mro/patients?query=${search}`
+          `https://aup-patientfirst-server.onrender.com/mro/patients?query=${search}`
         );
         setVisits(response.data); // response.data should be an array now
       } catch (error) {
@@ -50,7 +50,7 @@ const MROMngt = () => {
   const fetchPatientVisits = async (searchValue) => {
     try {
       const response = await axios.get(
-        `https://aup-patient-first.vercel.app/mro/checkups/${searchValue}`
+        `https://aup-patientfirst-server.onrender.com/mro/checkups/${searchValue}`
       );
       console.log("response", response.data);
       setPatientVisits(response.data);

@@ -27,7 +27,7 @@ const PatientProfile = () => {
   useEffect(() => {
     const fetchPatientId = async () => {
       try {
-        const response = await axios.get("https://aup-patient-first.vercel.app/patientname/auth/me", {
+        const response = await axios.get("https://aup-patientfirst-server.onrender.com/patientname/auth/me", {
           withCredentials: true, // ✅ Ensures cookies are sent
         });
         
@@ -53,7 +53,7 @@ const PatientProfile = () => {
         setLoading(true);
         console.log("Fetching patient data for ID:", patientId);
         const response = await axios.get(
-          `https://aup-patient-first.vercel.app/patientname/${patientId}`
+          `https://aup-patientfirst-server.onrender.com/patientname/${patientId}`
         );
         setPatient(response.data.patient);
         console.log("Fetched Patient Data:", response.data.patient);
@@ -74,7 +74,7 @@ const PatientProfile = () => {
       try {
         if (!patient?._id) return; // Ensure patientId is available
 
-        const response = await axios.get(`https://aup-patient-first.vercel.app/patient-visit/fetchVisit/${patient._id}`);
+        const response = await axios.get(`https://aup-patientfirst-server.onrender.com/patient-visit/fetchVisit/${patient._id}`);
         setVitals(response.data.visits); // Set array of visits
         console.log("📌 Patient Visits:", response.data.visits);
       } catch (error) {
@@ -97,7 +97,7 @@ const PatientProfile = () => {
       console.log("🛠 Sending update request for Patient ID:", patientId);
       console.log("🛠 Updating field:", field, "with value:", value);
       const response = await axios.put(
-        `https://aup-patient-first.vercel.app/patientname/${patientId}`,
+        `https://aup-patientfirst-server.onrender.com/patientname/${patientId}`,
         { [field]: value }, // ✅ Ensure JSON body
         {
           headers: { "Content-Type": "application/json" }, // ✅ Fix missing header

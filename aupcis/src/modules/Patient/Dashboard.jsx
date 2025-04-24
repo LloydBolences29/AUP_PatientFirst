@@ -30,7 +30,7 @@ const Dashboard = () => {
 
     try {
       const response = await fetch(
-        `https://aup-patient-first.vercel.app/type-of-visit-report/checkUpPatientperMonth/count?date=${formattedDate}`
+        `https://aup-patientfirst-server.onrender.com/type-of-visit-report/checkUpPatientperMonth/count?date=${formattedDate}`
       );
       const data = await response.json();
       console.log("API Response:", data);

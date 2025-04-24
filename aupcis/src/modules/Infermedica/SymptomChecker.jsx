@@ -51,7 +51,7 @@ const SymptomChecker = () => {
     if (query.length > 1) {
       try {
         const response = await axios.get(
-          `https://aup-patient-first.vercel.app/infermedica-api/symptom/search?q=${query}`
+          `https://aup-patientfirst-server.onrender.com/infermedica-api/symptom/search?q=${query}`
         );
         setSymptomResult(response.data.slice(0, 30)); // ✅ Limit results
       } catch (error) {
@@ -75,7 +75,7 @@ const SymptomChecker = () => {
   const fetchSymptoms = async () => {
     try {
       const response = await axios.get(
-        "https://aup-patient-first.vercel.app/infermedica-api/symptoms",
+        "https://aup-patientfirst-server.onrender.com/infermedica-api/symptoms",
         {
           params: { age, sex },
         }
@@ -98,7 +98,7 @@ const SymptomChecker = () => {
         }));
 
       const response = await axios.post(
-        "https://aup-patient-first.vercel.app/infermedica-api/diagnose",
+        "https://aup-patientfirst-server.onrender.com/infermedica-api/diagnose",
         {
           evidence: formattedEvidence,
           age: { value: age, unit: "year" },
@@ -131,7 +131,7 @@ const SymptomChecker = () => {
       ];
 
       const response = await axios.post(
-        "https://aup-patient-first.vercel.app/infermedica-api/diagnose",
+        "https://aup-patientfirst-server.onrender.com/infermedica-api/diagnose",
         {
           evidence: updatedEvidence,
           age: { value: age, unit: "year" },
@@ -176,7 +176,7 @@ const SymptomChecker = () => {
       console.log("Sending request:", requestData);
 
       const response = await axios.post(
-        "https://aup-patient-first.vercel.app/infermedica-api/diagnose",
+        "https://aup-patientfirst-server.onrender.com/infermedica-api/diagnose",
         requestData
       );
 
@@ -223,7 +223,7 @@ const SymptomChecker = () => {
     const fetchPatientId = async () => {
       try {
         const response = await axios.get(
-          "https://aup-patient-first.vercel.app/patientname/auth/me",
+          "https://aup-patientfirst-server.onrender.com/patientname/auth/me",
           {
             withCredentials: true, // ✅ Ensures cookies are sent
           }

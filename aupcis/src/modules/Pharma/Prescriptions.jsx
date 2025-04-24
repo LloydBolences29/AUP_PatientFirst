@@ -38,7 +38,7 @@ const Prescriptions = () => {
     const fetchMedicines = async () => {
       try {
         const res = await axios.get(
-          "https://aup-patient-first.vercel.app/api/pharma/medicines"
+          "https://aup-patientfirst-server.onrender.com/api/pharma/medicines"
         );
         setMedicineList(res.data.medicines); // Adjust key based on your API response
       } catch (err) {
@@ -53,7 +53,7 @@ const Prescriptions = () => {
     const fetchCheckUps = async () => {
       try {
         const res = await axios.get(
-          "https://aup-patient-first.vercel.app/checkup/getCheckup"
+          "https://aup-patientfirst-server.onrender.com/checkup/getCheckup"
         );
         const checkups = res.data.map((checkup) => {
           return {
@@ -73,7 +73,7 @@ const Prescriptions = () => {
   const fetchPrescriptions = async () => {
     try {
       const res = await fetch(
-        `https://aup-patient-first.vercel.app/prescriptions/fetchPrescriptions?status=${selectedStatus}`
+        `https://aup-patientfirst-server.onrender.com/prescriptions/fetchPrescriptions?status=${selectedStatus}`
       );
       const data = await res.json();
       console.log("Fetched Data:", data);
@@ -127,7 +127,7 @@ const Prescriptions = () => {
   const handleMarkAsDispensed = async (prescriptionId, status) => {
     try {
       const response = await fetch(
-        `https://aup-patient-first.vercel.app/prescriptions/update/${prescriptionId}`,
+        `https://aup-patientfirst-server.onrender.com/prescriptions/update/${prescriptionId}`,
         {
           method: "PUT",
           headers: {
@@ -216,7 +216,7 @@ const Prescriptions = () => {
       );
 
       const res = await axios.post(
-        `https://aup-patient-first.vercel.app/prescriptions/sendBilling/${patientId}`,
+        `https://aup-patientfirst-server.onrender.com/prescriptions/sendBilling/${patientId}`,
         {
           checkupId,
           department: "Pharmacy",

@@ -76,7 +76,7 @@ const CashierBilling = () => {
   const fetchQueue = async () => {
     try {
       const sendToCashierData = await axios.get(
-        `https://aup-patient-first.vercel.app//queue/sentToCashier`,
+        `https://aup-patient-first.vercel.app/queue/sentToCashier`,
         {
           params: {
             department: ["pharmacy", "cashier", "lab", "xray", "consultation"],
@@ -91,7 +91,7 @@ const CashierBilling = () => {
       setQueueNo(billList[0].queueNumber);
 
       const dispenseData = await axios.get(
-        `https://aup-patient-first.vercel.app//queue/dispensed`,
+        `https://aup-patient-first.vercel.app/queue/dispensed`,
         {
           params: {
             department: ["pharmacy", "cashier", "lab", "xray", "consultation"],
@@ -114,7 +114,7 @@ const CashierBilling = () => {
   const handleSearch = async () => {
     try {
       const response = await axios.get(
-        `https://aup-patient-first.vercel.app//billing/billing/search?query=${searchQuery}`
+        `https://aup-patient-first.vercel.app/billing/billing/search?query=${searchQuery}`
       );
 
       if (response.data.length > 0) {
@@ -139,7 +139,7 @@ const CashierBilling = () => {
       );
 
       for (const bill of billingDetails) {
-        await axios.put(`https://aup-patient-first.vercel.app//billing/update/${bill._id}`, {
+        await axios.put(`https://aup-patient-first.vercel.app/billing/update/${bill._id}`, {
           modeOfPayment: paymentMethod,
         });
       }
@@ -147,7 +147,7 @@ const CashierBilling = () => {
       // Update queue status
       const statusToUpdate = "dispensing";
       const queueRes = await axios.patch(
-        `https://aup-patient-first.vercel.app//queue/complete/${queueNo}`,
+        `https://aup-patient-first.vercel.app/queue/complete/${queueNo}`,
         { status: statusToUpdate }
       );
 

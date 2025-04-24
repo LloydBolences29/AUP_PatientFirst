@@ -16,7 +16,7 @@ const PharmacyAnalytics = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `https://aup-patient-first.vercel.app//api/pharma/sales-over-time?type=${type}`
+        `https://aup-patient-first.vercel.app/api/pharma/sales-over-time?type=${type}`
       );
       setLineChartData(response.data || []);
     } catch (error) {
@@ -29,7 +29,7 @@ const PharmacyAnalytics = () => {
 
   const fetchOtherData = async (date, type) => {
     try {
-        const response = await axios.get(`https://aup-patient-first.vercel.app//api/pharma/getAnalytics?date=${date}&type=${type}`);
+        const response = await axios.get(`https://aup-patient-first.vercel.app/api/pharma/getAnalytics?date=${date}&type=${type}`);
         setData(response.data || []);
         console.log("Fetched other data:", response.data);
     } catch (error) {

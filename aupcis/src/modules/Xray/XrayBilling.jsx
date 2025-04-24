@@ -79,7 +79,7 @@ const XrayBilling = () => {
 
   const fetchQueue = async () => {
     try {
-      const response = await axios.get(`https://aup-patient-first.vercel.app//queue/waiting`, {
+      const response = await axios.get(`https://aup-patient-first.vercel.app/queue/waiting`, {
         params: { department: "xray" },
       });
 
@@ -90,7 +90,7 @@ const XrayBilling = () => {
       setQueueNo(waitList[0]?.queueNumber); // Set the queue number from the first item
 
       const sendToCashierData = await axios.get(
-        `https://aup-patient-first.vercel.app//queue/sentToCashier`,
+        `https://aup-patient-first.vercel.app/queue/sentToCashier`,
         {
           params: { department: "xray" },
         }
@@ -102,7 +102,7 @@ const XrayBilling = () => {
       setToCashierData(billList);
 
       const dispenseData = await axios.get(
-        `https://aup-patient-first.vercel.app//queue/dispensed`,
+        `https://aup-patient-first.vercel.app/queue/dispensed`,
         {
           params: { department: "xray" },
         }
@@ -148,7 +148,7 @@ const XrayBilling = () => {
   const fetchPatientData = async () => {
     try {
       const response = await axios.get(
-        `https://aup-patient-first.vercel.app//patientname/${patientId}`
+        `https://aup-patient-first.vercel.app/patientname/${patientId}`
       );
       if (response.data) {
         setPatientData(response.data);
@@ -166,7 +166,7 @@ const XrayBilling = () => {
     if (searchTerm.trim() !== "") {
       try {
         const response = await axios.get(
-          `https://aup-patient-first.vercel.app//xray/getXray/${searchTerm}`
+          `https://aup-patient-first.vercel.app/xray/getXray/${searchTerm}`
         );
         setProcedure(response.data);
         setError("");
@@ -181,7 +181,7 @@ const XrayBilling = () => {
   const handleGenerateBill = async () => {
     try {
       const response = await axios.post(
-        `https://aup-patient-first.vercel.app//xray/sendXrayBilling/${patientId}`,
+        `https://aup-patient-first.vercel.app/xray/sendXrayBilling/${patientId}`,
         {
           items: selectedProcedures,
         }
@@ -190,7 +190,7 @@ const XrayBilling = () => {
       // Update queue status
       const statusToUpdate = "sent-to-cashier";
       const queueRes = await axios.patch(
-        `https://aup-patient-first.vercel.app//queue/complete/${queueNo}`,
+        `https://aup-patient-first.vercel.app/queue/complete/${queueNo}`,
         { status: statusToUpdate }
       );
 
@@ -218,7 +218,7 @@ const XrayBilling = () => {
     console.log("Skip button clicked.");
     const statusToUpdate = "skipped";
     const queueRes = await axios.patch(
-      `https://aup-patient-first.vercel.app//queue/complete/${queueNo}`,
+      `https://aup-patient-first.vercel.app/queue/complete/${queueNo}`,
       { status: statusToUpdate }
     );
 
@@ -229,7 +229,7 @@ const XrayBilling = () => {
     console.log("Skip button clicked.");
     const statusToUpdate = "done";
     const queueRes = await axios.patch(
-      `https://aup-patient-first.vercel.app//queue/complete/${queueDispenseNo}`,
+      `https://aup-patient-first.vercel.app/queue/complete/${queueDispenseNo}`,
       { status: statusToUpdate }
     );
 

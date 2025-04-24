@@ -114,7 +114,7 @@ const PharmacyTransactions = () => {
   const fetchPatientData = async () => {
     try {
       const response = await axios.get(
-        `https://aup-patient-first.vercel.app//patientname/${patientId}`
+        `https://aup-patient-first.vercel.app/patientname/${patientId}`
       );
       if (response.data) {
         setPatientData(response.data);
@@ -129,7 +129,7 @@ const PharmacyTransactions = () => {
   const fetchTransactions = async () => {
     try {
       const response = await axios.get(
-        "https://aup-patient-first.vercel.app//api/pharma/transactions"
+        "https://aup-patient-first.vercel.app/api/pharma/transactions"
       );
       setTransactions(response.data);
     } catch (error) {
@@ -140,7 +140,7 @@ const PharmacyTransactions = () => {
   //ferch all the queues along with the object id
   const fetchQueue = async () => {
     try {
-      const response = await axios.get(`https://aup-patient-first.vercel.app//queue/waiting`, {
+      const response = await axios.get(`https://aup-patient-first.vercel.app/queue/waiting`, {
         params: { department: "pharmacy" }});
   
       const waitList = response.data;
@@ -151,7 +151,7 @@ const PharmacyTransactions = () => {
       setQueueNo_id(waitList[0]?._id); // Set the queue ID from the first item
 
       const sendToCashierData = await axios.get(
-        `https://aup-patient-first.vercel.app//queue/sentToCashier`, {
+        `https://aup-patient-first.vercel.app/queue/sentToCashier`, {
           params: { department: "pharmacy" }});
 
           const billList = sendToCashierData.data;
@@ -160,7 +160,7 @@ const PharmacyTransactions = () => {
           setToCashierData(billList);
 
           const dispenseData = await axios.get(
-            `https://aup-patient-first.vercel.app//queue/dispensed`, {
+            `https://aup-patient-first.vercel.app/queue/dispensed`, {
               params: { department: "pharmacy" }});
 
               const dispenseList = dispenseData.data;
@@ -184,7 +184,7 @@ const PharmacyTransactions = () => {
   const fetchMedicines = async () => {
     try {
       const response = await axios.get(
-        "https://aup-patient-first.vercel.app//api/pharma/medicines"
+        "https://aup-patient-first.vercel.app/api/pharma/medicines"
       );
       setMedicines(response.data.medicines);
     } catch (error) {
@@ -223,7 +223,7 @@ const PharmacyTransactions = () => {
 
     try {
       await axios.post(
-        `https://aup-patient-first.vercel.app//api/pharma/emergencyDispenceBilling/${patientData.patient._id}`,
+        `https://aup-patient-first.vercel.app/api/pharma/emergencyDispenceBilling/${patientData.patient._id}`,
         transactionData
       );
 
@@ -271,14 +271,14 @@ const PharmacyTransactions = () => {
 
       // Send transaction to backend
       await axios.post(
-        "https://aup-patient-first.vercel.app//api/pharma/add-transactions",
+        "https://aup-patient-first.vercel.app/api/pharma/add-transactions",
         transactionData
       );
 
       // Update queue status
       const statusToUpdate = "sent-to-cashier";
       const queueRes = await axios.patch(
-        `https://aup-patient-first.vercel.app//queue/complete/${queueNo}`,
+        `https://aup-patient-first.vercel.app/queue/complete/${queueNo}`,
         { status: statusToUpdate }
       );
 
@@ -304,7 +304,7 @@ const PharmacyTransactions = () => {
     if (query) {
       try {
         const response = await axios.get(
-          `https://aup-patient-first.vercel.app//api/pharma/medicines?search=${query}`
+          `https://aup-patient-first.vercel.app/api/pharma/medicines?search=${query}`
         );
         setMedicineResults(response.data.medicines);
       } catch (error) {
@@ -333,7 +333,7 @@ const PharmacyTransactions = () => {
     console.log("Skip button clicked.");
     const statusToUpdate = "skipped";
       const queueRes = await axios.patch(
-        `https://aup-patient-first.vercel.app//queue/complete/${queueNo}`,
+        `https://aup-patient-first.vercel.app/queue/complete/${queueNo}`,
         { status: statusToUpdate }
       );
 
@@ -344,7 +344,7 @@ const PharmacyTransactions = () => {
       console.log("Skip button clicked.");
       const statusToUpdate = "done";
         const queueRes = await axios.patch(
-          `https://aup-patient-first.vercel.app//queue/complete/${queueDispenseNo}`,
+          `https://aup-patient-first.vercel.app/queue/complete/${queueDispenseNo}`,
           { status: statusToUpdate }
         );
   

@@ -130,9 +130,9 @@ const login = async (req, res) => {
     // ✅ Set Cookie
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "None",
-      secure: true,
+      secure: true, // required for HTTPS
+      sameSite: "None", // allows cross-site cookies
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
     });
 
     res.json({

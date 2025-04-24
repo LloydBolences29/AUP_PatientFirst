@@ -165,7 +165,7 @@ useEffect(() => {
               onChange={(e) => handleChange(e, setStaffLoginData)}
               required
             />
-            <button className="login-register-btn" type="submit">
+            <button className="login-register-btn" type="submit" onclick = {handleLogin}>
               Login
             </button>
           </form>

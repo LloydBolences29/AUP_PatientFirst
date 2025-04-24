@@ -75,7 +75,7 @@ const LogInPage = () => {
       navigate(targetPath, { replace: true }); // ✅ Redirect immediately
   
     } catch (error) {
-      console.error("🔴 Login Error:", error.response?.data || error.message);
+      console.error("🔴 Login for Error:", error.response?.data || error.message);
       alert("Login failed. Check console for details.");
     }
   };

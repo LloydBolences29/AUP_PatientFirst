@@ -1,5 +1,5 @@
 const Staff = require("../model/User");
-const bcrypt = require('bcryptjs');
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const express = require("express");
 const router = express.Router();
@@ -8,16 +8,28 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 const accessControl = {
   Patient: ["/dashboard", "/analytics", "/profile"],
-    Admin: ["/admin-dashboard", "/admin-management", "/admin-analytics", "/pharmacyAnalytics"],
-    MedicalRecordsOfficer: ["/medicalRecord-dashboard", "/medicalRecord-management"],
-    Nurse: ["/nurse-dashboard", "/patient-management", "/room-management"],
-    Doctor: ["/doctor-dashboard", "/doctor-patient-management"],
-    Cashier: ["/cashier-dashboard", "/payment"],
-    Pharmacist: ["/pharma-dashboard", "/pharma-transaction", "/medicine-list", "/prescription-page"],
-    Radiologist: ["/xray-dashboard", "/xray-billing", "/xray-upload"],
-    lab: ["/lab-dashboard", "/lab-billing", "/lab-upload"],
+  Admin: [
+    "/admin-dashboard",
+    "/admin-management",
+    "/admin-analytics",
+    "/pharmacyAnalytics",
+  ],
+  MedicalRecordsOfficer: [
+    "/medicalRecord-dashboard",
+    "/medicalRecord-management",
+  ],
+  Nurse: ["/nurse-dashboard", "/patient-management", "/room-management"],
+  Doctor: ["/doctor-dashboard", "/doctor-patient-management"],
+  Cashier: ["/cashier-dashboard", "/payment"],
+  Pharmacist: [
+    "/pharma-dashboard",
+    "/pharma-transaction",
+    "/medicine-list",
+    "/prescription-page",
+  ],
+  Radiologist: ["/xray-dashboard", "/xray-billing", "/xray-upload"],
+  lab: ["/lab-dashboard", "/lab-billing", "/lab-upload"],
 };
-
 
 const loginStaff = async (req, res) => {
   console.log("🟠 Incoming Login Request:", req.body);
@@ -33,13 +45,14 @@ const loginStaff = async (req, res) => {
 
     // Validate password
     const isMatch = await bcrypt.compare(password, staff.password);
-    if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
+    if (!isMatch)
+      return res.status(400).json({ message: "Invalid credentials" });
 
     console.log("🟢 Staff Authenticated:", staff);
 
     // Ensure allowedPages always exists
-   
-    const allowedPages = accessControl[staff.role] || []; 
+
+    const allowedPages = accessControl[staff.role] || [];
     console.log("🔍 Staff Role:", staff.role);
     // Generate Token
     const token = jwt.sign(
@@ -48,14 +61,14 @@ const loginStaff = async (req, res) => {
       { expiresIn: "1h" }
     );
 
-
     console.log("Generated Token (Backend):", token);
 
     // Set HttpOnly cookie for token
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV !== "development",
-      sameSite: "Strict",
+      secure: true, // required for HTTPS
+      sameSite: "None", // allows cross-site cookies
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
     });
 
     // Send final response
@@ -66,7 +79,6 @@ const loginStaff = async (req, res) => {
       token,
       allowedPages, // ✅ Always included
     });
-
   } catch (error) {
     console.error("🔴 Backend Error:", error);
     res.status(500).json({ message: "Error logging in", error: error.message });

@@ -14,15 +14,17 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
+        // 🔹 Fetch user session from the backend (JWT in HTTP-only cookies)
         const response = await axios.get("https://aup-patientfirst-server.onrender.com/api/auth/me", {
-          withCredentials: true, // Send cookies with request
+          withCredentials: true, // ✅ This sends the stored cookie automatically
         });
-        setUser(response.data.user); // Set user data here
+  
+        setUser(response.data.user);
       } catch (error) {
-        console.error("Error fetching user:", error);
-        setUser(null); // Reset user if there's an error
+        console.error("Auth error:", error);
+        setUser(null);
       } finally {
-        setLoading(false); // Stop loading after user fetch
+        setLoading(false);
       }
     };
   

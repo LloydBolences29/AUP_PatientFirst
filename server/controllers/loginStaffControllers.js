@@ -33,6 +33,8 @@ const accessControl = {
 
 const loginStaff = async (req, res) => {
   console.log("🟠 Incoming Login Request:", req.body);
+  console.log("JWT_SECRET:", process.env.JWT_SECRET);
+
 
   try {
     const { role_ID, password } = req.body;

@@ -52,11 +52,10 @@ const server = http.createServer(app);
 
 // ✅ Middleware Setup
 app.use(cors({
-  origin: ["https://aup-patient-first-frontend.vercel.app","https://aup-patientfirst-server.onrender.com"], // Ensure HTTP, not HTTPS
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"], // Allow necessary headers
-  credentials: true // Allow cookies & authentication headers
+  origin: "https://aup-patient-first-frontend.vercel.app", // ✅ Only allow your frontend
+  credentials: true
 }));
+
 
 
 

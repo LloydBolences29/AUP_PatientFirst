@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Route/AuthContext"; // Ensure correct import path
-import "./LogInPage.css";
+import "./LoginPage.css";
 
 const LogInPage = () => {
   const [isRightPanelActive, setIsRightPanelActive] = useState(false);

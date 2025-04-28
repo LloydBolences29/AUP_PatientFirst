@@ -34,8 +34,8 @@ export const AuthProvider = ({ children }) => {
   // Login function
   const login = async (credentials, isStaff) => {
     const url = isStaff
-      ? "https://aup-patient-first.vercel.app/staff/login"
-      : "https://aup-patient-first.vercel.app/patient/login";
+      ? "https://aup-patientfirst-server.onrender.com/staff/login"
+      : "https://aup-patientfirst-server.onrender.com/patient/login";
 
     const response = await axios.post(url, credentials, {
       withCredentials: true,

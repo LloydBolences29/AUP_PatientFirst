@@ -35,18 +35,10 @@ const queueRoute = require("./routes/queueRoute.js") // Import the queue route
 const patientTypeCount = require("./routes/patientTypeCount.js")
 const mostDiagnosed = require("./routes/mostDiagnosed.js")
 
-
-
 const app = express();
-
-
 
 // ✅ Connect to MongoDB BEFORE initializing routes
 connectDB();
-// const privateKey = fs.readFileSync("server.key", "utf8");
-// const certificate = fs.readFileSync("server.cert", "utf8");
-// const credentials = { key: privateKey, cert: certificate };
-
 
 const server = http.createServer(app);
 
@@ -55,10 +47,6 @@ app.use(cors({
   origin: "https://aup-patient-first-frontend.vercel.app", // ✅ Only allow your frontend
   credentials: true
 }));
-
-
-
-
 
 app.use(express.json());
 app.use(cookieParser());

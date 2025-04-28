@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
     const fetchUser = async () => {
       try {
         // 🔹 Fetch user session from the backend (JWT in HTTP-only cookies)
-        const response = await axios.get("https://aup-patient-first.vercel.app/api/auth/me", {
+        const response = await axios.get("https://aup-patientfirst-server.onrender.com/api/auth/me", {
           withCredentials: true, // ✅ This sends the stored cookie automatically
         });
   
@@ -59,7 +59,7 @@ export const AuthProvider = ({ children }) => {
 
   // Logout function
   const logout = async () => {
-    await axios.post("https://aup-patient-first.vercel.app/auth/logout", {}, { withCredentials: true });
+    await axios.post("https://aup-patientfirst-server.onrender.com/auth/logout", {}, { withCredentials: true });
     setUser(null);
     localStorage.removeItem("user");
     localStorage.removeItem("allowedPages");

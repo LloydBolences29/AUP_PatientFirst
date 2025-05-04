@@ -15,6 +15,7 @@ import {
   Legend,
   Line,
 } from "recharts";
+import axios from "axios";
 
 const Doctors = () => {
     const doctorSidebarLinks = [

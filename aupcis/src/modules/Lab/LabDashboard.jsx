@@ -89,7 +89,7 @@ const LabDashboard = () => {
                 <Card className="shadow-sm p-3 bg-white rounded text-center">
                   <Card.Body className="d-flex justify-content-between align-items-center">
                     <div>
-                      <h5 className="card-title">Total Xray Sales for today</h5>
+                      <h5 className="card-title">Total Laboratory Sales {selectedType}</h5>
                       <p className="card-text">
                         ₱
                         {selectedType === "daily"

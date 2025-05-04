@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../../components/Sidebar";
-import Modal from "../../components/Modal";
 import axios from "axios";
 import AccordionComponents from "../../components/AccordionComponents";
 import {
@@ -13,12 +12,12 @@ import {
   CardHeader,
   CardFooter,
 } from "react-bootstrap";
-import { red } from "@mui/material/colors";
+import Modal from "../../components/Modal";
 
 const DoctorPatient = () => {
   const doctorSidebarLinks = [
-    { label: "Dashboard", path: "/nurse-dashboard" },
-    { label: "Patient Queue", path: "/doctor-patient-management" },
+    { label: "Dashboard", path: "/doctor-dashboard" },
+    { label: "Patient", path: "/doctor-patient-management" },
   ];
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [visits, setVisits] = useState([]);
@@ -38,7 +37,6 @@ const DoctorPatient = () => {
   const [isChecked, setIsChecked] = useState(false);
   const [checkedValue, setCheckedValue] = useState("");
   const [textValue, setTextValue] = useState("");
-  const [doctorsFee, SetDoctorsFee] = useState(1000) //setting the value for the constant doctors fee for medical certificate submit handle function
   const [patientVisits, setPatientVisits] = useState([]);
   const [visitData, setVisitData] = useState([]);
   const [medCertSelections, setMedCertSelections] = useState({
@@ -47,8 +45,6 @@ const DoctorPatient = () => {
     Urinalysis: "",
     DrugTest: "",
   });
-
-
 
   const fetchVisitData = async (patientId) => {
     try {
@@ -63,6 +59,7 @@ const DoctorPatient = () => {
       console.error("Error fetching visits:", error.message);
     }
   };
+
   const handleCheckBoxChange = (e) => {
     setIsChecked(e.target.checked);
     setTextValue(e.target.value);
@@ -72,16 +69,15 @@ const DoctorPatient = () => {
   };
 
   const handleMedCertSubmit = () => {
-    
     console.log("Submitted text:", textValue);
-    alert("Successfully Submitted")
-    setIsModalOpen(false)
+    alert("Successfully Submitted");
+    setIsModalOpen(false);
     // You can also send `inputValue` to your backend or process it however you like
   };
 
   const addPrescription = (type) => {
-    setPrescriptions([
-      ...prescriptions,
+    setPrescriptions((prevPrescriptions) => [
+      ...prevPrescriptions.filter((pres) => pres.type === type),
       type === "medicinal"
         ? {
             type: "medicinal",
@@ -116,11 +112,20 @@ const DoctorPatient = () => {
     }
   };
 
-  const handleRowClick = (visit) => {
-    setSelectedVisit(visit);
-    console.log("Selected visit:", selectedVisit?.purpose);
-    setChiefComplaint(visit.chiefComplaints || ""); // Initialize chief complaint
+  const handleRowClick = async (visit) => {
+    setSelectedVisit(visit); // Save the visit object
+    setChiefComplaint(visit.chiefComplaints || "");
     setIsModalOpen(true);
+
+    // Extract the patient_id from the visit object
+    const patientId = visit.visitId?._id || visit.patient_id;
+
+    if (patientId) {
+      await fetchVisitData(patientId); // This gets all checkups linked to this patient
+      console.log("Fetched checkups for patient ID:", patientId);
+    } else {
+      console.warn("No patient ID found in visit object");
+    }
   };
 
   const handleOpenModal = (purpose) => {
@@ -240,12 +245,15 @@ const DoctorPatient = () => {
     updatedPrescriptions[index][field] = value; // Update specific field
     setPrescriptions(updatedPrescriptions); // Save updated state
   };
+
   const handleMedCertRadioChange = (group, value) => {
     setMedCertSelections((prev) => ({
       ...prev,
       [group]: value,
     }));
   };
+
+  console.log("Selected Visit Data:", visitData);
 
   return (
     <div>
@@ -1645,4 +1653,3 @@ const DoctorPatient = () => {
 };
 
 export default DoctorPatient;
-

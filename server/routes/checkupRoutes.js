@@ -152,5 +152,27 @@ router.put("/updatePatientType/:checkupId", async (req, res) => {
   }
 });
 
+router.get("/getCertainCheckup/:patientId", async (req, res) => {
+  try {
+    const { patientId } = req.params;
+
+    const checkups = await Checkup.find()
+      .populate({
+        path: "visitId",
+        populate: { 
+          path: "patient_id",
+          model: "patientname", // Name of the model you're referencing
+          match: { patient_id: patientId },
+        }, // What to return from Visit
+      })
+      .populate("icd", "code shortdescription"); // Populate ICD-10 details
+
+    res.status(200).json(checkups);
+  } catch (error) {
+    console.error("Error fetching checkups:", error);
+    res.status(500).json({ message: "Server error." });
+  }
+});
+
 
 module.exports = router;

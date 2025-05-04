@@ -44,7 +44,7 @@ const server = http.createServer(app);
 
 // ✅ Middleware Setup
 app.use(cors({
-  origin: "https://aup-patient-first-frontend.vercel.app", // ✅ Only allow your frontend
+  origin: ["https://aup-patient-first-frontend.vercel.app", "https://aup-patientfirst-server.onrender.com"] ,// ✅ Only allow your frontend
   credentials: true
 }));
 

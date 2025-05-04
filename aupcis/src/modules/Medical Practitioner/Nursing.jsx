@@ -14,10 +14,7 @@ const Nursing = () => {
       label: "Patient Management",
       path: "/patient-management",
     },
-    {
-      label: "Room Management",
-      path: "/room-management",
-    },
+  
   ];
 
   const [patients, setPatients] = useState([]);
@@ -197,7 +194,7 @@ const Nursing = () => {
       setPatientGender("");
     } catch (error) {
       console.error("Error adding patient:", error);
-      setNotification("An error occurred. Please try again.");
+      setNotification("A record is already existing with this ID.");
       setTimeout(() => setNotification(""), 3000);
     }
   };
@@ -258,7 +255,7 @@ const Nursing = () => {
       setIsEditing(false);
     } catch (error) {
       console.error("Error updating patient:", error);
-      setNotification("An error occurred. Please try again.");
+      setNotification("A record is already existing with this ID.");
       setTimeout(() => setNotification(""), 3000);
     }
   };
@@ -357,7 +354,7 @@ const Nursing = () => {
       setChiefComplaints(""); // Reset chief complaints
     } catch (error) {
       console.error("Error adding visit:", error);
-      setNotification("An error occurred. Please try again.");
+      setNotification("A record is already existing with this ID.");
       setTimeout(() => setNotification(""), 3000);
     }
   };
@@ -429,7 +426,7 @@ const Nursing = () => {
                 {notification}
               </div>
             )}
-
+{/* Adding a patient modal */}
             <Modal
               show={isOpen}
               title={
@@ -494,9 +491,15 @@ const Nursing = () => {
                     <div
                       className="form-container"
                       style={{
-                        maxWidth: "100%",
-                        maxHeight: "80vh", // Limit modal height
-                        overflowY: "auto", // Add scroll for overflow
+                        maxWidth: "6000px",
+                        margin: "0 auto",
+                        padding: "24px 32px",
+                        background: "#f8f9fa",
+                        borderRadius: "12px",
+                        boxShadow: "0 4px 16px rgba(44, 62, 80, 0.12)",
+                        maxHeight: "80vh",
+                        overflowY: "auto",
+                        border: "1px solid #e3e6ea"
                       }}
                     >
                       <div className="form-wrapper">
@@ -615,15 +618,20 @@ const Nursing = () => {
                                 <label className="form-label">
                                   Civil Status:
                                 </label>
-                                <input
+                                <select
                                   id="patientCivilStatus"
-                                  type="text"
                                   className="form-control"
                                   value={patientCivilStatus}
                                   onChange={(e) =>
                                     setPatientCivilStatus(e.target.value)
                                   }
-                                />
+                                >
+                                  <option value="">Select Civil Status</option>
+                                  <option value="Single">Single</option>
+                                  <option value="Married">Married</option>
+                                  <option value="Divorced">Divorced</option>
+                                  <option value="Widowed">Widowed</option>
+                                </select>
                               </div>
                             </div>
 
@@ -646,13 +654,27 @@ const Nursing = () => {
                                 </label>
                                 <input
                                   id="patientNationality"
-                                  type="text"
                                   className="form-control"
+                                  list="nationality-list"
                                   value={patientNationality}
                                   onChange={(e) =>
                                     setPatientNationality(e.target.value)
                                   }
+                                  placeholder="Type or select nationality"
                                 />
+                                <datalist id="nationality-list">
+                                  <option value="Filipino" />
+                                  <option value="American" />
+                                  <option value="Chinese" />
+                                  <option value="Japanese" />
+                                  <option value="Korean" />
+                                  <option value="Indian" />
+                                  <option value="British" />
+                                  <option value="German" />
+                                  <option value="French" />
+                                  <option value="Australian" />
+                                  {/* Add more nationalities as needed */}
+                                </datalist>
                               </div>
                             </div>
 
@@ -671,15 +693,16 @@ const Nursing = () => {
                               </div>
                               <div className="form-group col-md-6">
                                 <label className="form-label">Gender:</label>
-                                <input
+                                <select
                                   id="patientGender"
-                                  type="text"
                                   className="form-control"
                                   value={patientGender}
-                                  onChange={(e) =>
-                                    setPatientGender(e.target.value)
-                                  }
-                                />
+                                  onChange={(e) => setPatientGender(e.target.value)}
+                                >
+                                  <option value="">Select Gender</option>
+                                  <option value="Male">Male</option>
+                                  <option value="Female">Female</option>
+                                </select>
                               </div>
                             </div>
 
@@ -830,17 +853,20 @@ const Nursing = () => {
                             onChange={handleVisitInputChange}
                           />
                         </div>
-                        <div className="form-group">
-                          <label className="form-label">Chief Complaints:</label>
-                          <textarea
-                            className="form-control"
-                            name="chiefComplaints"
-                            value={chiefComplaints}
-                            onChange={handleChiefComplaintsChange}
-                            rows="3"
-                            placeholder="Enter chief complaints"
-                          ></textarea>
-                        </div>
+                        {/* Only show Chief Complaints if purpose is not Emergency or Medical Certificate */}
+                        {visitData.purpose !== "Emergency" && visitData.purpose !== "Medical Certificate" && (
+                          <div className="form-group">
+                            <label className="form-label">Chief Complaints:</label>
+                            <textarea
+                              className="form-control"
+                              name="chiefComplaints"
+                              value={chiefComplaints}
+                              onChange={handleChiefComplaintsChange}
+                              rows="3"
+                              placeholder="Enter chief complaints"
+                            ></textarea>
+                          </div>
+                        )}
                         <br />
                         <div className="btn-container text-center">
                           <button type="submit" className="btn btn-primary mx-2">

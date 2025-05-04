@@ -103,10 +103,7 @@ const Queue = () => {
       label: "Patient Management",
       path: "/patient-management",
     },
-    {
-      label: "Room Management",
-      path: "/room-management",
-    },
+ 
   ];
 
   return (

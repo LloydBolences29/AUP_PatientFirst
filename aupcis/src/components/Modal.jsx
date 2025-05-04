@@ -40,7 +40,7 @@ export const Modal = ({ show, onClose, title, body }) => {
  
   if(!show) return null;
   
-  
+
 
   return (
     <>

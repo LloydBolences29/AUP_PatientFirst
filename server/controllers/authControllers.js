@@ -89,7 +89,7 @@ const addPatient = async (req, res) => {
     console.error("Error adding patient:", error);
     res
       .status(500)
-      .json({ message: "An error occurred while adding the patient" });
+      .json({ message: "A record is already existing with this ID." });
   }
 };
 

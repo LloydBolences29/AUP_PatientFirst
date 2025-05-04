@@ -102,6 +102,7 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+//get the current user info from the token
 router.get("/auth/me", (req, res) => {
   try {
     console.log("Cookies received:", req.cookies); // Debug

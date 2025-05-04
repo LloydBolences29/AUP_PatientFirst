@@ -8,6 +8,12 @@ const VisitSchema = new mongoose.Schema(
       required: true,
     }, // Link to patient
 
+    checkUp: {
+      type:  mongoose.Schema.Types.ObjectId,
+      ref: "Checkup",
+  
+    },
+
     visit_date: {
       type: Date,
       default: () => new Date(new Date().toISOString()),
@@ -31,7 +37,7 @@ const VisitSchema = new mongoose.Schema(
     // Other Medical Data
     weight: { type: Number, required: true },
     last_menstrual_period: { type: String }, // Last Menstrual Period (if applicable)
-    chiefComplaints: { type: String, required: true, trim: true },
+    chiefComplaints: { type: String, trim: true },
 
   },
   { timestamps: true }

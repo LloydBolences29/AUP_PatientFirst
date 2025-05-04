@@ -4,18 +4,19 @@ import { Card } from "react-bootstrap"
 
 const Rooms = () => {
     const nurseSidebarLinks = [
-        {
-          label: "Dashboard",
-          path: "/nurse-dashboard",
-        },
-        {
-          label: "Patient Management",
-          path: "/patient-management",
-        },
-        {
-          label: "Room Management",
-          path: "/room-management",
-        },
+      {
+        label: "Cashier Dashboard",
+        path: "/cashier-dashboard",
+      },
+  
+      {
+        label: "Billing",
+        path: "/cashier-billing",
+      },  
+      {
+        label: "Admitting",
+        path: "/room-management",
+      },
       ];
   return (
     <div>

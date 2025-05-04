@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../../components/Sidebar";
-import Modal from "../../components/Modal";
 import axios from "axios";
 import AccordionComponents from "../../components/AccordionComponents";
 import {
@@ -13,12 +12,12 @@ import {
   CardHeader,
   CardFooter,
 } from "react-bootstrap";
-import { red } from "@mui/material/colors";
+import Modal from "../../components/Modal";
 
 const DoctorPatient = () => {
   const doctorSidebarLinks = [
-    { label: "Dashboard", path: "/nurse-dashboard" },
-    { label: "Patient Queue", path: "/doctor-patient-management" },
+    { label: "Dashboard", path: "/doctor-dashboard" },
+    { label: "Patient", path: "/doctor-patient-management" },
   ];
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [visits, setVisits] = useState([]);
@@ -38,7 +37,28 @@ const DoctorPatient = () => {
   const [isChecked, setIsChecked] = useState(false);
   const [checkedValue, setCheckedValue] = useState("");
   const [textValue, setTextValue] = useState("");
-  const [doctorsFee, SetDoctorsFee] = useState(1000) //setting the value for the constant doctors fee for medical certificate submit handle function
+  const [patientVisits, setPatientVisits] = useState([]);
+  const [visitData, setVisitData] = useState([]);
+  const [medCertSelections, setMedCertSelections] = useState({
+    CXR: "",
+    CBC: "",
+    Urinalysis: "",
+    DrugTest: "",
+  });
+
+  const fetchVisitData = async (patientId) => {
+    try {
+      const response = await fetch(
+        `https://localhost:3000/checkup/getCertainCheckup/${patientId}`
+      );
+      const data = await response.json();
+
+      console.log("Fetched checkup data:", data); // should now be filtered properly
+      setVisitData(data); // assuming visitData is a state holding all the checkups
+    } catch (error) {
+      console.error("Error fetching visits:", error.message);
+    }
+  };
 
   const handleCheckBoxChange = (e) => {
     setIsChecked(e.target.checked);
@@ -49,16 +69,15 @@ const DoctorPatient = () => {
   };
 
   const handleMedCertSubmit = () => {
-    
     console.log("Submitted text:", textValue);
-    alert("Successfully Submitted")
-    setIsModalOpen(false)
+    alert("Successfully Submitted");
+    setIsModalOpen(false);
     // You can also send `inputValue` to your backend or process it however you like
   };
 
   const addPrescription = (type) => {
-    setPrescriptions([
-      ...prescriptions,
+    setPrescriptions((prevPrescriptions) => [
+      ...prevPrescriptions.filter((pres) => pres.type === type),
       type === "medicinal"
         ? {
             type: "medicinal",
@@ -93,11 +112,20 @@ const DoctorPatient = () => {
     }
   };
 
-  const handleRowClick = (visit) => {
-    setSelectedVisit(visit);
-    console.log("Selected visit:", selectedVisit?.purpose);
-    setChiefComplaint(visit.chiefComplaints || ""); // Initialize chief complaint
+  const handleRowClick = async (visit) => {
+    setSelectedVisit(visit); // Save the visit object
+    setChiefComplaint(visit.chiefComplaints || "");
     setIsModalOpen(true);
+
+    // Extract the patient_id from the visit object
+    const patientId = visit.visitId?._id || visit.patient_id;
+
+    if (patientId) {
+      await fetchVisitData(patientId); // This gets all checkups linked to this patient
+      console.log("Fetched checkups for patient ID:", patientId);
+    } else {
+      console.warn("No patient ID found in visit object");
+    }
   };
 
   const handleOpenModal = (purpose) => {
@@ -217,6 +245,15 @@ const DoctorPatient = () => {
     updatedPrescriptions[index][field] = value; // Update specific field
     setPrescriptions(updatedPrescriptions); // Save updated state
   };
+
+  const handleMedCertRadioChange = (group, value) => {
+    setMedCertSelections((prev) => ({
+      ...prev,
+      [group]: value,
+    }));
+  };
+
+  console.log("Selected Visit Data:", visitData);
 
   return (
     <div>
@@ -426,7 +463,166 @@ const DoctorPatient = () => {
                                           {
                                             title:
                                               "Previous Consultations and Treatments",
-                                            content: "Content 1",
+                                            content: (
+                                              <div
+                                                style={{
+                                                  maxHeight: "300px",
+                                                  overflowY: "scroll",
+                                                }}
+                                              >
+                                                {Array.isArray(visitData) &&
+                                                visitData.length > 0 ? (
+                                                  visitData.map(
+                                                    (checkup, index) => (
+                                                      <Card
+                                                        className="mb-1 shadow-sm"
+                                                        key={index}
+                                                        style={{
+                                                          maxWidth: "600px",
+                                                          margin: "0 auto",
+                                                        }}
+                                                      >
+                                                        <Card.Header
+                                                          style={{
+                                                            backgroundColor:
+                                                              "#455F79",
+                                                            color: "white",
+                                                          }}
+                                                        >
+                                                          Visit Date:{" "}
+                                                          {new Date(
+                                                            checkup.visitId?.visit_date
+                                                          ).toLocaleDateString()}
+                                                        </Card.Header>
+                                                        <Card.Body>
+                                                          <Row>
+                                                            <Col>
+                                                              <p>
+                                                                <strong>
+                                                                  Temperature:
+                                                                </strong>{" "}
+                                                                {
+                                                                  checkup
+                                                                    .visitId
+                                                                    ?.temperature
+                                                                }{" "}
+                                                                °C
+                                                              </p>
+                                                              <p>
+                                                                <strong>
+                                                                  RR:
+                                                                </strong>{" "}
+                                                                {
+                                                                  checkup
+                                                                    .visitId
+                                                                    ?.respiratory_rate
+                                                                }{" "}
+                                                                breaths/min
+                                                              </p>
+                                                            </Col>
+                                                            <Col>
+                                                              <p>
+                                                                <strong>
+                                                                  Pulse Rate:
+                                                                </strong>{" "}
+                                                                {
+                                                                  checkup
+                                                                    .visitId
+                                                                    ?.pulse_rate
+                                                                }{" "}
+                                                                beats/min
+                                                              </p>
+                                                              
+                                                            </Col>
+
+                                                            <Col>
+                                                              <p>
+                                                                <strong>
+                                                                  Weight:
+                                                                </strong>{" "}
+                                                                {
+                                                                  checkup
+                                                                    .visitId
+                                                                    ?.weight
+                                                                }{" "}
+                                                                Kilogram/s
+                                                              </p>
+                                                              <p>
+                                                                <strong>
+                                                                  Blood Pressure: 
+                                                                </strong>{" "}
+                                                                {
+                                                                  checkup
+                                                                    .visitId
+                                                                    ?.blood_pressure
+                                                                }
+                                                              </p>
+                                                            </Col>
+                                                            <Col md={12}>
+                                                            <p>
+                                                                <strong>
+                                                                  Chief
+                                                                  Complaint:
+                                                                </strong>{" "}
+                                                                {
+                                                                  checkup
+                                                                    .visitId
+                                                                    ?.chiefComplaints
+                                                                }
+                                                              </p>
+                                                            
+                                                            </Col>
+                                                            <Col md={12}>
+                                                              <p>
+                                                                <strong>
+                                                                  Diagnosis:
+                                                                </strong>
+                                                              </p>
+                                                              {checkup.icd
+                                                                ?.length > 0 ? (
+                                                                <ul>
+                                                                  {checkup.icd.map(
+                                                                    (d, i) => (
+                                                                      <li
+                                                                        key={i}
+                                                                      >
+                                                                        {
+                                                                          d.shortdescription
+                                                                        }
+                                                                      </li>
+                                                                    )
+                                                                  )}
+                                                                </ul>
+                                                              ) : (
+                                                                <p>
+                                                                  No diagnosis
+                                                                  provided.
+                                                                </p>
+                                                              )}
+                                                            </Col>
+                                                            <Col md={12}>
+                                                              <p>
+                                                                <strong>
+                                                                  Additional
+                                                                  Notes:
+                                                                </strong>{" "}
+                                                                {checkup.additionalNotes ||
+                                                                  "None"}
+                                                              </p>
+                                                            </Col>
+                                                          </Row>
+                                                        </Card.Body>
+                                                      </Card>
+                                                    )
+                                                  )
+                                                ) : (
+                                                  <p>
+                                                    No previous consultations or
+                                                    treatments found.
+                                                  </p>
+                                                )}
+                                              </div>
+                                            ),
                                           },
                                         ]}
                                       />
@@ -707,6 +903,9 @@ const DoctorPatient = () => {
                 }
               />
             ) : (
+
+
+              // Modal for the medical certificate purpose
               <Modal
                 show={isModalOpen}
                 body={
@@ -804,7 +1003,7 @@ const DoctorPatient = () => {
                               </div>
                             </div>
 
-                            {/* content here for medical cert */}
+                            {/* first content here for medical cert */}
                             <div className="">
                               <div className="wrapper-content">
                                 <Row>
@@ -812,7 +1011,6 @@ const DoctorPatient = () => {
                                     <Card>
                                       <CardHeader>CXR</CardHeader>
                                       <Card.Body>
-                                        {/* //flex with a direction of column */}
                                         <div
                                           style={{
                                             display: "flex",
@@ -821,18 +1019,38 @@ const DoctorPatient = () => {
                                         >
                                           <label>
                                             <input
-                                              type="checkbox"
+                                              type="radio"
+                                              name="CXR"
                                               value="Normal"
-                                              onChange={handleCheckBoxChange}
+                                              checked={
+                                                medCertSelections.CXR ===
+                                                "Normal"
+                                              }
+                                              onChange={() =>
+                                                handleMedCertRadioChange(
+                                                  "CXR",
+                                                  "Normal"
+                                                )
+                                              }
                                             />{" "}
                                             Normal{" "}
                                           </label>
                                           <br />
                                           <label>
                                             <input
-                                              type="checkbox"
+                                              type="radio"
+                                              name="CXR"
                                               value="With Findings"
-                                              onChange={handleCheckBoxChange}
+                                              checked={
+                                                medCertSelections.CXR ===
+                                                "With Findings"
+                                              }
+                                              onChange={() =>
+                                                handleMedCertRadioChange(
+                                                  "CXR",
+                                                  "With Findings"
+                                                )
+                                              }
                                             />{" "}
                                             With Findings{" "}
                                           </label>
@@ -845,7 +1063,6 @@ const DoctorPatient = () => {
                                     <Card>
                                       <CardHeader>CBC</CardHeader>
                                       <Card.Body>
-                                        {/* //flex with a direction of column */}
                                         <div
                                           style={{
                                             display: "flex",
@@ -854,18 +1071,38 @@ const DoctorPatient = () => {
                                         >
                                           <label>
                                             <input
-                                              type="checkbox"
+                                              type="radio"
+                                              name="CBC"
                                               value="Normal"
-                                              onChange={handleCheckBoxChange}
+                                              checked={
+                                                medCertSelections.CBC ===
+                                                "Normal"
+                                              }
+                                              onChange={() =>
+                                                handleMedCertRadioChange(
+                                                  "CBC",
+                                                  "Normal"
+                                                )
+                                              }
                                             />{" "}
                                             Normal{" "}
                                           </label>
                                           <br />
                                           <label>
                                             <input
-                                              type="checkbox"
+                                              type="radio"
+                                              name="CBC"
                                               value="With Findings"
-                                              onChange={handleCheckBoxChange}
+                                              checked={
+                                                medCertSelections.CBC ===
+                                                "With Findings"
+                                              }
+                                              onChange={() =>
+                                                handleMedCertRadioChange(
+                                                  "CBC",
+                                                  "With Findings"
+                                                )
+                                              }
                                             />{" "}
                                             With Findings{" "}
                                           </label>
@@ -878,7 +1115,6 @@ const DoctorPatient = () => {
                                     <Card>
                                       <CardHeader>Urinalysis</CardHeader>
                                       <Card.Body>
-                                        {/* //flex with a direction of column */}
                                         <div
                                           style={{
                                             display: "flex",
@@ -887,18 +1123,38 @@ const DoctorPatient = () => {
                                         >
                                           <label>
                                             <input
-                                              type="checkbox"
+                                              type="radio"
+                                              name="Urinalysis"
                                               value="Normal"
-                                              onChange={handleCheckBoxChange}
+                                              checked={
+                                                medCertSelections.Urinalysis ===
+                                                "Normal"
+                                              }
+                                              onChange={() =>
+                                                handleMedCertRadioChange(
+                                                  "Urinalysis",
+                                                  "Normal"
+                                                )
+                                              }
                                             />{" "}
                                             Normal{" "}
                                           </label>
                                           <br />
                                           <label>
                                             <input
-                                              type="checkbox"
+                                              type="radio"
+                                              name="Urinalysis"
                                               value="With Findings"
-                                              onChange={handleCheckBoxChange}
+                                              checked={
+                                                medCertSelections.Urinalysis ===
+                                                "With Findings"
+                                              }
+                                              onChange={() =>
+                                                handleMedCertRadioChange(
+                                                  "Urinalysis",
+                                                  "With Findings"
+                                                )
+                                              }
                                             />{" "}
                                             With Findings{" "}
                                           </label>
@@ -911,7 +1167,6 @@ const DoctorPatient = () => {
                                     <Card>
                                       <CardHeader>Drug Test</CardHeader>
                                       <Card.Body>
-                                        {/* //flex with a direction of column */}
                                         <div
                                           style={{
                                             display: "flex",
@@ -920,18 +1175,38 @@ const DoctorPatient = () => {
                                         >
                                           <label>
                                             <input
-                                              type="checkbox"
+                                              type="radio"
+                                              name="DrugTest"
                                               value="Negative"
-                                              onChange={handleCheckBoxChange}
+                                              checked={
+                                                medCertSelections.DrugTest ===
+                                                "Negative"
+                                              }
+                                              onChange={() =>
+                                                handleMedCertRadioChange(
+                                                  "DrugTest",
+                                                  "Negative"
+                                                )
+                                              }
                                             />{" "}
                                             Negative{" "}
                                           </label>
                                           <br />
                                           <label>
                                             <input
-                                              type="checkbox"
+                                              type="radio"
+                                              name="DrugTest"
                                               value="Positive"
-                                              onChange={handleCheckBoxChange}
+                                              checked={
+                                                medCertSelections.DrugTest ===
+                                                "Positive"
+                                              }
+                                              onChange={() =>
+                                                handleMedCertRadioChange(
+                                                  "DrugTest",
+                                                  "Positive"
+                                                )
+                                              }
                                             />{" "}
                                             Positive{" "}
                                           </label>
@@ -943,6 +1218,7 @@ const DoctorPatient = () => {
                               </div>
                               <br />
 
+{/* Second part of the content here for medical cert */}
                               <h3>Physical Examination</h3>
 
                               <Row>

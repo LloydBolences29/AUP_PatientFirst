@@ -377,7 +377,9 @@ const PharmacyTransactions = () => {
                     Queue No: {waitingQueueData[0]?.queueNumber}
                   </div>
                 </CardHeader>
-                <CardFooter>Status: Next in line</CardFooter>
+                <CardFooter>
+                  
+                  Status: Next in line</CardFooter>
                 <Button variant="outline-primary"
                 onClick={handleSkipButton}>
                   Skip

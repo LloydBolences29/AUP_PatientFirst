@@ -173,6 +173,10 @@ const CashierBilling = () => {
       label: "Billing",
       path: "/cashier-billing",
     },
+    {
+      label: "Admitting",
+      path: "/room-management",
+    },
   ];
 
   const totalDue = billingDetails.reduce(

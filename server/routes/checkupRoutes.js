@@ -3,10 +3,8 @@ const router = express.Router();
 const Checkup = require("../model/checkup");
 const Patient = require("../model/Patient"); // Import Patient model
 const ICD = require("../model/icdcode"); // Import ICD-10 model
-const Billing = require ("../model/BillingModel")
+const Billing = require("../model/BillingModel");
 const Prescription = require("../model/Prescription");
-
-
 
 router.get("/icd10", async (req, res) => {
   try {
@@ -46,17 +44,26 @@ router.get("/icd10/search", async (req, res) => {
 // 🔹 Create a new checkup with multiple ICD-10 codes
 router.post("/create-new", async (req, res) => {
   try {
-    const { visitId, patientId, doctorFee, icd, additionalNotes, patientType } = req.body;
+    const { visitId, patientId, doctorFee, icd, additionalNotes, patientType } =
+      req.body;
 
     // ✅ Validate Inputs
     if (!patientId || !Array.isArray(icd) || icd.length === 0) {
-      return res.status(400).json({ message: "Patient ID and at least one ICD code are required." });
+      return res
+        .status(400)
+        .json({
+          message: "Patient ID and at least one ICD code are required.",
+        });
     }
 
     // ✅ Check if Patient Exists
     const patientExists = await Patient.findById(patientId);
     if (!patientExists) {
-      return res.status(400).json({ message: "Invalid patient ID. Please check the patient record." });
+      return res
+        .status(400)
+        .json({
+          message: "Invalid patient ID. Please check the patient record.",
+        });
     }
 
     // ✅ Validate ICD-10 Codes
@@ -80,24 +87,26 @@ router.post("/create-new", async (req, res) => {
     const doctorBilling = new Billing({
       patientId,
       department: "Consultation",
-      items: [{
-        type: "doctor-fee",
-        name: "Doctor's Consultation Fee",
-        price: doctorFee,
-        quantity: 1,
-        total: doctorFee
-      }],
+      items: [
+        {
+          type: "doctor-fee",
+          name: "Doctor's Consultation Fee",
+          price: doctorFee,
+          quantity: 1,
+          total: doctorFee,
+        },
+      ],
       totalAmount: doctorFee,
-      status: "pending"
+      status: "pending",
     });
 
     await doctorBilling.save();
 
-    res.status(201).json({ 
-      message: "Checkup recorded & doctor's fee billed successfully", 
-      checkup: newCheckup, 
-      billing: doctorBilling ,
-      checkupId: newCheckup._id
+    res.status(201).json({
+      message: "Checkup recorded & doctor's fee billed successfully",
+      checkup: newCheckup,
+      billing: doctorBilling,
+      checkupId: newCheckup._id,
     });
 
     // ✅ Return the created checkup _id
@@ -111,14 +120,37 @@ router.post("/create-new", async (req, res) => {
 router.get("/getCheckup", async (req, res) => {
   try {
     const checkups = await Checkup.find()
-    .populate({
-      path: "visitId",
-      populate: {
-        path: "patient_id",
-        model: "patientname", // Name of the model you're referencing
-         // You can customize what fields to return
-      }, // What to return from Visit
-    })      .populate("icd", "code shortdescription"); // Populate ICD-10 details
+      .populate({
+        path: "visitId",
+        populate: {
+          path: "patient_id",
+          model: "patientname", // Name of the model you're referencing
+          // You can customize what fields to return
+        }, // What to return from Visit
+      })
+      .populate("icd", "code shortdescription"); // Populate ICD-10 details
+
+    res.status(200).json(checkups);
+  } catch (error) {
+    console.error("Error fetching checkups:", error);
+    res.status(500).json({ message: "Server error." });
+  }
+});
+
+router.get("/getCertainCheckup/:patientId", async (req, res) => {
+  try {
+    const { patientId } = req.params;
+
+    const checkups = await Checkup.find()
+      .populate({
+        path: "visitId",
+        populate: { 
+          path: "patient_id",
+          model: "patientname", // Name of the model you're referencing
+          match: { patient_id: patientId },
+        }, // What to return from Visit
+      })
+      .populate("icd", "code shortdescription"); // Populate ICD-10 details
 
     res.status(200).json(checkups);
   } catch (error) {
@@ -146,11 +178,15 @@ router.put("/updatePatientType/:checkupId", async (req, res) => {
       return res.status(404).json({ message: "Checkup not found" });
     }
 
-    res.json({ message: "Patient type updated successfully", checkup: updatedCheckup });
+    res.json({
+      message: "Patient type updated successfully",
+      checkup: updatedCheckup,
+    });
   } catch (error) {
-    res.status(500).json({ message: "Error updating patient type", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error updating patient type", error: error.message });
   }
 });
-
 
 module.exports = router;

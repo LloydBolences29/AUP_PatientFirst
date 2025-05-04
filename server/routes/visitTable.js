@@ -31,4 +31,33 @@ router.get("/fetchVisit/:patient_id", async (req, res) =>{
       }
 })
 
+router.get("/fetchVisits/:patientId", async (req,res) =>{
+//get patient visit data
+try {
+  const { patientId } = req.params;
+
+  const visits = await Visit.find()
+    .populate({
+      path: 'patient_id',
+      match: { patient_id: patientId } // 👈 Match the *custom* patient_id in Patient model
+    })
+  
+    console.log("Visit value: ", visits)
+
+  const filteredVisits = visits.filter(visit => visit.patientId !== null);
+
+  if (filteredVisits.length === 0) {
+    return res.status(404).json({ message: 'No visits found for this patient ID.' });
+  }
+
+  res.status(200).json(filteredVisits);
+} catch (error) {
+  console.error('Error:', error);
+  res.status(500).json({ message: 'Server error.' });
+}
+});
+
+
+
+
 module.exports = router

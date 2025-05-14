@@ -10,60 +10,72 @@ import {
   Table,
 } from "react-bootstrap";
 import CustomLineChart from "../../components/LineChart";
-import axios from "axios"; 
+import axios from "axios";
 const LabDashboard = () => {
   const labSidebarLinks = [
     { label: "Dashboard", path: "/lab-dashboard" },
     { label: "Billing", path: "/lab-billing" },
     { label: "Upload", path: "/lab-upload" },
   ];
-    const [selectedType, setSelectedType] = useState("daily");
-    const [loading, setLoading] = useState(false);
-    const [labTotalSales, setLabTotalSales] = useState([]);
-    const [salesSummary, setSalesSummary] = useState({
-      today: 0,
-      month: 0,
-      year: 0,
-    });
+  const [selectedType, setSelectedType] = useState("daily");
+  const [loading, setLoading] = useState(false);
+  const [labTotalSales, setLabTotalSales] = useState([]);
+  const [salesSummary, setSalesSummary] = useState({
+    today: 0,
+    month: 0,
+    year: 0,
+  });
+  const [visitChartData, setVisitChartData] = useState([]);
+  const [visitTotal, setVisitTotal] = useState(0);
 
-
+  const fetchVisitData = async (type) => {
+    try {
+      const res = await axios.get(
+        `https://localhost:3000/labTest/visit-count?type=${type}`
+      );
+      setVisitChartData(res.data.chartData || []);
+      setVisitTotal(res.data.totalForSelectedPeriod || 0);
+    } catch (error) {
+      console.error("Error fetching visits:", error);
+    }
+  };
 
   const fetchSalesSummary = async () => {
-      try {
-        const response = await axios.get(
-          `https://localhost:3000/labTest/sales-summary`
-        );
-        setSalesSummary(response.data || { today: 0, month: 0, year: 0 });
-      } catch (error) {
-        console.error("Error fetching sales summary:", error);
-      }
-    };
+    try {
+      const response = await axios.get(
+        `https://localhost:3000/labTest/sales-summary`
+      );
+      setSalesSummary(response.data || { today: 0, month: 0, year: 0 });
+    } catch (error) {
+      console.error("Error fetching sales summary:", error);
+    }
+  };
 
+  const fetchTotalSales = async (type) => {
+    setLoading(true); // ADD THIS
 
-    const fetchTotalSales = async (type) => {
-      setLoading(true); // ADD THIS
-  
-      try {
-        const response = await axios.get(
-          `https://localhost:3000/labTest/sales-over-time?type=${type}`
-        );
-        setLabTotalSales(response.data || []);
-      } catch (error) {
-        console.error("Error fetching sales data:", error);
-        setLabTotalSales([]);
-      }
-      setLoading(false);
-    };
-  
-    useEffect(() => {
-      fetchTotalSales(selectedType);
-      fetchSalesSummary();
-    }, [selectedType]);
-  
-    const totalSalesSum = labTotalSales.reduce(
-      (acc, curr) => acc + (curr.sales || 0),
-      0
-    );
+    try {
+      const response = await axios.get(
+        `https://localhost:3000/labTest/sales-over-time?type=${type}`
+      );
+      setLabTotalSales(response.data || []);
+    } catch (error) {
+      console.error("Error fetching sales data:", error);
+      setLabTotalSales([]);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchTotalSales(selectedType);
+    fetchSalesSummary();
+    fetchVisitData(selectedType);
+  }, [selectedType]);
+
+  const totalSalesSum = labTotalSales.reduce(
+    (acc, curr) => acc + (curr.sales || 0),
+    0
+  );
   return (
     <div>
       <Sidebar
@@ -81,9 +93,7 @@ const LabDashboard = () => {
                 </h1>
               </div>
             </Card>
-
             <br />
-
             <Row className="mb-4 container">
               <Col md={12}>
                 <Card className="shadow-sm p-3 bg-white rounded text-center">
@@ -127,10 +137,24 @@ const LabDashboard = () => {
                   )}
                 </Card>
               </Col>
+
+              <Col md={12} className="mt-4">
+                <Card>
+                  <Card.Body className="text-center">
+                    <Card.Title as="h5">Total Laboratory Visits</Card.Title>
+                    <p>
+                      {visitTotal.toLocaleString()} {selectedType} visits
+                    </p>
+                    <CustomLineChart
+                      title={`Xray Visits Trend (${selectedType})`}
+                      data={visitChartData}
+                      xKey="date"
+                      yKey="count"
+                    />
+                  </Card.Body>
+                </Card>
+              </Col>
             </Row>
-
-
-
           </>
         }
       />

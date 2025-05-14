@@ -40,6 +40,7 @@ const Prescriptions = () => {
         const res = await axios.get(
           "https://localhost:3000/api/pharma/medicines"
         );
+        console.log("Medicines:", res.data.medicines);
         setMedicineList(res.data.medicines); // Adjust key based on your API response
       } catch (err) {
         console.error("Error fetching medicines", err);
@@ -62,6 +63,7 @@ const Prescriptions = () => {
             checkupId: checkup._id,
           };
         });
+        console.log("Checkups:", checkups);
         setCheckupId(checkups);
       } catch (err) {
         console.error("Error fetching checkups", err);
@@ -179,7 +181,7 @@ const Prescriptions = () => {
   const handleGenerateBill = (prescription) => {
     const items = prescription.prescriptions.map((med) => {
       const medicineData = medicineList.find(
-        (m) => m.name.toLowerCase() === med.medication.toLowerCase()
+        (m) => m.genericName.toLowerCase() === med.medication.toLowerCase()
       );
 
       return {
@@ -205,7 +207,7 @@ const Prescriptions = () => {
       const checkupId = prescription.checkupId?._id;
 
       const items = billDetails.map((item, index) => ({
-        name: item.name,
+        name: item.genericName,
         quantity: updatedQuantities[index],
         price: item.price,
       }));

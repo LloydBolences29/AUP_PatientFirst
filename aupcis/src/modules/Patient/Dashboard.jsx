@@ -18,10 +18,11 @@ const Dashboard = () => {
   // Handle My Profile click
 
   // Sidebar links
-  const sidebarLinks = [
+    const sidebarLinks = [
     { label: "Dashboard", path: "/dashboard" },
     { label: "Symptom Checker", path: "/symptomChecker" },
     { label: "My Profile", path: `/profile/${patient_id}` },
+    { label: "Request", path: "/request" },
   ];
 
   // Fetch patient counts

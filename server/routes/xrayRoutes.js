@@ -3,6 +3,8 @@ const router = Router();
 const Xray = require("../model/xrayModel"); // Import the X-ray model
 const Patient = require("../model/Patient"); // Import the Patient model
 const Billing = require("../model/BillingModel"); // Import the Billing model
+const moment = require("moment");
+
 
 router.get("/getXray", async (req, res) => {
     try {
@@ -215,11 +217,126 @@ function getDateRange(selectedDate, type) {
       res.status(500).json({ error: "Internal server error" });
     }
   });
-  
-  
-  
 
+  router.get("/visit-count", async (req, res) => {
+    const { type } = req.query;
+  
+    if (!type) {
+      return res.status(400).json({ error: "Type is required" });
+    }
+  
+    let dateFormat;
+    let now = new Date();
+    let startDate;
+  
+    if (type === "daily") {
+      dateFormat = "%Y-%m-%d";
+      startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // today 00:00
+    } else if (type === "monthly") {
+      dateFormat = "%Y-%m";
+      startDate = new Date(now.getFullYear(), now.getMonth(), 1); // 1st of this month
+    } else if (type === "yearly") {
+      dateFormat = "%Y";
+      startDate = new Date(now.getFullYear(), 0, 1); // Jan 1st of this year
+    } else {
+      return res.status(400).json({ error: "Invalid type" });
+    }
+  
+    try {
+      const result = await Billing.aggregate([
+        {
+          $match: {
+            department: "X-ray",
+            status: "paid",
+          },
+        },
+        {
+          $group: {
+            _id: {
+              $dateToString: { format: dateFormat, date: "$createdAt" },
+            },
+            visitCount: { $sum: 1 },
+          },
+        },
+        { $sort: { _id: 1 } },
+      ]);
+  
+      const data = result.map((item) => ({
+        date: item._id,
+        count: item.visitCount,
+      }));
+  
+      // Get the most recent record (today's/month's/year's count)
+      const todayKey = formatDateKey(now, type);
+      const todayData = data.find((item) => item.date === todayKey);
+      const totalCountForPeriod = todayData ? todayData.count : 0;
+  
+      res.json({
+        chartData: data,
+        totalForSelectedPeriod: totalCountForPeriod,
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  
+    function formatDateKey(date, type) {
+      const y = date.getFullYear();
+      const m = `${date.getMonth() + 1}`.padStart(2, "0");
+      const d = `${date.getDate()}`.padStart(2, "0");
+  
+      if (type === "daily") return `${y}-${m}-${d}`;
+      if (type === "monthly") return `${y}-${m}`;
+      if (type === "yearly") return `${y}`;
+    }
+  });
 
+  // Route: /xray/visit-counts
+  router.get("/visit-counts", async (req, res) => {
+    try {
+      const { startDate, month, year } = req.query;
+  
+      const startMoment = startDate
+        ? moment(startDate) // If startDate is provided, parse it
+        : moment().startOf("day"); // Default to today's date if not provided
+  
+      const monthMoment = month
+        ? moment(month, "MMMM YYYY") // If month is provided, parse it
+        : moment().startOf("month"); // Default to the start of the current month if not provided
+  
+      const yearMoment = year
+        ? moment(year, "YYYY") // If year is provided, parse it
+        : moment().startOf("year"); // Default to the start of the current year if not provided
+  
+      // Use the same logic to query for visits
+      const [todayCount, monthCount, yearCount] = await Promise.all([
+        Billing.countDocuments({
+          department: "X-ray",
+          status: "paid",
+          createdAt: { $gte: startMoment.toDate() },
+        }),
+        Billing.countDocuments({
+          department: "X-ray",
+          status: "paid",
+          createdAt: { $gte: monthMoment.toDate() },
+        }),
+        Billing.countDocuments({
+          department: "X-ray",
+          status: "paid",
+          createdAt: { $gte: yearMoment.toDate() },
+        }),
+      ]);
+  
+      res.json({
+        today: todayCount,
+        month: monthCount,
+        year: yearCount,
+      });
+    } catch (err) {
+      console.error("Error getting visit summary:", err);
+      res.status(500).json({ message: "Server error" });
+    }
+  });
 
 
 module.exports = router;

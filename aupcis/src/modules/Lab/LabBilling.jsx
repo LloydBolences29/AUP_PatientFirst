@@ -1,7 +1,18 @@
 import React from "react";
-import { useState , useEffect} from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "../../components/Sidebar";
-import { Container, Row, Col, Button, Form,CardHeader,Table, Modal, Card, CardFooter } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Button,
+  Form,
+  CardHeader,
+  Table,
+  Modal,
+  Card,
+  CardFooter,
+} from "react-bootstrap";
 import axios from "axios";
 import io from "socket.io-client";
 import "../Pharma/PharmacyTransactions.css";
@@ -12,8 +23,6 @@ const socket = io("wss://localhost:3000", {
   withCredentials: true, // Ensure cookies and authentication headers are sent
 });
 
-
-
 const LabBilling = () => {
   const [tests, setTests] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -21,15 +30,14 @@ const LabBilling = () => {
   const [patientId, setPatientId] = useState("");
   const [patientData, setPatientData] = useState(null);
   const [selectedTest, setSelectedTest] = useState([]);
-    const [showModal, setShowModal] = useState(false); // State to control modal visibility
+  const [showModal, setShowModal] = useState(false); // State to control modal visibility
   const [waitingQueueData, setWaitingQueueData] = useState([]); // State to hold the waiting queue data
-    const [toCashierData, setToCashierData] = useState([]); // State to hold the sent to cashier data
-    const [forDispense, setForDispense] = useState([]); // State to hold the dispensed queue data
-    const [queueNo, setQueueNo] = useState("")
-  const [queueDispenseNo, setQueueDispenseNo] = useState([])
+  const [toCashierData, setToCashierData] = useState([]); // State to hold the sent to cashier data
+  const [forDispense, setForDispense] = useState([]); // State to hold the dispensed queue data
+  const [queueNo, setQueueNo] = useState("");
+  const [queueDispenseNo, setQueueDispenseNo] = useState([]);
 
-
-useEffect(() => {
+  useEffect(() => {
     socket.on("connect", () => {
       console.log("Connected to Socket.IO server");
     });
@@ -70,47 +78,49 @@ useEffect(() => {
     };
   }, []);
 
-
   const fetchQueue = async () => {
     try {
       const response = await axios.get(`https://localhost:3000/queue/waiting`, {
-        params: { department: "lab" }});
-  
+        params: { department: "lab" },
+      });
+
       const waitList = response.data;
       console.log("Waiting Queue Response:", waitList);
-  
+
       setWaitingQueueData(waitList);
       setQueueNo(waitList[0]?.queueNumber); // Set the queue number from the first item
 
       const sendToCashierData = await axios.get(
-        `https://localhost:3000/queue/sentToCashier`, {
-          params: { department: "lab" }});
+        `https://localhost:3000/queue/sentToCashier`,
+        {
+          params: { department: "lab" },
+        }
+      );
 
-          const billList = sendToCashierData.data;
-          console.log("To Cashier Queue Response:", billList);
+      const billList = sendToCashierData.data;
+      console.log("To Cashier Queue Response:", billList);
 
-          setToCashierData(billList);
+      setToCashierData(billList);
 
-          const dispenseData = await axios.get(
-            `https://localhost:3000/queue/dispensed`, {
-              params: { department: "lab" }});
+      const dispenseData = await axios.get(
+        `https://localhost:3000/queue/dispensed`,
+        {
+          params: { department: "lab" },
+        }
+      );
 
-              const dispenseList = dispenseData.data;
-              console.log("Dispense Queue Response:", dispenseList);
-              setForDispense(dispenseList);
-              setQueueDispenseNo(dispenseList[0]?.queueNumber)
-
-        
-
-  
+      const dispenseList = dispenseData.data;
+      console.log("Dispense Queue Response:", dispenseList);
+      setForDispense(dispenseList);
+      setQueueDispenseNo(dispenseList[0]?.queueNumber);
     } catch (error) {
       console.error("Error fetching queue:", error);
     }
   };
 
-    useEffect(() => {
-      fetchQueue(); // Fetch queue data on component mount
-    }, []);
+  useEffect(() => {
+    fetchQueue(); // Fetch queue data on component mount
+  }, []);
 
   const handleSearch = async () => {
     // Implement search logic here
@@ -130,107 +140,104 @@ useEffect(() => {
   };
 
   //fetch the patient data
-    const fetchPatientData = async () => {
-      try {
-        const response = await axios.get(
-          `https://localhost:3000/patientname/${patientId}`
-        );
-        if (response.data) {
-          setPatientData(response.data);
-        } else {
-          setPatientData(null);
-        }
-      } catch (error) {
-        console.error("Error fetching patient data:", error);             
+  const fetchPatientData = async () => {
+    try {
+      const response = await axios.get(
+        `https://localhost:3000/patientname/${patientId}`
+      );
+      if (response.data) {
+        setPatientData(response.data);
+      } else {
         setPatientData(null);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching patient data:", error);
+      setPatientData(null);
+    }
+  };
 
-    const calculateTotal = () => {
-      return selectedTest.reduce((total, proc) => {
-        let price = proc.price;
-    
-        // Remove any ₱ or $ and convert to number
-        if (typeof price === "string") {
-          price = parseFloat(price.replace(/[₱$]/g, ''));
+  const calculateTotal = () => {
+    return selectedTest.reduce((total, proc) => {
+      let price = proc.price;
+
+      // Remove any ₱ or $ and convert to number
+      if (typeof price === "string") {
+        price = parseFloat(price.replace(/[₱$]/g, ""));
+      }
+
+      return total + (isNaN(price) ? 0 : price);
+    }, 0);
+  };
+
+  const removeTest = (index) => {
+    setSelectedTest((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  useEffect(() => {
+    console.log("Fetched patientData:", selectedTest);
+  }, [selectedTest]);
+
+  const addTest = (proc) => {
+    setSelectedTest((prev) => [...prev, proc]);
+  };
+
+  const handleGenerateBill = async () => {
+    try {
+      const response = await axios.post(
+        `https://localhost:3000/labTest/sendLabBilling/${patientId}`,
+        {
+          items: selectedTest,
         }
-    
-        return total + (isNaN(price) ? 0 : price);
-      }, 0);
-    };
-    
+      );
 
-    const removeTest = (index) => {
-      setSelectedTest((prev) => prev.filter((_, i) => i !== index));
-    };
-
-    useEffect(() => {
-      console.log("Fetched patientData:", selectedTest);
-    }, [selectedTest]);
-
-    const addTest = (proc) => {
-      setSelectedTest((prev) => [...prev, proc]);
-    };
-
-    const handleGenerateBill = async () => {
-      try {
-        const response = await axios.post(
-          `https://localhost:3000/labTest/sendLabBilling/${patientId}`,
-          {
-            items: selectedTest,
-          }
-        );
-
-        // Update queue status
+      // Update queue status
       const statusToUpdate = "sent-to-cashier";
       const queueRes = await axios.patch(
         `https://localhost:3000/queue/complete/${queueNo}`,
         { status: statusToUpdate }
       );
-    
+
       console.log("Queue status updated:", queueRes.data);
 
-        console.log("Billing sent successfully:", response.data);
-        alert("Lab billing created successfully!");
-      } catch (error) {
-        console.error("Error sending billing:", error);
-        alert("Failed to create Lab billing: " + error?.response?.data?.message);
-      }
-  setShowModal(false); // Close the modal after generating the bill
-  
-    };
+      console.log("Billing sent successfully:", response.data);
+      alert("Lab billing created successfully!");
+    } catch (error) {
+      console.error("Error sending billing:", error);
+      alert("Failed to create Lab billing: " + error?.response?.data?.message);
+    }
+    setShowModal(false); // Close the modal after generating the bill
+  };
 
-    const handleSkipButton = async () => {
-          console.log("Skip button clicked.");
-          const statusToUpdate = "skipped";
-            const queueRes = await axios.patch(
-              `https://localhost:3000/queue/complete/${queueNo}`,
-              { status: statusToUpdate }
-            );
-      
-            console.log("Queue status updated:", queueRes.data);
-          }
-      
-          const handleDoneButton = async () => {
-            console.log("Done button clicked.");
-            const statusToUpdate = "done";
-              const queueRes = await axios.patch(
-                `https://localhost:3000/queue/complete/${queueDispenseNo}`,
-                { status: statusToUpdate }
-              );
-        
-              console.log("Queue status updated:", queueRes.data);
-            }
-    
+  const handleSkipButton = async () => {
+    console.log("Skip button clicked.");
+    const statusToUpdate = "skipped";
+    const queueRes = await axios.patch(
+      `https://localhost:3000/queue/complete/${queueNo}`,
+      { status: statusToUpdate }
+    );
+
+    console.log("Queue status updated:", queueRes.data);
+  };
+
+  const handleDoneButton = async () => {
+    console.log("Done button clicked.");
+    const statusToUpdate = "done";
+    const queueRes = await axios.patch(
+      `https://localhost:3000/queue/complete/${queueDispenseNo}`,
+      { status: statusToUpdate }
+    );
+
+    console.log("Queue status updated:", queueRes.data);
+  };
+
+
+
   const labSidebarLinks = [
     { label: "Dashboard", path: "/lab-dashboard" },
     { label: "Billing", path: "/lab-billing" },
     { label: "Upload", path: "/lab-upload" },
   ];
-  
-  
-  
-  
+
   return (
     <div>
       <Sidebar
@@ -241,38 +248,33 @@ useEffect(() => {
               <Row>
                 <Col className="mt-4 d-flex justify-content-center align-items-center">
                   <h1>Lab Billing</h1>
-
-                  
-
-
-
-
                 </Col>
               </Row>
             </Container>
 
-
             <Container className="d-flex justify-content-evenly mb-4">
               <Card>
                 <CardHeader>
-                
                   <div
-                    className={waitingQueueData[0]?.status === "waiting" ? "flash" : ""}
+                    className={
+                      waitingQueueData[0]?.status === "waiting" ? "flash" : ""
+                    }
                   >
                     Queue No: {waitingQueueData[0]?.queueNumber}
                   </div>
                 </CardHeader>
                 <CardFooter>Status: Next in line</CardFooter>
-               <Button variant="outline-primary"
-                               onClick={handleSkipButton}>
-                                 Skip
-                               </Button>
+                <Button variant="outline-primary" onClick={handleSkipButton}>
+                  Skip
+                </Button>
               </Card>
               <Card>
                 <CardHeader>
                   <div
                     className={
-                      toCashierData[0]?.status === "sent-to-cashier" ? "flash" : ""
+                      toCashierData[0]?.status === "sent-to-cashier"
+                        ? "flash"
+                        : ""
                     }
                   >
                     Queue No: {toCashierData[0]?.queueNumber}
@@ -291,10 +293,9 @@ useEffect(() => {
                   </div>
                 </CardHeader>
                 <CardFooter>Status: For Dispensing</CardFooter>
-              <Button variant="outline-success"
-                              onClick={handleDoneButton}>
-                                Done
-                              </Button>
+                <Button variant="outline-success" onClick={handleDoneButton}>
+                  Done
+                </Button>
               </Card>
             </Container>
 
@@ -353,10 +354,15 @@ useEffect(() => {
                               <td>{index + 1}</td>
                               <td>{test.name}</td>
                               <td>₱{test.price}</td>
-                              <td><Button variant="success"
-                                    size="sm"
-                                    onClick={() => addTest(test)}
-                                  >Add</Button></td>
+                              <td>
+                                <Button
+                                  variant="success"
+                                  size="sm"
+                                  onClick={() => addTest(test)}
+                                >
+                                  Add
+                                </Button>
+                              </td>
                             </tr>
                           ))}
                         </tbody>
@@ -392,8 +398,6 @@ useEffect(() => {
                       Search
                     </Button>
                   </Form>
-                  
-
 
                   {patientData ? (
                     <div className="mt-4">
@@ -420,8 +424,8 @@ useEffect(() => {
                       <p className="text-danger mt-3">Patient not found.</p>
                     )
                   )}
-                  </Col>
-                  <Col md={6} className="bg-white shadow-sm p-4 rounded mx-0">
+                </Col>
+                <Col md={6} className="bg-white shadow-sm p-4 rounded mx-0">
                   <CardHeader className="fw-bold text-primary">
                     Selected Test/s
                   </CardHeader>
@@ -476,57 +480,57 @@ useEffect(() => {
               </Row>
             </Container>
 
-             {/* Modal for Bill Confirmation */}
-                        <Modal show={showModal} onHide={() => setShowModal(false)} centered>
-                          <Modal.Header closeButton>
-                            <Modal.Title>Confirm Billing</Modal.Title>
-                          </Modal.Header>
-                          <Modal.Body>
-                            <h5>Patient Information</h5>
-                            <Table striped bordered hover>
-                              <tbody>
-                                <tr>
-                                  <td className="fw-bold">Patient ID</td>
-                                  <td>{patientData?.patient?.patient_id}</td>
-                                </tr>
-                                <tr>
-                                  <td className="fw-bold">Name</td>
-                                  <td>{patientData?.patient?.firstname}</td>
-                                </tr>
-                                <tr>
-                                  <td className="fw-bold">Gender</td>
-                                  <td>{patientData?.patient?.gender}</td>
-                                </tr>
-                              </tbody>
-                            </Table>
-                            <h5 className="mt-4">Selected Test</h5>
-                            <Table striped bordered hover>
-                              <thead>
-                                <tr>
-                                  <th>Test Name</th>
-                                  <th>Price</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {selectedTest.map((proc, index) => (
-                                  <tr key={index}>
-                                    <td>{proc.name}</td>
-                                    <td>{proc.price}</td>
-                                  </tr>
-                                ))}
-                              </tbody>
-                            </Table>
-                            <h5 className="mt-3">Total: ₱{calculateTotal().toFixed(2)}</h5>
-                          </Modal.Body>
-                          <Modal.Footer>
-                            <Button variant="secondary" onClick={() => setShowModal(false)}>
-                              Cancel
-                            </Button>
-                            <Button variant="success" onClick={handleGenerateBill}>
-                              Confirm and Generate Bill
-                            </Button>
-                          </Modal.Footer>
-                        </Modal>
+            {/* Modal for Bill Confirmation */}
+            <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+              <Modal.Header closeButton>
+                <Modal.Title>Confirm Billing</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <h5>Patient Information</h5>
+                <Table striped bordered hover>
+                  <tbody>
+                    <tr>
+                      <td className="fw-bold">Patient ID</td>
+                      <td>{patientData?.patient?.patient_id}</td>
+                    </tr>
+                    <tr>
+                      <td className="fw-bold">Name</td>
+                      <td>{patientData?.patient?.firstname}</td>
+                    </tr>
+                    <tr>
+                      <td className="fw-bold">Gender</td>
+                      <td>{patientData?.patient?.gender}</td>
+                    </tr>
+                  </tbody>
+                </Table>
+                <h5 className="mt-4">Selected Test</h5>
+                <Table striped bordered hover>
+                  <thead>
+                    <tr>
+                      <th>Test Name</th>
+                      <th>Price</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedTest.map((proc, index) => (
+                      <tr key={index}>
+                        <td>{proc.name}</td>
+                        <td>{proc.price}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+                <h5 className="mt-3">Total: ₱{calculateTotal().toFixed(2)}</h5>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={() => setShowModal(false)}>
+                  Cancel
+                </Button>
+                <Button variant="success" onClick={handleGenerateBill}>
+                  Confirm and Generate Bill
+                </Button>
+              </Modal.Footer>
+            </Modal>
           </>
         }
       />

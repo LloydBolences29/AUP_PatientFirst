@@ -22,6 +22,7 @@ const MedicalRecordDashboard = () => {
   const MROsidebarLinks = [
     { label: "Dashboard", path: "/medicalRecord-dashboard" },
     { label: "Patient Management", path: "/medicalRecord-management" },
+    { label: "Request Forms", path: "/request-forms" },
   ];
 
   const [selectedDate, setSelectedDate] = useState(new Date());

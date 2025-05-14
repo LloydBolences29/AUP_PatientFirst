@@ -188,6 +188,79 @@ router.post("/sendLabBilling/:patientId", async (req, res) => {
       }
     });
     
+      router.get("/visit-count", async (req, res) => {
+        const { type } = req.query;
+      
+        if (!type) {
+          return res.status(400).json({ error: "Type is required" });
+        }
+      
+        let dateFormat;
+        let now = new Date();
+        let startDate;
+      
+        if (type === "daily") {
+          dateFormat = "%Y-%m-%d";
+          startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // today 00:00
+        } else if (type === "monthly") {
+          dateFormat = "%Y-%m";
+          startDate = new Date(now.getFullYear(), now.getMonth(), 1); // 1st of this month
+        } else if (type === "yearly") {
+          dateFormat = "%Y";
+          startDate = new Date(now.getFullYear(), 0, 1); // Jan 1st of this year
+        } else {
+          return res.status(400).json({ error: "Invalid type" });
+        }
+      
+        try {
+          const result = await Billing.aggregate([
+            {
+              $match: {
+                department: "Laboratory",
+                status: "paid",
+              },
+            },
+            {
+              $group: {
+                _id: {
+                  $dateToString: { format: dateFormat, date: "$createdAt" },
+                },
+                visitCount: { $sum: 1 },
+              },
+            },
+            { $sort: { _id: 1 } },
+          ]);
+      
+          const data = result.map((item) => ({
+            date: item._id,
+            count: item.visitCount,
+          }));
+      
+          // Get the most recent record (today's/month's/year's count)
+          const todayKey = formatDateKey(now, type);
+          const todayData = data.find((item) => item.date === todayKey);
+          const totalCountForPeriod = todayData ? todayData.count : 0;
+      
+          res.json({
+            chartData: data,
+            totalForSelectedPeriod: totalCountForPeriod,
+          });
+        } catch (error) {
+          console.error("Error:", error);
+          res.status(500).json({ error: "Internal server error" });
+        }
+      
+        function formatDateKey(date, type) {
+          const y = date.getFullYear();
+          const m = `${date.getMonth() + 1}`.padStart(2, "0");
+          const d = `${date.getDate()}`.padStart(2, "0");
+      
+          if (type === "daily") return `${y}-${m}-${d}`;
+          if (type === "monthly") return `${y}-${m}`;
+          if (type === "yearly") return `${y}`;
+        }
+      });
+    
 
 
 

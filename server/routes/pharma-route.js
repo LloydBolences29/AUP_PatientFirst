@@ -85,6 +85,34 @@ router.post("/emergencyDispenceBilling/:patientId", async (req, res) => {
 });
 
 
+//for updating the total quantity left of the medicine
+router.put("/update-medicine-quantity/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { quantity } = req.body; // Expecting quantity in the request body
+
+    // Find the medicine by ID
+    const medicine = await Medication.findById(id);
+    if (!medicine) {
+      return res.status(404).json({ message: "Medicine not found" });
+    }
+
+    // Update the total quantity left
+    medicine.totalQuantityLeft += quantity; // Add the new quantity to the existing one
+    await medicine.save();
+
+    res.status(200).json({
+      message: "Medicine quantity updated successfully",
+      medicine,
+    });
+  }
+  catch (error) {
+    console.error("Error updating medicine quantity:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
 
 
 router.get("/medicines/search", async (req, res) => {
@@ -92,7 +120,7 @@ router.get("/medicines/search", async (req, res) => {
     const query = req.query.q || ""; // Get search query
     const medicines = await Medication.find({
       $or: [
-        { name: { $regex: `^${query}`, $options: "i" } }, // Search in name
+        { genericName: { $regex: `^${query}`, $options: "i" } }, // Search in name
         { brand: { $regex: `^${query}`, $options: "i" } }, // Search in brand
         { manufacturer: { $regex: `^${query}`, $options: "i" } }, // Search in manufacturer
       ],
@@ -107,17 +135,17 @@ router.get("/medicines/search", async (req, res) => {
 
 router.post("/add-medicines", async (req, res) => {
   try {
-    const { name, brand, manufacturer, dosageForm, strength, price, unit } =
+    const { genericName, brand, manufacturer, dosageForm, strength, price, unit } =
       req.body;
 
     // Check if medicine already exists
-    const existingMedicine = await Medication.findOne({ name });
+const existingMedicine = await Medication.findOne({  brand });
     if (existingMedicine) {
       return res.status(400).json({ message: "Medicine already exists" });
     }
 
     const newMedicine = new Medication({
-      name,
+      genericName,
       brand,
       manufacturer,
       dosageForm,
@@ -281,7 +309,13 @@ router.post("/add-transactions", async (req, res) => {
       }
 
       if (remainingQuantity > 0) {
-        return res.status(400).json({ message: `Not enough stock available for ${med.name}` });
+        // Notification: Not enough stock for this medicine
+        const notification = `Not enough stock for ${med.name}. Requested: ${med.quantity}, Available: ${med.quantity - remainingQuantity}`;
+        console.warn(`Notification: ${notification}`);
+        return res.status(400).json({
+          message: `Not enough stock available for ${med.name}`,
+          notification
+        });
       }
 
       // Save transaction

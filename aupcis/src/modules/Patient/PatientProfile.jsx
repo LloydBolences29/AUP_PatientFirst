@@ -90,6 +90,7 @@ const PatientProfile = () => {
     { label: "Dashboard", path: "/dashboard" },
     { label: "Symptom Checker", path: "/symptomChecker" },
     { label: "My Profile", path: `/profile/${patientId || ""}` },
+     { label: "Request", path: "/request" },
   ];
 
   const saveChanges = async (patientId, field, value) => {

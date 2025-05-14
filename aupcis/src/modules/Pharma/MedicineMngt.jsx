@@ -40,7 +40,7 @@ const MedicineMngt = () => {
     setFilteredMedicines(
       medicines.filter(
         (med) =>
-          med.name.toLowerCase().includes(search.toLowerCase()) ||
+          med.genericName.toLowerCase().includes(search.toLowerCase()) ||
           med.brand.toLowerCase().includes(search.toLowerCase()) ||
           med.manufacturer.toLowerCase().includes(search.toLowerCase())
       )
@@ -171,11 +171,12 @@ const MedicineMngt = () => {
     try {
       // Ensure all required fields are populated
       if (
-        !formData.name ||
+        !formData.genericName ||
         !formData.brand ||
         !formData.manufacturer ||
         !formData.price
       ) {
+        console.log("Form Data:", formData);
         console.error("Error: Missing required fields for adding medicine");
         return;
       }
@@ -286,7 +287,7 @@ const MedicineMngt = () => {
             <table className="table table-bordered table-striped">
               <thead className="table-dark">
                 <tr>
-                  <th>Name</th>
+                  <th>Generic Name</th>
                   <th>Brand</th>
                   <th>Price</th>
                   <th>Total Quantity</th>
@@ -300,7 +301,7 @@ const MedicineMngt = () => {
                     onClick={() => openMedicineModal(medicine)}
                     style={{ cursor: "pointer" }}
                   >
-                    <td>{medicine.name}</td>
+                    <td>{medicine.genericName}</td>
                     <td>{medicine.brand}</td>
                     <td>₱{medicine.price}</td>
                     <td>{medicine.totalQuantityLeft}</td>
@@ -336,7 +337,7 @@ const MedicineMngt = () => {
                 onClose={closeMedicineModal}
                 body={
                   <>
-                    <h4>{selectedMedicine.name} Details</h4>
+                    <h4>{selectedMedicine.genericName} Details</h4>
                     <p>
                       <strong>Total Quantity:</strong>{" "}
                       {selectedMedicine.totalQuantityLeft}
@@ -399,7 +400,7 @@ const MedicineMngt = () => {
                       }
                     >
                       {[
-                        "name",
+                        "genericName",
                         "brand",
                         "manufacturer",
                         "dosageForm",
@@ -412,18 +413,34 @@ const MedicineMngt = () => {
                           <label>
                             {field.charAt(0).toUpperCase() + field.slice(1)}
                           </label>
-                          <input
-                            type={field === "price" ? "number" : "text"}
-                            className="form-control"
-                            value={formData[field]}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                [field]: e.target.value,
-                              })
-                            }
-                            required
-                          />
+                          {field === "dosageForm" ? (
+                            <select
+                              className="form-control"
+                              value={formData.dosageForm}
+                              onChange={e => setFormData({ ...formData, dosageForm: e.target.value })}
+                              required
+                            >
+                              <option value="">Select Dosage Form</option>
+                              <option value="Tablet">Tablet</option>
+                              <option value="Capsule">Capsule</option>
+                              <option value="Syrup">Syrup</option>
+                              {/* <option value="Suspension">Suspension</option>
+                              <option value="Injection">Injection</option>
+                              <option value="Ointment">Ointment</option>
+                              <option value="Cream">Cream</option>
+                              <option value="Drops">Drops</option>
+                              <option value="Suppository">Suppository</option> */}
+                              <option value="Other">Other</option>
+                            </select>
+                          ) : (
+                            <input
+                              type={field === "price" ? "number" : "text"}
+                              className="form-control"
+                              value={formData[field]}
+                              onChange={e => setFormData({ ...formData, [field]: e.target.value })}
+                              required
+                            />
+                          )}
                         </div>
                       ))}
                       <button type="submit" className="btn btn-primary">

@@ -60,8 +60,9 @@ const MROMngt = () => {
   };
 
   const MROsidebarLinks = [
-    { label: "Dashboard", path: "/medicalRecord-dashboard" },
+     { label: "Dashboard", path: "/medicalRecord-dashboard" },
     { label: "Patient Management", path: "/medicalRecord-management" },
+    { label: "Request Forms", path: "/request-forms" },
   ];
   console.log(
     "Null visits:",

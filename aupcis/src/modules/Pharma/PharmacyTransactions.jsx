@@ -44,9 +44,10 @@ const PharmacyTransactions = () => {
   const [waitingQueueData, setWaitingQueueData] = useState([]); // State to hold the waiting queue data
   const [toCashierData, setToCashierData] = useState([]); // State to hold the sent to cashier data
   const [forDispense, setForDispense] = useState([]); // State to hold the dispensed queue data
-  const [queueDispenseNo, setQueueDispenseNo] = useState([])
-  
-  
+  const [queueDispenseNo, setQueueDispenseNo] = useState([]);
+  const [notification, setNotification] = useState(""); // Add this state
+  const [notificationTimer, setNotificationTimer] = useState(0); // Timer for notification
+
   // for websocket connection
   useEffect(() => {
     socket.on("connect", () => {
@@ -111,6 +112,24 @@ const PharmacyTransactions = () => {
     }
   }, [showSuccessModal]);
 
+  // Effect to auto-clear notification after 5 seconds
+  useEffect(() => {
+    if (notification) {
+      setNotificationTimer(5);
+      const interval = setInterval(() => {
+        setNotificationTimer((prev) => {
+          if (prev <= 1) {
+            setNotification("");
+            clearInterval(interval);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [notification]);
+
   const fetchPatientData = async () => {
     try {
       const response = await axios.get(
@@ -141,42 +160,44 @@ const PharmacyTransactions = () => {
   const fetchQueue = async () => {
     try {
       const response = await axios.get(`https://localhost:3000/queue/waiting`, {
-        params: { department: "pharmacy" }});
-  
+        params: { department: "pharmacy" },
+      });
+
       const waitList = response.data;
       console.log("Waiting Queue Response:", waitList);
-  
+
       setWaitingQueueData(waitList);
       setQueueNo(waitList[0]?.queueNumber); // Set the queue number from the first item
       setQueueNo_id(waitList[0]?._id); // Set the queue ID from the first item
 
       const sendToCashierData = await axios.get(
-        `https://localhost:3000/queue/sentToCashier`, {
-          params: { department: "pharmacy" }});
+        `https://localhost:3000/queue/sentToCashier`,
+        {
+          params: { department: "pharmacy" },
+        }
+      );
 
-          const billList = sendToCashierData.data;
-          console.log("To Cashier Queue Response:", billList);
+      const billList = sendToCashierData.data;
+      console.log("To Cashier Queue Response:", billList);
 
-          setToCashierData(billList);
+      setToCashierData(billList);
 
-          const dispenseData = await axios.get(
-            `https://localhost:3000/queue/dispensed`, {
-              params: { department: "pharmacy" }});
+      const dispenseData = await axios.get(
+        `https://localhost:3000/queue/dispensed`,
+        {
+          params: { department: "pharmacy" },
+        }
+      );
 
-              const dispenseList = dispenseData.data;
-              console.log("Dispense Queue Response:", dispenseList);
-              setForDispense(dispenseList);
-              setQueueDispenseNo(dispenseList[0]?.queueNumber)
-        
-
-  
+      const dispenseList = dispenseData.data;
+      console.log("Dispense Queue Response:", dispenseList);
+      setForDispense(dispenseList);
+      setQueueDispenseNo(dispenseList[0]?.queueNumber);
     } catch (error) {
       console.error("Error fetching queue:", error);
     }
   };
-  
 
-  
   useEffect(() => {
     fetchQueue(); // Fetch queue data on component mount
   }, []);
@@ -208,7 +229,7 @@ const PharmacyTransactions = () => {
       type: transactionType,
       items: selectedMedicine.map((med) => ({
         medication: med._id,
-        name: med.name,
+        name: med.genericName,
         quantity: parseInt(med.quantity, 10),
         price:
           transactionType === "Emergency Dispense" ? parseFloat(med.price) : 0,
@@ -241,7 +262,37 @@ const PharmacyTransactions = () => {
 
   const handleTransactionSubmit = async () => {
     if (!queueNo || !transactionType || selectedMedicine.length === 0) {
-      alert("Please complete all fields.");
+      let errorMsg = "";
+      if (!queueNo) errorMsg += "Queue number is missing.\n";
+      if (!transactionType) errorMsg += "Transaction type is required.\n";
+      if (selectedMedicine.length === 0)
+        errorMsg += "Please select at least one medicine.\n";
+      alert(errorMsg.trim() || "Please complete all fields.");
+      return;
+    }
+
+    // Check for out-of-stock medicines
+    const outOfStock = selectedMedicine.find(
+      (med) => med.totalQuantityLeft === 0
+    );
+    if (outOfStock) {
+      alert(
+        `"${outOfStock.genericName}" is out of stock and cannot be selected.`
+      );
+      return;
+    }
+
+    // Additional validation for medicine quantity and price
+    const invalidMedicine = selectedMedicine.find(
+      (med) =>
+        !med.quantity ||
+        med.quantity <= 0 ||
+        (transactionType === "Sold" && (!med.price || med.price <= 0))
+    );
+    if (invalidMedicine) {
+      alert(
+        "Please enter valid quantity and price for all selected medicines."
+      );
       return;
     }
 
@@ -249,7 +300,7 @@ const PharmacyTransactions = () => {
       // Prepare the items array based on selectedMedicine
       const items = selectedMedicine.map((med) => ({
         type: "medicine",
-        name: med.name,
+        name: med.genericNname,
         quantity: parseInt(med.quantity, 10),
         price: transactionType === "Sold" ? parseFloat(med.price) : 0,
         total:
@@ -285,6 +336,7 @@ const PharmacyTransactions = () => {
       console.log("Queue status updated:", queueRes.data);
 
       // Success notification and cleanup
+      setNotification(""); // Clear notification on success
       setModalMessage(
         `Transaction completed. Queue marked as "${statusToUpdate}"`
       );
@@ -294,7 +346,13 @@ const PharmacyTransactions = () => {
       setShowModal(false);
     } catch (error) {
       console.error("Error during transaction:", error.response?.data || error);
-      alert("Something went wrong while processing the transaction.");
+      // Show backend notification if present
+      if (error.response?.data?.notification) {
+        setNotification(error.response.data.notification);
+      } else {
+        setNotification("");
+        alert("Something went wrong while processing the transaction.");
+      }
     }
   };
 
@@ -304,9 +362,10 @@ const PharmacyTransactions = () => {
     if (query) {
       try {
         const response = await axios.get(
-          `https://localhost:3000/api/pharma/medicines?search=${query}`
+          `https://localhost:3000/api/pharma/medicines/search?q=${query}`
         );
-        setMedicineResults(response.data.medicines);
+        console.log("Search Results:", response.data);
+        setMedicineResults(response.data);
       } catch (error) {
         console.error("Error searching medicines", error);
       }
@@ -332,26 +391,24 @@ const PharmacyTransactions = () => {
   const handleSkipButton = async () => {
     console.log("Skip button clicked.");
     const statusToUpdate = "skipped";
-      const queueRes = await axios.patch(
-        `https://localhost:3000/queue/complete/${queueNo}`,
-        { status: statusToUpdate }
-      );
+    const queueRes = await axios.patch(
+      `https://localhost:3000/queue/complete/${queueNo}`,
+      { status: statusToUpdate }
+    );
 
-      console.log("Queue status updated:", queueRes.data);
-    }
+    console.log("Queue status updated:", queueRes.data);
+  };
 
-    const handleDoneButton = async () => {
-      console.log("Skip button clicked.");
-      const statusToUpdate = "done";
-        const queueRes = await axios.patch(
-          `https://localhost:3000/queue/complete/${queueDispenseNo}`,
-          { status: statusToUpdate }
-        );
-  
-        console.log("Queue status updated:", queueRes.data);
-      }
+  const handleDoneButton = async () => {
+    console.log("Skip button clicked.");
+    const statusToUpdate = "done";
+    const queueRes = await axios.patch(
+      `https://localhost:3000/queue/complete/${queueDispenseNo}`,
+      { status: statusToUpdate }
+    );
 
-
+    console.log("Queue status updated:", queueRes.data);
+  };
 
   const pharmasidebarLinks = [
     { label: "Pharmacy Dashboard", path: "/pharma-dashboard" },
@@ -370,18 +427,16 @@ const PharmacyTransactions = () => {
             <Container className="d-flex justify-content-evenly mb-4">
               <Card>
                 <CardHeader>
-                
                   <div
-                    className={waitingQueueData[0]?.status === "waiting" ? "flash" : ""}
+                    className={
+                      waitingQueueData[0]?.status === "waiting" ? "flash" : ""
+                    }
                   >
                     Queue No: {waitingQueueData[0]?.queueNumber}
                   </div>
                 </CardHeader>
-                <CardFooter>
-                  
-                  Status: Next in line</CardFooter>
-                <Button variant="outline-primary"
-                onClick={handleSkipButton}>
+                <CardFooter>Status: Next in line</CardFooter>
+                <Button variant="outline-primary" onClick={handleSkipButton}>
                   Skip
                 </Button>
               </Card>
@@ -389,7 +444,9 @@ const PharmacyTransactions = () => {
                 <CardHeader>
                   <div
                     className={
-                      toCashierData[0]?.status === "sent-to-cashier" ? "flash" : ""
+                      toCashierData[0]?.status === "sent-to-cashier"
+                        ? "flash"
+                        : ""
                     }
                   >
                     Queue No: {toCashierData[0]?.queueNumber}
@@ -408,8 +465,7 @@ const PharmacyTransactions = () => {
                   </div>
                 </CardHeader>
                 <CardFooter>Status: For Dispensing</CardFooter>
-                <Button variant="outline-success"
-                onClick={handleDoneButton}>
+                <Button variant="outline-success" onClick={handleDoneButton}>
                   Done
                 </Button>
               </Card>
@@ -437,7 +493,7 @@ const PharmacyTransactions = () => {
                 <tbody>
                   {transactions.map((tx) => (
                     <tr key={tx._id}>
-                      <td>{tx.medication.name}</td>
+                      <td>{tx.medication?.genericName}</td>
                       <td>{tx.type}</td>
                       <td>{tx.quantity}</td>
                       <td>
@@ -466,8 +522,22 @@ const PharmacyTransactions = () => {
                 body={
                   <>
                     <div className="p-3">
+                      {/* Notification display */}
+                      {notification && (
+                        <div className="alert alert-warning text-center mb-3">
+                          {notification}
+                          {notificationTimer > 0 && (
+                            <span style={{ marginLeft: 8, fontSize: "0.9em" }}>
+                              (Closing in {notificationTimer}s)
+                            </span>
+                          )}
+                        </div>
+                      )}
                       <div className="modal-header">
-                        <h3>Pharmacy Transaction for Patient {waitingQueueData[0].queueNumber}</h3>
+                        <h3>
+                          Pharmacy Transaction for Patient{" "}
+                          {waitingQueueData[0].queueNumber}
+                        </h3>
                       </div>
 
                       <div className="modal-body">
@@ -491,14 +561,16 @@ const PharmacyTransactions = () => {
                           >
                             {medicineResults.map((medicine) => (
                               <li
-                                key={medicine.name}
+                                key={medicine._id}
                                 className="list-group-item"
                                 onClick={() => {
-                                  handleMedicineSelect(medicine); // Set the selected medicine
-                                  // Clear the search results
+                                  handleMedicineSelect(medicine);
                                 }}
                               >
-                                {medicine.name}
+                                <strong>{medicine.genericName}</strong>{" "}
+                                <span style={{ color: "#888" }}>
+                                  - {medicine.brand}
+                                </span>
                               </li>
                             ))}
                           </ul>
@@ -512,6 +584,7 @@ const PharmacyTransactions = () => {
                               <thead>
                                 <tr>
                                   <th>Medicine Name</th>
+                                  <th>Brand</th>
                                   <th>Price (₱)</th>
                                   <th>Total Quantity Left</th>
                                   <th>Quantity</th>
@@ -520,8 +593,9 @@ const PharmacyTransactions = () => {
                               </thead>
                               <tbody>
                                 {selectedMedicine.map((medicine, index) => (
-                                  <tr key={medicine.name}>
-                                    <td>{medicine.name}</td>
+                                  <tr key={medicine._id}>
+                                    <td>{medicine.genericName}</td>
+                                    <td>{medicine.brand}</td>
                                     <td>{medicine.price}</td>
                                     <td>{medicine.totalQuantityLeft}</td>
                                     <td>
@@ -548,7 +622,7 @@ const PharmacyTransactions = () => {
                                           setSelectedMedicine(
                                             selectedMedicine.filter(
                                               (med) =>
-                                                med.name !== medicine.name
+                                                med._id !== medicine._id
                                             )
                                           )
                                         }
@@ -646,9 +720,9 @@ const PharmacyTransactions = () => {
                                 className="btn btn-outline-success"
                                 onClick={() => {
                                   handleTransactionSubmit();
-                                  alert(
-                                    "Sell transaction submitted successfully!"
-                                  );
+                                  // alert(
+                                  //   "Sell transaction submitted successfully!"
+                                  // );
                                 }}
                               >
                                 Generate Bill

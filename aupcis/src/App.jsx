@@ -32,6 +32,8 @@ import Queue from "./modules/Medical Practitioner/Queue.jsx";
 import PharmacyAnalytics from "./modules/Admin/PharmacyAnalytics.jsx";
 import Rooms from "./modules/Medical Practitioner/Rooms.jsx"
 import LabUpload from "./modules/Lab/LabUpload.jsx";
+import Request from "./modules/Patient/Request.jsx";
+import RequestForms from "./modules/MRO/MRORequest.jsx";
 
 export default function App() {
   return (
@@ -51,6 +53,9 @@ export default function App() {
       </Route>
       <Route element={<ProtectedRoute allowedRoles={["Patient"]} />}>
       <Route path="/symptomChecker" element={<SymptomChecker />} />
+      </Route>
+      <Route element={<ProtectedRoute allowedRoles={["Patient"]} />}>
+      <Route path="/request" element={<Request />} />
       </Route>
 
       <Route element={<ProtectedRoute allowedRoles={["Nurse"]} />}>
@@ -102,6 +107,9 @@ export default function App() {
       </Route>
       <Route element={<ProtectedRoute allowedRoles={["MedicalRecordsOfficer"]} />}>
         <Route path="/medicalRecord-management" element={<MedicalRecordManagement />} />
+      </Route>
+      <Route element={<ProtectedRoute allowedRoles={["MedicalRecordsOfficer"]} />}>
+        <Route path="/request-forms" element={<RequestForms />} />
       </Route>
       <Route element={<ProtectedRoute allowedRoles={["Radiologist"]} />}>
         <Route path="/xray-dashboard" element={<XrayDashboard />} />

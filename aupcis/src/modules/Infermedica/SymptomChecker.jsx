@@ -2,7 +2,14 @@ import React from "react";
 import Sidebar from "../../components/Sidebar";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Card, Button, Form, Badge, ListGroup, ProgressBar } from "react-bootstrap";
+import {
+  Card,
+  Button,
+  Form,
+  Badge,
+  ListGroup,
+  ProgressBar,
+} from "react-bootstrap";
 
 const SymptomChecker = () => {
   const [step, setStep] = useState(1);
@@ -245,6 +252,7 @@ const SymptomChecker = () => {
     { label: "Dashboard", path: "/dashboard" },
     { label: "Symptom Checker", path: "/symptomChecker" },
     { label: "My Profile", path: `/profile/${patientId || ""}` },
+    { label: "Request", path: "/request" },
   ];
 
   const getProgress = () => {
@@ -301,7 +309,9 @@ const SymptomChecker = () => {
 
             {step === 1 && disclaimerAgreed && (
               <Card className="p-4">
-                <h2 className="mb-3 text-primary">Step 1: Enter Your Information</h2>
+                <h2 className="mb-3 text-primary">
+                  Step 1: Enter Your Information
+                </h2>
                 <Form.Group className="mb-3">
                   <Form.Control
                     type="number"
@@ -378,7 +388,11 @@ const SymptomChecker = () => {
                     </div>
                   </div>
                 )}
-                <Button variant="primary" className="mt-3" onClick={handleNextStep}>
+                <Button
+                  variant="primary"
+                  className="mt-3"
+                  onClick={handleNextStep}
+                >
                   Next
                 </Button>
               </Card>
@@ -386,7 +400,9 @@ const SymptomChecker = () => {
 
             {step === 3 && followUpQuestions && (
               <Card className="p-4">
-                <h2 className="mb-3 text-primary">Step 3: Answer Follow-up Questions</h2>
+                <h2 className="mb-3 text-primary">
+                  Step 3: Answer Follow-up Questions
+                </h2>
                 <p>{followUpQuestions.text}</p>
                 {followUpQuestions?.items?.length > 0 ? (
                   followUpQuestions.items.map((item) => (
@@ -399,7 +415,9 @@ const SymptomChecker = () => {
                           name={`followUp-${item.id}`}
                           label={choice.label}
                           value={choice.id}
-                          onChange={() => handleFollowUpSelect(item.id, choice.id)}
+                          onChange={() =>
+                            handleFollowUpSelect(item.id, choice.id)
+                          }
                         />
                       ))}
                     </div>
@@ -431,7 +449,9 @@ const SymptomChecker = () => {
                     ))}
                   </ListGroup>
                 ) : (
-                  <p className="text-muted text-center">No diagnosis available</p>
+                  <p className="text-muted text-center">
+                    No diagnosis available
+                  </p>
                 )}
               </Card>
             )}

@@ -1,5 +1,4 @@
 import Navbar from "../Navbar/Navbar";
-import "./AppointmentHistory.css";
 import React from "react";
 import Card from "../../components/Card";
 import Sidebar from "../../components/Sidebar";

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../../components/Sidebar";
-import "./dashboard.css";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Card, Container, Row, Col, Alert } from "react-bootstrap";

@@ -160,7 +160,6 @@ const PharmacyTransactions = () => {
   const fetchQueue = async () => {
     try {
       const response = await axios.get(`https://aup-patientfirst-server.onrender.com/queue/waiting`, {
-
         params: { department: "pharmacy" },
       });
 

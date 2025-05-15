@@ -10,18 +10,16 @@ import {
   Table,
 } from "react-bootstrap";
 import CustomLineChart from "../../components/LineChart";
-<<<<<<< HEAD
+
 import axios from "axios";
-=======
-import axios from "axios"; 
->>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
+
 const LabDashboard = () => {
   const labSidebarLinks = [
     { label: "Dashboard", path: "/lab-dashboard" },
     { label: "Billing", path: "/lab-billing" },
     { label: "Upload", path: "/lab-upload" },
   ];
-<<<<<<< HEAD
+
   const [selectedType, setSelectedType] = useState("daily");
   const [loading, setLoading] = useState(false);
   const [labTotalSales, setLabTotalSales] = useState([]);
@@ -81,55 +79,7 @@ const LabDashboard = () => {
     (acc, curr) => acc + (curr.sales || 0),
     0
   );
-=======
-    const [selectedType, setSelectedType] = useState("daily");
-    const [loading, setLoading] = useState(false);
-    const [labTotalSales, setLabTotalSales] = useState([]);
-    const [salesSummary, setSalesSummary] = useState({
-      today: 0,
-      month: 0,
-      year: 0,
-    });
 
-
-
-  const fetchSalesSummary = async () => {
-      try {
-        const response = await axios.get(
-          `https://aup-patientfirst-server.onrender.com/labTest/sales-summary`
-        );
-        setSalesSummary(response.data || { today: 0, month: 0, year: 0 });
-      } catch (error) {
-        console.error("Error fetching sales summary:", error);
-      }
-    };
-
-
-    const fetchTotalSales = async (type) => {
-      setLoading(true); // ADD THIS
-  
-      try {
-        const response = await axios.get(
-          `https://aup-patientfirst-server.onrender.com/labTest/sales-over-time?type=${type}`
-        );
-        setLabTotalSales(response.data || []);
-      } catch (error) {
-        console.error("Error fetching sales data:", error);
-        setLabTotalSales([]);
-      }
-      setLoading(false);
-    };
-  
-    useEffect(() => {
-      fetchTotalSales(selectedType);
-      fetchSalesSummary();
-    }, [selectedType]);
-  
-    const totalSalesSum = labTotalSales.reduce(
-      (acc, curr) => acc + (curr.sales || 0),
-      0
-    );
->>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
   return (
     <div>
       <Sidebar
@@ -147,23 +97,17 @@ const LabDashboard = () => {
                 </h1>
               </div>
             </Card>
-<<<<<<< HEAD
-            <br />
-=======
 
             <br />
 
->>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
             <Row className="mb-4 container">
               <Col md={12}>
                 <Card className="shadow-sm p-3 bg-white rounded text-center">
                   <Card.Body className="d-flex justify-content-between align-items-center">
                     <div>
-<<<<<<< HEAD
+
                       <h5 className="card-title">Total Xray Sales for today</h5>
-=======
-                      <h5 className="card-title">Total Laboratory Sales {selectedType}</h5>
->>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
+
                       <p className="card-text">
                         ₱
                         {selectedType === "daily"
@@ -201,7 +145,7 @@ const LabDashboard = () => {
                   )}
                 </Card>
               </Col>
-<<<<<<< HEAD
+
 
               <Col md={12} className="mt-4">
                 <Card>
@@ -220,12 +164,7 @@ const LabDashboard = () => {
                 </Card>
               </Col>
             </Row>
-=======
-            </Row>
 
-
-
->>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
           </>
         }
       />

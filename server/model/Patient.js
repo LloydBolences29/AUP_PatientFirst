@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const { head } = require("../routes/protectedRoutes");
-const bcrypt = require("bcrypt");
+const bcrypt = require('bcryptjs');
 
 
 const PatientSchema = new mongoose.Schema({

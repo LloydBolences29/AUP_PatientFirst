@@ -3,7 +3,7 @@ const path = require("path");
 require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
 const fs = require("fs");
-const https = require("https");
+const http = require("http");
 const express = require("express");
 const mongoose = require("mongoose");
 const connectDB = require("./db.js");
@@ -36,27 +36,18 @@ const patientTypeCount = require("./routes/patientTypeCount.js")
 const mostDiagnosed = require("./routes/mostDiagnosed.js")
 const FormRequest = require("./routes/formRequest.js"); // Import the form request route
 
-
-
 const app = express();
-
-
 
 // ✅ Connect to MongoDB BEFORE initializing routes
 connectDB();
-const privateKey = fs.readFileSync("server.key", "utf8");
-const certificate = fs.readFileSync("server.cert", "utf8");
-const credentials = { key: privateKey, cert: certificate };
 
-
-const server = https.createServer(credentials, app);
+const server = http.createServer(app);
 
 // ✅ Middleware Setup
 app.use(cors({
   origin: ["https://aup-patient-first-frontend.vercel.app", "https://aup-patientfirst-server.onrender.com"] ,// ✅ Only allow your frontend
   credentials: true
 }));
-
 
 app.use(express.json());
 app.use(cookieParser());

@@ -188,6 +188,7 @@ router.post("/sendLabBilling/:patientId", async (req, res) => {
       }
     });
     
+<<<<<<< HEAD
       router.get("/visit-count", async (req, res) => {
         const { type } = req.query;
       
@@ -261,6 +262,8 @@ router.post("/sendLabBilling/:patientId", async (req, res) => {
         }
       });
     
+=======
+>>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
 
 
 

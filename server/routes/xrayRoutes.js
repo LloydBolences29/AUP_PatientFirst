@@ -124,6 +124,106 @@ function getDateRange(selectedDate, type) {
     return { startDate, endDate };
   }
   
+<<<<<<< HEAD
+=======
+
+  router.get("/sales-over-time", async (req, res) => {
+    const { type } = req.query;
+  
+    if (!type) {
+      return res.status(400).json({ error: "Type is required" });
+    }
+  
+    let dateFormat;
+    if (type === "daily") dateFormat = "%Y-%m-%d";
+    else if (type === "monthly") dateFormat = "%Y-%m";
+    else if (type === "yearly") dateFormat = "%Y";
+  
+    try {
+      const result = await Billing.aggregate([
+        {
+          $match: {
+            department: "X-ray",
+            status: "paid",
+          },
+        },
+        {
+          $group: {
+            _id: {
+              $dateToString: { format: dateFormat, date: "$createdAt" },
+            },
+            totalSales: { $sum: "$totalAmount" },
+          },
+        },
+        { $sort: { _id: 1 } },
+      ]);
+  
+      const formatted = result.map((item) => ({
+        date: item._id,
+        sales: item.totalSales,
+      }));
+  
+      res.json(formatted);
+    } catch (error) {
+      console.error("Error generating chart data:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  router.get("/sales-summary", async (req, res) => {
+    try {
+      const now = new Date();
+  
+      // Start of today
+      const startOfToday = new Date(now);
+      startOfToday.setHours(0, 0, 0, 0);
+  
+      // Start of month
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  
+      // Start of year
+      const startOfYear = new Date(now.getFullYear(), 0, 1);
+  
+      const [totals] = await Billing.aggregate([
+        {
+          $match: {
+            department: "X-ray",
+            status: "paid",
+          },
+        },
+        {
+          $facet: {
+            today: [
+              { $match: { createdAt: { $gte: startOfToday } } },
+              { $group: { _id: null, total: { $sum: "$totalAmount" } } },
+            ],
+            month: [
+              { $match: { createdAt: { $gte: startOfMonth } } },
+              { $group: { _id: null, total: { $sum: "$totalAmount" } } },
+            ],
+            year: [
+              { $match: { createdAt: { $gte: startOfYear } } },
+              { $group: { _id: null, total: { $sum: "$totalAmount" } } },
+            ],
+          },
+        },
+      ]);
+  
+      res.json({
+        today: totals.today[0]?.total || 0,
+        month: totals.month[0]?.total || 0,
+        year: totals.year[0]?.total || 0,
+      });
+    } catch (error) {
+      console.error("Error fetching sales summary:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+  
+  
+  
+
+>>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
 
   router.get("/sales-over-time", async (req, res) => {
     const { type } = req.query;

@@ -1,5 +1,5 @@
 const Patient = require("../model/Patient");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const express = require("express");
 
@@ -7,6 +7,7 @@ const router = express.Router();
 
 const accessControl = {
   Patient: ["/dashboard", "/analytics", "/profile"],
+<<<<<<< HEAD
     Admin: ["/admin-dashboard", "/admin-management", "/admin-analytics"],
     MedicalRecordsOfficer: ["/medicalRecord-dashboard", "/medicalRecord-management", "/request-forms"],
     Nurse: ["/nurse-dashboard", "/patient-management", "/room-management"],
@@ -18,6 +19,20 @@ const accessControl = {
     lab: ["/lab-dashboard", "/lab-billing", "/lab-upload"],
 
     
+=======
+  Admin: ["/admin-dashboard", "/admin-management", "/admin-analytics"],
+  MedicalRecordsOfficer: [
+    "/medicalRecord-dashboard",
+    "/medicalRecord-management",
+  ],
+  Nurse: ["/nurse-dashboard", "/patient-management", "/room-management"],
+  Doctor: ["/doctor-dashboard", "/doctor-analytics"],
+  Cashier: ["/cashier-dashboard", "/payment"],
+  Pharmacist: ["/pharma-dashboard", "/pharma-transaction", "/medicine-list"],
+  Radiologist: ["/xray-dashboard", "/xray-billing"],
+  Laboratory: ["/lab-dashboard", "/lab-billing"],
+  lab: ["/lab-dashboard", "/lab-billing", "/lab-upload"],
+>>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
 };
 
 // JWT Secret Key
@@ -55,7 +70,6 @@ const addPatient = async (req, res) => {
     }
 
     // Use religion as the temporary password
-  
 
     // Create the patient object
     const newPatient = new Patient({
@@ -79,12 +93,10 @@ const addPatient = async (req, res) => {
     // Save patient to database
     await newPatient.save();
 
-    res
-      .status(201)
-      .json({
-        message: "Patient registered successfully",
-        patient: newPatient,
-      });
+    res.status(201).json({
+      message: "Patient registered successfully",
+      patient: newPatient,
+    });
   } catch (error) {
     console.error("Error adding patient:", error);
     res
@@ -115,29 +127,40 @@ const login = async (req, res) => {
 
     if (!isMatch) {
       console.log("❌ Incorrect password!");
-      return res.status(401).json({ message: "Unauthorized: Invalid credentials" });
+      return res
+        .status(401)
+        .json({ message: "Unauthorized: Invalid credentials" });
     }
 
-
-    const allowedPages = accessControl[user.role] || []; 
+    const allowedPages = accessControl[user.role] || [];
     console.log("🔍 Staff Role:", user.role);
     // ✅ Generate JWT Token
-    const token = jwt.sign({ id: user.patient_id, role: user.role }, JWT_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign(
+      { id: user.patient_id, role: user.role },
+      JWT_SECRET,
+      { expiresIn: "1h" }
+    );
 
     // ✅ Set Cookie
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
+      secure: true, // required for HTTPS
+      sameSite: "None", // allows cross-site cookies
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
     });
 
-    res.json({ message: "Login successful", patient_ID: user.patient_id, role: user.role, token, allowedPages });
-  } catch (error) {
+    res.json({
+      message: "Login successful",
+      patient_ID: user.patient_id,
+      role: user.role,
+      token,
+      allowedPages,
+    });
+  } catch (error) { 
     console.error("🔴 Login Error:", error);
     res.status(500).json({ message: "Error logging in", error: error.message });
   }
 };
-
 
 //✅ Logout (Clear Cookie)
 // exports.logout = (req, res) => {

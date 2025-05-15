@@ -14,11 +14,6 @@ const MROMngt = () => {
   const [selectedDate, setSelectedDate] = useState(null); // State for selected date
   const [patientVisits, setPatientVisits] = useState([]);
 
-  
-
-
-  
-
   useEffect(() => {
     fetchPatientData();
   }, [search]);

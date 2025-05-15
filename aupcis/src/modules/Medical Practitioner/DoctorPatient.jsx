@@ -54,6 +54,7 @@ const DoctorPatient = () => {
     Urinalysis: "",
     DrugTest: "",
   });
+<<<<<<< HEAD
   const [selectedMedicine, setSelectedMedicine] = useState([]);
   const [medicineSearch, setMedicineSearch] = useState("");
   const [medicineResults, setMedicineResults] = useState([]);
@@ -103,6 +104,8 @@ const DoctorPatient = () => {
     updated[index][field] = value;
     setPrescriptions(updated);
   };
+=======
+>>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
 
   const fetchVisitData = async (patientId) => {
     try {
@@ -134,7 +137,12 @@ const DoctorPatient = () => {
   };
 
   const addPrescription = (type) => {
+<<<<<<< HEAD
     const newPres =
+=======
+    setPrescriptions((prevPrescriptions) => [
+      ...prevPrescriptions.filter((pres) => pres.type === type),
+>>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
       type === "medicinal"
         ? {
             type: "medicinal",
@@ -305,6 +313,16 @@ const DoctorPatient = () => {
     }));
   };
 
+<<<<<<< HEAD
+=======
+  const handleMedCertRadioChange = (group, value) => {
+    setMedCertSelections((prev) => ({
+      ...prev,
+      [group]: value,
+    }));
+  };
+
+>>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
   console.log("Selected Visit Data:", visitData);
 
   return (
@@ -584,6 +602,10 @@ const DoctorPatient = () => {
                                                                 }{" "}
                                                                 beats/min
                                                               </p>
+<<<<<<< HEAD
+=======
+                                                              
+>>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
                                                             </Col>
 
                                                             <Col>
@@ -600,8 +622,12 @@ const DoctorPatient = () => {
                                                               </p>
                                                               <p>
                                                                 <strong>
+<<<<<<< HEAD
                                                                   Blood
                                                                   Pressure:
+=======
+                                                                  Blood Pressure: 
+>>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
                                                                 </strong>{" "}
                                                                 {
                                                                   checkup
@@ -611,7 +637,11 @@ const DoctorPatient = () => {
                                                               </p>
                                                             </Col>
                                                             <Col md={12}>
+<<<<<<< HEAD
                                                               <p>
+=======
+                                                            <p>
+>>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
                                                                 <strong>
                                                                   Chief
                                                                   Complaint:
@@ -622,6 +652,10 @@ const DoctorPatient = () => {
                                                                     ?.chiefComplaints
                                                                 }
                                                               </p>
+<<<<<<< HEAD
+=======
+                                                            
+>>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
                                                             </Col>
                                                             <Col md={12}>
                                                               <p>
@@ -998,6 +1032,11 @@ const DoctorPatient = () => {
                 }
               />
             ) : (
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
               // Modal for the medical certificate purpose
               <Modal
                 show={isModalOpen}
@@ -1311,7 +1350,11 @@ const DoctorPatient = () => {
                               </div>
                               <br />
 
+<<<<<<< HEAD
                               {/* Second part of the content here for medical cert */}
+=======
+{/* Second part of the content here for medical cert */}
+>>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
                               <h3>Physical Examination</h3>
 
                               <Row>

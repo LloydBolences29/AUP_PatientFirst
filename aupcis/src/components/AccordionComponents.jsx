@@ -17,7 +17,11 @@ const AccordionComponents = ({ items }) => {
             <span>{item.title}</span>
             <span className={`arrow ${openIndex === index ? "rotate" : ""}`}>&#9660;</span>
           </button>
+<<<<<<< HEAD
           <div className="accordion-body" style={{ maxHeight: openIndex === index ? "100vh" : "0", padding: openIndex === index ? "10px" : "0" }}>
+=======
+          <div className="accordion-body" style={{ maxHeight: openIndex === index ? "500px" : "0", padding: openIndex === index ? "10px" : "0" }}>
+>>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
             {item.content}
           </div>
         </div>

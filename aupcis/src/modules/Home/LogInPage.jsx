@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Route/AuthContext"; // Ensure correct import path
-import "./LogInPage.css";
+import "./LoginPage.css";
 
 const LogInPage = () => {
   const [isRightPanelActive, setIsRightPanelActive] = useState(false);
@@ -75,7 +75,7 @@ const LogInPage = () => {
       navigate(targetPath, { replace: true }); // ✅ Redirect immediately
   
     } catch (error) {
-      console.error("🔴 Login Error:", error.response?.data || error.message);
+      console.error("🔴 Login for Error:", error.response?.data || error.message);
       alert("Login failed. Check console for details.");
     }
   };
@@ -165,7 +165,7 @@ useEffect(() => {
               onChange={(e) => handleChange(e, setStaffLoginData)}
               required
             />
-            <button className="login-register-btn" type="submit">
+            <button className="login-register-btn" type="submit" onclick = {handleLogin}>
               Login
             </button>
           </form>

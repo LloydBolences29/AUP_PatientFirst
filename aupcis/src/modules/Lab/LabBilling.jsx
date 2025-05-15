@@ -81,9 +81,14 @@ const LabBilling = () => {
   const fetchQueue = async () => {
     try {
       const response = await axios.get(`https://aup-patientfirst-server.onrender.com/queue/waiting`, {
+<<<<<<< HEAD
         params: { department: "lab" },
       });
 
+=======
+        params: { department: "lab" }});
+  
+>>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
       const waitList = response.data;
       console.log("Waiting Queue Response:", waitList);
 
@@ -91,23 +96,34 @@ const LabBilling = () => {
       setQueueNo(waitList[0]?.queueNumber); // Set the queue number from the first item
 
       const sendToCashierData = await axios.get(
+<<<<<<< HEAD
         `https://aup-patientfirst-server.onrender.com/queue/sentToCashier`,
         {
           params: { department: "lab" },
         }
       );
+=======
+        `https://aup-patientfirst-server.onrender.com/queue/sentToCashier`, {
+          params: { department: "lab" }});
+>>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
 
       const billList = sendToCashierData.data;
       console.log("To Cashier Queue Response:", billList);
 
       setToCashierData(billList);
 
+<<<<<<< HEAD
       const dispenseData = await axios.get(
         `https://aup-patientfirst-server.onrender.com/queue/dispensed`,
         {
           params: { department: "lab" },
         }
       );
+=======
+          const dispenseData = await axios.get(
+            `https://aup-patientfirst-server.onrender.com/queue/dispensed`, {
+              params: { department: "lab" }});
+>>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
 
       const dispenseList = dispenseData.data;
       console.log("Dispense Queue Response:", dispenseList);
@@ -140,6 +156,7 @@ const LabBilling = () => {
   };
 
   //fetch the patient data
+<<<<<<< HEAD
   const fetchPatientData = async () => {
     try {
       const response = await axios.get(
@@ -148,6 +165,20 @@ const LabBilling = () => {
       if (response.data) {
         setPatientData(response.data);
       } else {
+=======
+    const fetchPatientData = async () => {
+      try {
+        const response = await axios.get(
+          `https://aup-patientfirst-server.onrender.com/patientname/${patientId}`
+        );
+        if (response.data) {
+          setPatientData(response.data);
+        } else {
+          setPatientData(null);
+        }
+      } catch (error) {
+        console.error("Error fetching patient data:", error);             
+>>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
         setPatientData(null);
       }
     } catch (error) {
@@ -190,7 +221,32 @@ const LabBilling = () => {
         }
       );
 
+<<<<<<< HEAD
       // Update queue status
+=======
+    const removeTest = (index) => {
+      setSelectedTest((prev) => prev.filter((_, i) => i !== index));
+    };
+
+    useEffect(() => {
+      console.log("Fetched patientData:", selectedTest);
+    }, [selectedTest]);
+
+    const addTest = (proc) => {
+      setSelectedTest((prev) => [...prev, proc]);
+    };
+
+    const handleGenerateBill = async () => {
+      try {
+        const response = await axios.post(
+          `https://aup-patientfirst-server.onrender.com/labTest/sendLabBilling/${patientId}`,
+          {
+            items: selectedTest,
+          }
+        );
+
+        // Update queue status
+>>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
       const statusToUpdate = "sent-to-cashier";
       const queueRes = await axios.patch(
         `https://aup-patientfirst-server.onrender.com/queue/complete/${queueNo}`,
@@ -232,6 +288,31 @@ const LabBilling = () => {
 
 
 
+<<<<<<< HEAD
+=======
+    const handleSkipButton = async () => {
+          console.log("Skip button clicked.");
+          const statusToUpdate = "skipped";
+            const queueRes = await axios.patch(
+              `https://aup-patientfirst-server.onrender.com/queue/complete/${queueNo}`,
+              { status: statusToUpdate }
+            );
+      
+            console.log("Queue status updated:", queueRes.data);
+          }
+      
+          const handleDoneButton = async () => {
+            console.log("Done button clicked.");
+            const statusToUpdate = "done";
+              const queueRes = await axios.patch(
+                `https://aup-patientfirst-server.onrender.com/queue/complete/${queueDispenseNo}`,
+                { status: statusToUpdate }
+              );
+        
+              console.log("Queue status updated:", queueRes.data);
+            }
+    
+>>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
   const labSidebarLinks = [
     { label: "Dashboard", path: "/lab-dashboard" },
     { label: "Billing", path: "/lab-billing" },

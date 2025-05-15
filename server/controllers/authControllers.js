@@ -7,7 +7,7 @@ const router = express.Router();
 
 const accessControl = {
   Patient: ["/dashboard", "/analytics", "/profile"],
-<<<<<<< HEAD
+
     Admin: ["/admin-dashboard", "/admin-management", "/admin-analytics"],
     MedicalRecordsOfficer: ["/medicalRecord-dashboard", "/medicalRecord-management", "/request-forms"],
     Nurse: ["/nurse-dashboard", "/patient-management", "/room-management"],
@@ -19,20 +19,7 @@ const accessControl = {
     lab: ["/lab-dashboard", "/lab-billing", "/lab-upload"],
 
     
-=======
-  Admin: ["/admin-dashboard", "/admin-management", "/admin-analytics"],
-  MedicalRecordsOfficer: [
-    "/medicalRecord-dashboard",
-    "/medicalRecord-management",
-  ],
-  Nurse: ["/nurse-dashboard", "/patient-management", "/room-management"],
-  Doctor: ["/doctor-dashboard", "/doctor-analytics"],
-  Cashier: ["/cashier-dashboard", "/payment"],
-  Pharmacist: ["/pharma-dashboard", "/pharma-transaction", "/medicine-list"],
-  Radiologist: ["/xray-dashboard", "/xray-billing"],
-  Laboratory: ["/lab-dashboard", "/lab-billing"],
-  lab: ["/lab-dashboard", "/lab-billing", "/lab-upload"],
->>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
+
 };
 
 // JWT Secret Key

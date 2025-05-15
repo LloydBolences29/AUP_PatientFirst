@@ -160,14 +160,12 @@ const PharmacyTransactions = () => {
   const fetchQueue = async () => {
     try {
       const response = await axios.get(`https://aup-patientfirst-server.onrender.com/queue/waiting`, {
-<<<<<<< HEAD
+
         params: { department: "pharmacy" },
       });
 
-=======
-        params: { department: "pharmacy" }});
-  
->>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
+
+
       const waitList = response.data;
       console.log("Waiting Queue Response:", waitList);
 
@@ -176,34 +174,29 @@ const PharmacyTransactions = () => {
       setQueueNo_id(waitList[0]?._id); // Set the queue ID from the first item
 
       const sendToCashierData = await axios.get(
-<<<<<<< HEAD
+
         `https://aup-patientfirst-server.onrender.com/queue/sentToCashier`,
         {
           params: { department: "pharmacy" },
         }
       );
-=======
-        `https://aup-patientfirst-server.onrender.com/queue/sentToCashier`, {
-          params: { department: "pharmacy" }});
->>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
+
+
 
       const billList = sendToCashierData.data;
       console.log("To Cashier Queue Response:", billList);
 
       setToCashierData(billList);
 
-<<<<<<< HEAD
+
       const dispenseData = await axios.get(
         `https://aup-patientfirst-server.onrender.com/queue/dispensed`,
         {
           params: { department: "pharmacy" },
         }
       );
-=======
-          const dispenseData = await axios.get(
-            `https://aup-patientfirst-server.onrender.com/queue/dispensed`, {
-              params: { department: "pharmacy" }});
->>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
+
+
 
       const dispenseList = dispenseData.data;
       console.log("Dispense Queue Response:", dispenseList);
@@ -378,11 +371,9 @@ const PharmacyTransactions = () => {
     if (query) {
       try {
         const response = await axios.get(
-<<<<<<< HEAD
+
           `https://aup-patientfirst-server.onrender.com/api/pharma/medicines/search?q=${query}`
-=======
-          `https://aup-patientfirst-server.onrender.com/api/pharma/medicines?search=${query}`
->>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
+
         );
         console.log("Search Results:", response.data);
         setMedicineResults(response.data);
@@ -411,7 +402,7 @@ const PharmacyTransactions = () => {
   const handleSkipButton = async () => {
     console.log("Skip button clicked.");
     const statusToUpdate = "skipped";
-<<<<<<< HEAD
+
     const queueRes = await axios.patch(
       `https://aup-patientfirst-server.onrender.com/queue/complete/${queueNo}`,
       { status: statusToUpdate }
@@ -419,26 +410,7 @@ const PharmacyTransactions = () => {
 
     console.log("Queue status updated:", queueRes.data);
   };
-=======
-      const queueRes = await axios.patch(
-        `https://aup-patientfirst-server.onrender.com/queue/complete/${queueNo}`,
-        { status: statusToUpdate }
-      );
 
-      console.log("Queue status updated:", queueRes.data);
-    }
-
-    const handleDoneButton = async () => {
-      console.log("Skip button clicked.");
-      const statusToUpdate = "done";
-        const queueRes = await axios.patch(
-          `https://aup-patientfirst-server.onrender.com/queue/complete/${queueDispenseNo}`,
-          { status: statusToUpdate }
-        );
-  
-        console.log("Queue status updated:", queueRes.data);
-      }
->>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
 
   const handleDoneButton = async () => {
     console.log("Skip button clicked.");
@@ -476,16 +448,10 @@ const PharmacyTransactions = () => {
                     Queue No: {waitingQueueData[0]?.queueNumber}
                   </div>
                 </CardHeader>
-<<<<<<< HEAD
+
                 <CardFooter>Status: Next in line</CardFooter>
                 <Button variant="outline-primary" onClick={handleSkipButton}>
-=======
-                <CardFooter>
-                  
-                  Status: Next in line</CardFooter>
-                <Button variant="outline-primary"
-                onClick={handleSkipButton}>
->>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
+
                   Skip
                 </Button>
               </Card>

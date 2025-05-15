@@ -49,7 +49,7 @@ const Nursing = () => {
 
   useEffect(() => {
     const fetchPatientData = async () => {
-      const res = await fetch("https://localhost:3000/patientname");
+      const res = await fetch("https://aup-patientfirst-server.onrender.com/patientname");
       const data = await res.json();
       setPatients(data.patientname);
       setFilteredPatients(data.patientname);
@@ -150,7 +150,7 @@ const Nursing = () => {
 
     try {
       const response = await fetch(
-        "https://localhost:3000/patient/add-patient",
+        "https://aup-patientfirst-server.onrender.com/patient/add-patient",
         {
           method: "POST",
           headers: {
@@ -212,7 +212,7 @@ const Nursing = () => {
 
     try {
       const response = await fetch(
-        `https://localhost:3000/patientname/${patientID}`, // Corrected variable name
+        `https://aup-patientfirst-server.onrender.com/patientname/${patientID}`, // Corrected variable name
         {
           method: "PUT",
           headers: {
@@ -262,7 +262,7 @@ const Nursing = () => {
 
   const handleDeletePatient = async (id) => {
     try {
-      const response = await fetch(`https://localhost:3000/patientname/${id}`, {
+      const response = await fetch(`https://aup-patientfirst-server.onrender.com/patientname/${id}`, {
         method: "DELETE",
       });
       if (response.ok) {
@@ -320,7 +320,7 @@ const Nursing = () => {
     };
   
     try {
-      const response = await fetch("https://localhost:3000/patient-visit/create-visit", {
+      const response = await fetch("https://aup-patientfirst-server.onrender.com/patient-visit/create-visit", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

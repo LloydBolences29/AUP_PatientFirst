@@ -22,7 +22,7 @@ const MedicalRecordDashboard = () => {
 
   const fetchRequests = async () => {
     try {
-      const res = await axios.get("https://localhost:3000/formRequest/pending");
+      const res = await axios.get("https://aup-patientfirst-server.onrender.com/formRequest/pending");
       console.log("Fetched requests:", res.data);
       setRequests(res.data);
     } catch (err) {
@@ -32,7 +32,7 @@ const MedicalRecordDashboard = () => {
 
   const handleStatusChange = async (id, newStatus) => {
     try {
-      await axios.put(`https://localhost:3000/formRequest/${id}`, {
+      await axios.put(`https://aup-patientfirst-server.onrender.com/formRequest/${id}`, {
         status: newStatus,
       });
       fetchRequests(); // refresh list

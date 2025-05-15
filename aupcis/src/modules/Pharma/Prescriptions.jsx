@@ -38,7 +38,7 @@ const Prescriptions = () => {
     const fetchMedicines = async () => {
       try {
         const res = await axios.get(
-          "https://localhost:3000/api/pharma/medicines"
+          "https://aup-patientfirst-server.onrender.com/api/pharma/medicines"
         );
         console.log("Medicines:", res.data.medicines);
         setMedicineList(res.data.medicines); // Adjust key based on your API response
@@ -54,7 +54,7 @@ const Prescriptions = () => {
     const fetchCheckUps = async () => {
       try {
         const res = await axios.get(
-          "https://localhost:3000/checkup/getCheckup"
+          "https://aup-patientfirst-server.onrender.com/checkup/getCheckup"
         );
         const checkups = res.data.map((checkup) => {
           return {
@@ -75,7 +75,7 @@ const Prescriptions = () => {
   const fetchPrescriptions = async () => {
     try {
       const res = await fetch(
-        `https://localhost:3000/prescriptions/fetchPrescriptions?status=${selectedStatus}`
+        `https://aup-patientfirst-server.onrender.com/prescriptions/fetchPrescriptions?status=${selectedStatus}`
       );
       const data = await res.json();
       console.log("Fetched Data:", data);
@@ -129,7 +129,7 @@ const Prescriptions = () => {
   const handleMarkAsDispensed = async (prescriptionId, status) => {
     try {
       const response = await fetch(
-        `https://localhost:3000/prescriptions/update/${prescriptionId}`,
+        `https://aup-patientfirst-server.onrender.com/prescriptions/update/${prescriptionId}`,
         {
           method: "PUT",
           headers: {
@@ -218,7 +218,7 @@ const Prescriptions = () => {
       );
 
       const res = await axios.post(
-        `https://localhost:3000/prescriptions/sendBilling/${patientId}`,
+        `https://aup-patientfirst-server.onrender.com/prescriptions/sendBilling/${patientId}`,
         {
           checkupId,
           department: "Pharmacy",

@@ -133,7 +133,7 @@ const PharmacyTransactions = () => {
   const fetchPatientData = async () => {
     try {
       const response = await axios.get(
-        `https://localhost:3000/patientname/${patientId}`
+        `https://aup-patientfirst-server.onrender.com/patientname/${patientId}`
       );
       if (response.data) {
         setPatientData(response.data);
@@ -148,7 +148,7 @@ const PharmacyTransactions = () => {
   const fetchTransactions = async () => {
     try {
       const response = await axios.get(
-        "https://localhost:3000/api/pharma/transactions"
+        "https://aup-patientfirst-server.onrender.com/api/pharma/transactions"
       );
       setTransactions(response.data);
     } catch (error) {
@@ -159,7 +159,7 @@ const PharmacyTransactions = () => {
   //ferch all the queues along with the object id
   const fetchQueue = async () => {
     try {
-      const response = await axios.get(`https://localhost:3000/queue/waiting`, {
+      const response = await axios.get(`https://aup-patientfirst-server.onrender.com/queue/waiting`, {
         params: { department: "pharmacy" },
       });
 
@@ -171,7 +171,7 @@ const PharmacyTransactions = () => {
       setQueueNo_id(waitList[0]?._id); // Set the queue ID from the first item
 
       const sendToCashierData = await axios.get(
-        `https://localhost:3000/queue/sentToCashier`,
+        `https://aup-patientfirst-server.onrender.com/queue/sentToCashier`,
         {
           params: { department: "pharmacy" },
         }
@@ -183,7 +183,7 @@ const PharmacyTransactions = () => {
       setToCashierData(billList);
 
       const dispenseData = await axios.get(
-        `https://localhost:3000/queue/dispensed`,
+        `https://aup-patientfirst-server.onrender.com/queue/dispensed`,
         {
           params: { department: "pharmacy" },
         }
@@ -205,7 +205,7 @@ const PharmacyTransactions = () => {
   const fetchMedicines = async () => {
     try {
       const response = await axios.get(
-        "https://localhost:3000/api/pharma/medicines"
+        "https://aup-patientfirst-server.onrender.com/api/pharma/medicines"
       );
       setMedicines(response.data.medicines);
     } catch (error) {
@@ -244,7 +244,7 @@ const PharmacyTransactions = () => {
 
     try {
       await axios.post(
-        `https://localhost:3000/api/pharma/emergencyDispenceBilling/${patientData.patient._id}`,
+        `https://aup-patientfirst-server.onrender.com/api/pharma/emergencyDispenceBilling/${patientData.patient._id}`,
         transactionData
       );
 
@@ -322,14 +322,14 @@ const PharmacyTransactions = () => {
 
       // Send transaction to backend
       await axios.post(
-        "https://localhost:3000/api/pharma/add-transactions",
+        "https://aup-patientfirst-server.onrender.com/api/pharma/add-transactions",
         transactionData
       );
 
       // Update queue status
       const statusToUpdate = "sent-to-cashier";
       const queueRes = await axios.patch(
-        `https://localhost:3000/queue/complete/${queueNo}`,
+        `https://aup-patientfirst-server.onrender.com/queue/complete/${queueNo}`,
         { status: statusToUpdate }
       );
 
@@ -362,7 +362,7 @@ const PharmacyTransactions = () => {
     if (query) {
       try {
         const response = await axios.get(
-          `https://localhost:3000/api/pharma/medicines/search?q=${query}`
+          `https://aup-patientfirst-server.onrender.com/api/pharma/medicines/search?q=${query}`
         );
         console.log("Search Results:", response.data);
         setMedicineResults(response.data);
@@ -392,7 +392,7 @@ const PharmacyTransactions = () => {
     console.log("Skip button clicked.");
     const statusToUpdate = "skipped";
     const queueRes = await axios.patch(
-      `https://localhost:3000/queue/complete/${queueNo}`,
+      `https://aup-patientfirst-server.onrender.com/queue/complete/${queueNo}`,
       { status: statusToUpdate }
     );
 
@@ -403,7 +403,7 @@ const PharmacyTransactions = () => {
     console.log("Skip button clicked.");
     const statusToUpdate = "done";
     const queueRes = await axios.patch(
-      `https://localhost:3000/queue/complete/${queueDispenseNo}`,
+      `https://aup-patientfirst-server.onrender.com/queue/complete/${queueDispenseNo}`,
       { status: statusToUpdate }
     );
 

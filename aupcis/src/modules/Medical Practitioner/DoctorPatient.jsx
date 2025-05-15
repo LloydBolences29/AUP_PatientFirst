@@ -62,7 +62,7 @@ const DoctorPatient = () => {
   const fetchMedicines = async () => {
     try {
       const response = await axios.get(
-        "https://localhost:3000/api/pharma/medicines"
+        "https://aup-patientfirst-server.onrender.com/api/pharma/medicines"
       );
       setMedicines(response.data);
     } catch (error) {
@@ -78,7 +78,7 @@ const DoctorPatient = () => {
     if (query.length > 1) {
       try {
         const response = await axios.get(
-          `https://localhost:3000/api/pharma/medicines/search?q=${encodeURIComponent(query)}`
+          `https://aup-patientfirst-server.onrender.com/api/pharma/medicines/search?q=${encodeURIComponent(query)}`
         );
         updated[index].searchResults = response.data;
       } catch (error) {
@@ -107,7 +107,7 @@ const DoctorPatient = () => {
   const fetchVisitData = async (patientId) => {
     try {
       const response = await fetch(
-        `https://localhost:3000/checkup/getCertainCheckup/${patientId}`
+        `https://aup-patientfirst-server.onrender.com/checkup/getCertainCheckup/${patientId}`
       );
       const data = await response.json();
 
@@ -159,7 +159,7 @@ const DoctorPatient = () => {
   const fetchVisits = async () => {
     try {
       const response = await fetch(
-        "https://localhost:3000/doctor/get-patients"
+        "https://aup-patientfirst-server.onrender.com/doctor/get-patients"
       );
       if (!response.ok) throw new Error("Failed to fetch visits");
       const data = await response.json();
@@ -205,7 +205,7 @@ const DoctorPatient = () => {
     if (query.length > 1) {
       try {
         const response = await axios.get(
-          `https://localhost:3000/icd/icd10/search?q=${query}`
+          `https://aup-patientfirst-server.onrender.com/icd/icd10/search?q=${query}`
         );
         setIcdResults(response.data); // Assume response returns [{ code, shortdescription }]
       } catch (error) {
@@ -231,7 +231,7 @@ const DoctorPatient = () => {
   const handleCompleteVisit = async (visitId) => {
     try {
       const response = await fetch(
-        `https://localhost:3000/doctor/visits/${visitId}/complete`,
+        `https://aup-patientfirst-server.onrender.com/doctor/visits/${visitId}/complete`,
         { method: "PUT" }
       );
 
@@ -266,7 +266,7 @@ const DoctorPatient = () => {
     setMessage("");
     try {
       const checkupResponse = await axios.post(
-        "https://localhost:3000/checkup/create-new",
+        "https://aup-patientfirst-server.onrender.com/checkup/create-new",
         {
           visitId: selectedVisit._id,
           patientId: selectedVisit.patient_id?._id,
@@ -280,7 +280,7 @@ const DoctorPatient = () => {
       const checkupId = checkupResponse.data.checkupId;
 
       await axios.post(
-        "https://localhost:3000/prescriptions/createPrescription",
+        "https://aup-patientfirst-server.onrender.com/prescriptions/createPrescription",
         {
           checkupId, // Reference the existing checkup
           patientId: selectedVisit.patient_id?._id,

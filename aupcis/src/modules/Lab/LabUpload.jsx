@@ -17,7 +17,7 @@ const LabUpload = () => {
   const fetchPatientData = async () => {
     try {
       const response = await axios.get(
-        `https://localhost:3000/patientname/${patientId}`
+        `https://aup-patientfirst-server.onrender.com/patientname/${patientId}`
       );
       if (response.data) {
         setPatientData(response.data);

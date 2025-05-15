@@ -45,6 +45,17 @@ const addStock = async (req, res) => {
 
         await newStock.save();
 
+        const updateMedicineQuantityLeft = await Medication.findByIdAndUpdate(
+            medicineId,
+            { $inc: { totalQuantityLeft: quantity } },
+            { new: true }
+        );
+        if (!updateMedicineQuantityLeft) {
+            return res.status(404).json({ error: "Failed to update medicine quantity." });
+        }
+       
+
+
         res.status(201).json({ message: "Stock added successfully!", data: newStock });
     } catch (error) {
         console.error("Error adding stock:", error);

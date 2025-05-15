@@ -10,7 +10,7 @@ const XrayUpload = () => {
   const fetchPatientData = async () => {
     try {
       const response = await axios.get(
-        `https://localhost:3000/patientname/${patientId}`
+        `https://aup-patientfirst-server.onrender.com/patientname/${patientId}`
       );
       if (response.data) {
         setPatientData(response.data);
@@ -26,7 +26,7 @@ const XrayUpload = () => {
     if (searchTerm.trim() !== "") {
       try {
         const response = await axios.get(
-          `https://localhost:3000/xray/getXray/${searchTerm}`
+          `https://aup-patientfirst-server.onrender.com/xray/getXray/${searchTerm}`
         );
         setProcedure(response.data);
         setError("");

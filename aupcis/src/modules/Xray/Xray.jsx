@@ -39,7 +39,7 @@ const Xray = () => {
   const fetchSalesSummary = async () => {
     try {
       const response = await axios.get(
-        "https://localhost:3000/xray/sales-summary"
+        "https://aup-patientfirst-server.onrender.com/xray/sales-summary"
       );
       setSalesSummary(response.data || { today: 0, month: 0, year: 0 });
     } catch (error) {
@@ -51,7 +51,7 @@ const Xray = () => {
     setLoading(true); // ADD THIS
     try {
       const response = await axios.get(
-        `https://localhost:3000/xray/sales-over-time?type=${type}`
+        `https://aup-patientfirst-server.onrender.com/xray/sales-over-time?type=${type}`
       );
       setXrayTotalSales(response.data || []);
     } catch (error) {
@@ -64,7 +64,7 @@ const Xray = () => {
   const fetchVisitData = async (type) => {
     try {
       const res = await axios.get(
-        `https://localhost:3000/xray/visit-count?type=${type}`
+        `https://aup-patientfirst-server.onrender.com/xray/visit-count?type=${type}`
       );
       setVisitChartData(res.data.chartData || []);
       setVisitTotal(res.data.totalForSelectedPeriod || 0);

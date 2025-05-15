@@ -61,7 +61,7 @@ const Doctor = () => {
   const [doctors, setDoctors] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch("https://localhost:3000");
+      const res = await fetch("https://aup-patientfirst-server.onrender.com");
       const data = await res.json();
       setDoctors(data.items);
     };

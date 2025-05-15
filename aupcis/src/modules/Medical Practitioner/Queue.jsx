@@ -27,7 +27,7 @@ const Queue = () => {
   const handleGenerateQueue = async (department) => {
     try {
       const response = await axios.post(
-        "https://localhost:3000/queue/generateQueue",
+        "https://aup-patientfirst-server.onrender.com/queue/generateQueue",
         { department: department.toLowerCase() }
       );
 

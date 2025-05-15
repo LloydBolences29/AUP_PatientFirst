@@ -41,7 +41,7 @@ const AdminRoleManagement = () => {
 
   useEffect(() => {
     const fetchAdmin = async () => {
-      const response = await fetch("https://localhost:3000/api/roles/user");
+      const response = await fetch("https://aup-patientfirst-server.onrender.com/api/roles/user");
 
       try {
         const data = await response.json(); // ✅ Read response only once
@@ -62,7 +62,7 @@ const AdminRoleManagement = () => {
     e.preventDefault();
 
     console.log("Submitting FormData:", formData); // Debugging
-    const response = await fetch("https://localhost:3000/api/roles/user", {
+    const response = await fetch("https://aup-patientfirst-server.onrender.com/api/roles/user", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

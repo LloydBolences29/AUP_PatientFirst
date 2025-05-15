@@ -32,7 +32,7 @@ const Dashboard = () => {
 
     try {
       const response = await fetch(
-        `https://localhost:3000/type-of-visit-report/checkUpPatientperMonth/count?date=${formattedDate}`
+        `https://aup-patientfirst-server.onrender.com/type-of-visit-report/checkUpPatientperMonth/count?date=${formattedDate}`
       );
       const data = await response.json();
       console.log("API Response:", data);

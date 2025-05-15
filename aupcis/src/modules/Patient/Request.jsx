@@ -29,7 +29,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchPatientId = async () => {
       try {
-        const response = await axios.get("https://localhost:3000/patientname/auth/me", {
+        const response = await axios.get("https://aup-patientfirst-server.onrender.com/patientname/auth/me", {
           withCredentials: true,
         });
         setPatientId(response.data.id);
@@ -48,7 +48,7 @@ const Dashboard = () => {
       if (!patientId) return;
       try {
         setLoading(true);
-        const response = await axios.get(`https://localhost:3000/patientname/${patientId}`);
+        const response = await axios.get(`https://aup-patientfirst-server.onrender.com/patientname/${patientId}`);
         setPatient(response.data.patient);
       } catch (err) {
         console.error("Error fetching patient data:", err);
@@ -71,7 +71,7 @@ const Dashboard = () => {
     }
 
     try {
-      await axios.post("https://localhost:3000/formRequest", {
+      await axios.post("https://aup-patientfirst-server.onrender.com/formRequest", {
         patientId,
         requestTypes,
         purpose,

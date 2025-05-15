@@ -31,7 +31,7 @@ const LabDashboard = () => {
   const fetchVisitData = async (type) => {
     try {
       const res = await axios.get(
-        `https://localhost:3000/labTest/visit-count?type=${type}`
+        `https://aup-patientfirst-server.onrender.com/labTest/visit-count?type=${type}`
       );
       setVisitChartData(res.data.chartData || []);
       setVisitTotal(res.data.totalForSelectedPeriod || 0);
@@ -43,7 +43,7 @@ const LabDashboard = () => {
   const fetchSalesSummary = async () => {
     try {
       const response = await axios.get(
-        `https://localhost:3000/labTest/sales-summary`
+        `https://aup-patientfirst-server.onrender.com/labTest/sales-summary`
       );
       setSalesSummary(response.data || { today: 0, month: 0, year: 0 });
     } catch (error) {
@@ -56,7 +56,7 @@ const LabDashboard = () => {
 
     try {
       const response = await axios.get(
-        `https://localhost:3000/labTest/sales-over-time?type=${type}`
+        `https://aup-patientfirst-server.onrender.com/labTest/sales-over-time?type=${type}`
       );
       setLabTotalSales(response.data || []);
     } catch (error) {

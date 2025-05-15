@@ -189,8 +189,7 @@ router.put("/updatePatientType/:checkupId", async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
-=======
+
 router.get("/getCertainCheckup/:patientId", async (req, res) => {
   try {
     const { patientId } = req.params;
@@ -214,5 +213,5 @@ router.get("/getCertainCheckup/:patientId", async (req, res) => {
 });
 
 
->>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
+
 module.exports = router;

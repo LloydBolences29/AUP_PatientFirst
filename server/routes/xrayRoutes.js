@@ -124,8 +124,7 @@ function getDateRange(selectedDate, type) {
     return { startDate, endDate };
   }
   
-<<<<<<< HEAD
-=======
+
 
   router.get("/sales-over-time", async (req, res) => {
     const { type } = req.query;
@@ -223,7 +222,6 @@ function getDateRange(selectedDate, type) {
   
   
 
->>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
 
   router.get("/sales-over-time", async (req, res) => {
     const { type } = req.query;

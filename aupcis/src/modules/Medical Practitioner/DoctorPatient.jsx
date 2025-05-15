@@ -67,8 +67,8 @@ const DoctorPatient = () => {
 
     try {
       const response = await axios.post("https://aup-patientfirst-server.onrender.com/checkup/create-medical-certificate", {
-        visitId,
-        patientType,
+        visitId: selectedVisit._id,
+        patientType: patientType,
       });
 
       setAlertInfo({
@@ -210,6 +210,7 @@ const DoctorPatient = () => {
 
   const handleRowClick = async (visit) => {
     setSelectedVisit(visit); // Save the visit object
+    console.log("Slected Visit : ", selectedVisit)
     setChiefComplaint(visit.chiefComplaints || "");
     setIsModalOpen(true);
 

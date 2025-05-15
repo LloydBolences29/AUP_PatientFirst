@@ -1,25 +1,14 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../../components/Sidebar";
-<<<<<<< HEAD
+
 import moment from "moment";
 import { Card, Row, Col } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import CustomLineChart from "../../components/LineChart";
 import axios from "axios";
 
-=======
-import {
-  Form,
-  Card,
-  Button,
-  Container,
-  Row,
-  Col,
-  Table,
-} from "react-bootstrap";
-import CustomLineChart from "../../components/LineChart";
-import axios from "axios";
->>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
+
+
 const Xray = () => {
   const xraySidebarLinks = [
     { label: "Dashboard", path: "/xray-dashboard" },
@@ -36,7 +25,7 @@ const Xray = () => {
     month: 0,
     year: 0,
   });
-<<<<<<< HEAD
+
 
   const [visitChartData, setVisitChartData] = useState([]);
   const [visitTotal, setVisitTotal] = useState(0);
@@ -55,12 +44,8 @@ const Xray = () => {
     try {
       const response = await axios.get(
         "https://aup-patientfirst-server.onrender.com/xray/sales-summary"
-=======
-  const fetchSalesSummary = async () => {
-    try {
-      const response = await axios.get(
-        `https://aup-patientfirst-server.onrender.com/xray/sales-summary`
->>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
+
+
       );
       setSalesSummary(response.data || { today: 0, month: 0, year: 0 });
     } catch (error) {
@@ -70,10 +55,8 @@ const Xray = () => {
 
   const fetchTotalSales = async (type) => {
     setLoading(true); // ADD THIS
-<<<<<<< HEAD
-=======
 
->>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
+
     try {
       const response = await axios.get(
         `https://aup-patientfirst-server.onrender.com/xray/sales-over-time?type=${type}`
@@ -86,7 +69,7 @@ const Xray = () => {
     setLoading(false);
   };
 
-<<<<<<< HEAD
+
   const fetchVisitData = async (type) => {
     try {
       const res = await axios.get(
@@ -103,11 +86,7 @@ const Xray = () => {
     fetchTotalSales(selectedType);
     fetchSalesSummary();
     fetchVisitData(selectedType);
-=======
-  useEffect(() => {
-    fetchTotalSales(selectedType);
-    fetchSalesSummary();
->>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
+
   }, [selectedType]);
 
   const totalSalesSum = xrayTotalSales.reduce(
@@ -121,21 +100,19 @@ const Xray = () => {
         links={xraySidebarLinks}
         pageContent={
           <>
-<<<<<<< HEAD
-=======
+
             {" "}
->>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
+
             <Card
               md={9}
               className="content-column analytics-card shadow-sm p-3 bg-white rounded text-center"
             >
               <div className="page-content">
                 <h1 className="page-title fw-bold" style={{ color: "#2c3e50" }}>
-<<<<<<< HEAD
+
                   Xray Dashboard
-=======
-                  Xray Dashboard{" "}
->>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
+
+
                 </h1>
               </div>
             </Card>
@@ -183,7 +160,7 @@ const Xray = () => {
                   )}
                 </Card>
               </Col>
-<<<<<<< HEAD
+
 
               
               <Col md={12} className="mt-4">
@@ -202,8 +179,7 @@ const Xray = () => {
                   </Card.Body>
                 </Card>
               </Col>
-=======
->>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
+
             </Row>
           </>
         }

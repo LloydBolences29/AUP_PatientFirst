@@ -212,6 +212,26 @@ router.get("/getCertainCheckup/:patientId", async (req, res) => {
   }
 });
 
+// Create checkup with visitId and patientType only
+router.post("/create-medical-certificate", async (req, res) => {
+  try {
+    const { visitId, patientType } = req.body;
+
+    // Basic validation
+    if (!visitId || !patientType) {
+      return res.status(400).json({ message: "visitId and patientType are required" });
+    }
+
+    const newCheckup = new Checkup({ visitId, patientType });
+    await newCheckup.save();
+
+    res.status(201).json({ message: "Medical certificate checkup created", data: newCheckup });
+  } catch (error) {
+    console.error("Error creating checkup:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 
 
 module.exports = router;

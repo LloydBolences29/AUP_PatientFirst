@@ -11,6 +11,7 @@ import {
   Card,
   CardHeader,
   CardFooter,
+  Alert, // <-- add this import
 } from "react-bootstrap";
 import Modal from "../../components/Modal";
 
@@ -58,6 +59,42 @@ const DoctorPatient = () => {
   const [medicineSearch, setMedicineSearch] = useState("");
   const [medicineResults, setMedicineResults] = useState([]);
   const [medicines, setMedicines] = useState([]);
+  const [alertInfo, setAlertInfo] = useState({ show: false, message: "", variant: "" });
+
+  const handleMedCertSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post("https://aup-patientfirst-server.onrender.com/checkup/create-medical-certificate", {
+        visitId,
+        patientType,
+      });
+
+      setAlertInfo({
+        show: true,
+        message: "Medical certificate saved successfully!",
+        variant: "success",
+      });
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      setAlertInfo({
+        show: true,
+        message: "Failed to save medical certificate.",
+        variant: "danger",
+      });
+    }
+  };
+
+  // Auto-hide alert after 3 seconds
+  useEffect(() => {
+    if (alertInfo.show) {
+      const timer = setTimeout(() => {
+        setAlertInfo({ ...alertInfo, show: false });
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [alertInfo]);
 
   const fetchMedicines = async () => {
     try {
@@ -126,12 +163,12 @@ const DoctorPatient = () => {
     setCheckedValue(e.target.value);
   };
 
-  const handleMedCertSubmit = () => {
-    console.log("Submitted text:", textValue);
-    alert("Successfully Submitted");
-    setIsModalOpen(false);
-    // You can also send `inputValue` to your backend or process it however you like
-  };
+  // const handleMedCertSubmit = () => {
+  //   console.log("Submitted text:", textValue);
+  //   alert("Successfully Submitted");
+  //   setIsModalOpen(false);
+  //   // You can also send `inputValue` to your backend or process it however you like
+  // };
 
   const addPrescription = (type) => {
     const newPres =
@@ -1272,26 +1309,6 @@ const DoctorPatient = () => {
                                               name="DrugTest"
                                               value="Negative"
                                               checked={
-                                                medCertSelections.DrugTest ===
-                                                "Negative"
-                                              }
-                                              onChange={() =>
-                                                handleMedCertRadioChange(
-                                                  "DrugTest",
-                                                  "Negative"
-                                                )
-                                              }
-                                            />{" "}
-                                            Negative{" "}
-                                          </label>
-                                          <br />
-                                          <label>
-                                            <input
-                                              type="radio"
-                                              name="DrugTest"
-                                              value="Positive"
-                                              checked={
-                                                medCertSelections.DrugTest ===
                                                 "Positive"
                                               }
                                               onChange={() =>

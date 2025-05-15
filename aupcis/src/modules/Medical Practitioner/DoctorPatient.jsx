@@ -60,6 +60,7 @@ const DoctorPatient = () => {
   const [medicineResults, setMedicineResults] = useState([]);
   const [medicines, setMedicines] = useState([]);
   const [alertInfo, setAlertInfo] = useState({ show: false, message: "", variant: "" });
+  const [visitId, setVisitId] = useState("");
 
   const handleMedCertSubmit = async () => {
     

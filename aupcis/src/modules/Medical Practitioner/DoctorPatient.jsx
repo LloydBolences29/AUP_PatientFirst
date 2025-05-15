@@ -28,16 +28,7 @@ const DoctorPatient = () => {
   const [doctorNote, setDoctorNote] = useState(""); // New state for doctor's note
   const [chiefComplaint, setChiefComplaint] = useState(""); // New state for chief complaint
   const [isEditingChiefComplaint, setIsEditingChiefComplaint] = useState(false); // New state for edit mode
-  const [prescriptions, setPrescriptions] = useState([
-    {
-      type: "medicinal",
-      medicineSearch: "",
-      selectedMedicine: null,
-      dosage: "",
-      instruction: "",
-      searchResults: [],
-    },
-  ]);
+  const [prescriptions, setPrescriptions] = useState([]);
   const [doctorFee, setDoctorFee] = useState("");
   const [patientType, setPatientType] = useState("Outpatient");
   const [message, setMessage] = useState("");
@@ -54,58 +45,6 @@ const DoctorPatient = () => {
     Urinalysis: "",
     DrugTest: "",
   });
-<<<<<<< HEAD
-  const [selectedMedicine, setSelectedMedicine] = useState([]);
-  const [medicineSearch, setMedicineSearch] = useState("");
-  const [medicineResults, setMedicineResults] = useState([]);
-  const [medicines, setMedicines] = useState([]);
-
-  const fetchMedicines = async () => {
-    try {
-      const response = await axios.get(
-        "https://aup-patientfirst-server.onrender.com/api/pharma/medicines"
-      );
-      setMedicines(response.data);
-    } catch (error) {
-      console.error("Error fetching medicines", error);
-    }
-  };
-
-  const handleMedicineSearch = async (index, e) => {
-    const query = e.target.value;
-    const updated = [...prescriptions];
-    updated[index].medicineSearch = query;
-
-    if (query.length > 1) {
-      try {
-        const response = await axios.get(
-          `https://aup-patientfirst-server.onrender.com/api/pharma/medicines/search?q=${encodeURIComponent(query)}`
-        );
-        updated[index].searchResults = response.data;
-      } catch (error) {
-        updated[index].searchResults = [];
-      }
-    } else {
-      updated[index].searchResults = [];
-    }
-    setPrescriptions(updated);
-  };
-
-  const handleMedicineSelect = (index, medicine) => {
-    const updated = [...prescriptions];
-    updated[index].selectedMedicine = medicine;
-    updated[index].medicineSearch = `${medicine.genericName} - ${medicine.brand}`;
-    updated[index].searchResults = [];
-    setPrescriptions(updated);
-  };
-
-  const handleChange = (index, field, value) => {
-    const updated = [...prescriptions];
-    updated[index][field] = value;
-    setPrescriptions(updated);
-  };
-=======
->>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
 
   const fetchVisitData = async (patientId) => {
     try {
@@ -137,27 +76,22 @@ const DoctorPatient = () => {
   };
 
   const addPrescription = (type) => {
-<<<<<<< HEAD
-    const newPres =
-=======
     setPrescriptions((prevPrescriptions) => [
       ...prevPrescriptions.filter((pres) => pres.type === type),
->>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
       type === "medicinal"
         ? {
             type: "medicinal",
-            medicineSearch: "",
-            selectedMedicine: null,
+            medication: "",
             dosage: "",
-            instruction: "",
-            searchResults: [],
+            frequency: "",
+            duration: "",
           }
         : {
             type: "non-medicinal",
             recommendation: "",
             notes: "",
-          };
-    setPrescriptions((prev) => [...prev, newPres]);
+          },
+    ]);
   };
 
   useEffect(() => {
@@ -306,6 +240,12 @@ const DoctorPatient = () => {
     }
   };
 
+  const handleChange = (index, field, value) => {
+    const updatedPrescriptions = [...prescriptions]; // Copy current prescriptions
+    updatedPrescriptions[index][field] = value; // Update specific field
+    setPrescriptions(updatedPrescriptions); // Save updated state
+  };
+
   const handleMedCertRadioChange = (group, value) => {
     setMedCertSelections((prev) => ({
       ...prev,
@@ -313,16 +253,6 @@ const DoctorPatient = () => {
     }));
   };
 
-<<<<<<< HEAD
-=======
-  const handleMedCertRadioChange = (group, value) => {
-    setMedCertSelections((prev) => ({
-      ...prev,
-      [group]: value,
-    }));
-  };
-
->>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
   console.log("Selected Visit Data:", visitData);
 
   return (
@@ -602,10 +532,7 @@ const DoctorPatient = () => {
                                                                 }{" "}
                                                                 beats/min
                                                               </p>
-<<<<<<< HEAD
-=======
                                                               
->>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
                                                             </Col>
 
                                                             <Col>
@@ -622,12 +549,7 @@ const DoctorPatient = () => {
                                                               </p>
                                                               <p>
                                                                 <strong>
-<<<<<<< HEAD
-                                                                  Blood
-                                                                  Pressure:
-=======
                                                                   Blood Pressure: 
->>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
                                                                 </strong>{" "}
                                                                 {
                                                                   checkup
@@ -637,11 +559,7 @@ const DoctorPatient = () => {
                                                               </p>
                                                             </Col>
                                                             <Col md={12}>
-<<<<<<< HEAD
-                                                              <p>
-=======
                                                             <p>
->>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
                                                                 <strong>
                                                                   Chief
                                                                   Complaint:
@@ -652,10 +570,7 @@ const DoctorPatient = () => {
                                                                     ?.chiefComplaints
                                                                 }
                                                               </p>
-<<<<<<< HEAD
-=======
                                                             
->>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
                                                             </Col>
                                                             <Col md={12}>
                                                               <p>
@@ -816,65 +731,22 @@ const DoctorPatient = () => {
                                             <Col md={3}>
                                               <Form.Control
                                                 type="text"
-                                                placeholder="Search Medication"
-                                                value={
-                                                  pres.medicineSearch || ""
-                                                }
+                                                placeholder="Medication"
+                                                value={pres.medication}
                                                 onChange={(e) =>
-                                                  handleMedicineSearch(index, e)
+                                                  handleChange(
+                                                    index,
+                                                    "medication",
+                                                    e.target.value
+                                                  )
                                                 }
-                                                autoComplete="off"
                                               />
-                                              {pres.searchResults?.length >
-                                                0 && (
-                                                <ul
-                                                  className="list-group mb-3"
-                                                  style={{
-                                                    maxHeight: "150px",
-                                                    overflowY: "scroll",
-                                                    cursor: "pointer",
-                                                    zIndex: 1000,
-                                                    position: "absolute",
-                                                    background: "#fff",
-                                                    width: "100%",
-                                                  }}
-                                                >
-                                                  {pres.searchResults.map(
-                                                    (medicine) => (
-                                                      <li
-                                                        key={medicine._id}
-                                                        className="list-group-item"
-                                                        onClick={() =>
-                                                          handleMedicineSelect(
-                                                            index,
-                                                            medicine
-                                                          )
-                                                        }
-                                                      >
-                                                        <strong>
-                                                          {
-                                                            medicine.genericName
-                                                          }
-                                                        </strong>{" "}
-                                                        <span
-                                                          style={{
-                                                            color: "#888",
-                                                          }}
-                                                        >
-                                                          - {medicine.brand}
-                                                        </span>
-                                                      </li>
-                                                    )
-                                                  )}
-                                                </ul>
-                                              )}
                                             </Col>
-
                                             <Col md={2}>
                                               <Form.Control
                                                 type="text"
                                                 placeholder="Dosage"
-                                                value={pres.dosage || ""}
+                                                value={pres.dosage}
                                                 onChange={(e) =>
                                                   handleChange(
                                                     index,
@@ -884,11 +756,12 @@ const DoctorPatient = () => {
                                                 }
                                               />
                                             </Col>
+
                                             <Col md={2}>
                                               <Form.Control
                                                 as="textarea"
                                                 placeholder="Instruction"
-                                                value={pres.instruction || ""}
+                                                value={pres.instruction}
                                                 onChange={(e) =>
                                                   handleChange(
                                                     index,
@@ -896,8 +769,8 @@ const DoctorPatient = () => {
                                                     e.target.value
                                                   )
                                                 }
-                                                rows={3}
-                                                style={{ resize: "horizontal" }}
+                                                rows={3} // Optional: Adjust the number of rows
+                                                style={{ resize: "horizontal" }} // Allow horizontal resizing
                                               />
                                             </Col>
                                           </>
@@ -907,9 +780,7 @@ const DoctorPatient = () => {
                                               <Form.Control
                                                 type="text"
                                                 placeholder="Recommendation"
-                                                value={
-                                                  pres.recommendation || ""
-                                                }
+                                                value={pres.recommendation}
                                                 onChange={(e) =>
                                                   handleChange(
                                                     index,
@@ -923,7 +794,7 @@ const DoctorPatient = () => {
                                               <Form.Control
                                                 type="text"
                                                 placeholder="Notes"
-                                                value={pres.notes || ""}
+                                                value={pres.notes}
                                                 onChange={(e) =>
                                                   handleChange(
                                                     index,
@@ -1032,11 +903,8 @@ const DoctorPatient = () => {
                 }
               />
             ) : (
-<<<<<<< HEAD
-=======
 
 
->>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
               // Modal for the medical certificate purpose
               <Modal
                 show={isModalOpen}
@@ -1350,11 +1218,7 @@ const DoctorPatient = () => {
                               </div>
                               <br />
 
-<<<<<<< HEAD
-                              {/* Second part of the content here for medical cert */}
-=======
 {/* Second part of the content here for medical cert */}
->>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
                               <h3>Physical Examination</h3>
 
                               <Row>
@@ -1734,6 +1598,19 @@ const DoctorPatient = () => {
                                 </Row>
                               </Card>
                             </div>
+                            {/* <div>
+                              <label>
+                                <strong>Doctor's Fee: </strong>
+                              </label>
+                              <input
+                                type="number"
+                                placeholder="Doctor's Fee"
+                                value={doctorFee}
+                                onChange={(e) => setDoctorFee(e.target.value)}
+                                className="w-full p-2 mb-2 border rounded"
+                                required
+                              />
+                            </div> */}
                           </>
                         )}
                       </div>

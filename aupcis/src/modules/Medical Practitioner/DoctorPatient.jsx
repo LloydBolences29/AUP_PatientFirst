@@ -61,8 +61,8 @@ const DoctorPatient = () => {
   const [medicines, setMedicines] = useState([]);
   const [alertInfo, setAlertInfo] = useState({ show: false, message: "", variant: "" });
 
-  const handleMedCertSubmit = async (e) => {
-    e.preventDefault();
+  const handleMedCertSubmit = async () => {
+    
 
     try {
       const response = await axios.post("https://aup-patientfirst-server.onrender.com/checkup/create-medical-certificate", {

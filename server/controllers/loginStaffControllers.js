@@ -8,7 +8,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 const accessControl = {
   Patient: ["/dashboard", "/analytics", "/profile"],
-<<<<<<< HEAD
+
     Admin: ["/admin-dashboard", "/admin-management", "/admin-analytics", "/pharmacyAnalytics"],
     MedicalRecordsOfficer: ["/medicalRecord-dashboard", "/medicalRecord-management", "/request-forms"],
     Nurse: ["/nurse-dashboard", "/patient-management", "/room-management"],
@@ -17,29 +17,7 @@ const accessControl = {
     Pharmacist: ["/pharma-dashboard", "/pharma-transaction", "/medicine-list", "/prescription-page"],
     Radiologist: ["/xray-dashboard", "/xray-billing", "/xray-upload"],
     lab: ["/lab-dashboard", "/lab-billing", "/lab-upload"],
-=======
-  Admin: [
-    "/admin-dashboard",
-    "/admin-management",
-    "/admin-analytics",
-    "/pharmacyAnalytics",
-  ],
-  MedicalRecordsOfficer: [
-    "/medicalRecord-dashboard",
-    "/medicalRecord-management",
-  ],
-  Nurse: ["/nurse-dashboard", "/patient-management", "/room-management"],
-  Doctor: ["/doctor-dashboard", "/doctor-patient-management"],
-  Cashier: ["/cashier-dashboard", "/payment"],
-  Pharmacist: [
-    "/pharma-dashboard",
-    "/pharma-transaction",
-    "/medicine-list",
-    "/prescription-page",
-  ],
-  Radiologist: ["/xray-dashboard", "/xray-billing", "/xray-upload"],
-  lab: ["/lab-dashboard", "/lab-billing", "/lab-upload"],
->>>>>>> 1eea76120af253bb703e77d4c23d8974cd9e4ebc
+
 };
 
 const loginStaff = async (req, res) => {

@@ -1730,7 +1730,7 @@ const DoctorPatient = () => {
                                 "Are you sure you want to mark this visit as complete?"
                               )
                             ) {
-                              // handleCompleteVisit(selectedVisit._id);
+                              handleCompleteVisit(selectedVisit._id);
                               handleMedCertSubmit();
                               closeModal();
                             }
